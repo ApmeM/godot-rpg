@@ -1,0 +1,103 @@
+[gd_scene load_steps=64 format=2]
+
+[ext_resource path="res://Troll.cs" type="Script" id=1]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_70009.png" type="Texture" id=2]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_10013.png" type="Texture" id=3]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_10011.png" type="Texture" id=4]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_10014.png" type="Texture" id=5]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_10009.png" type="Texture" id=6]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_10007.png" type="Texture" id=7]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_10008.png" type="Texture" id=8]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_10006.png" type="Texture" id=9]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_10001.png" type="Texture" id=10]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_10004.png" type="Texture" id=11]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_10012.png" type="Texture" id=12]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_10010.png" type="Texture" id=13]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_10002.png" type="Texture" id=14]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_10005.png" type="Texture" id=15]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_10003.png" type="Texture" id=16]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_10000.png" type="Texture" id=17]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_70003.png" type="Texture" id=18]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_70008.png" type="Texture" id=19]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_70013.png" type="Texture" id=20]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_70005.png" type="Texture" id=21]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_70014.png" type="Texture" id=22]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_70010.png" type="Texture" id=23]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_70006.png" type="Texture" id=24]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_70012.png" type="Texture" id=25]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_70011.png" type="Texture" id=26]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_70004.png" type="Texture" id=27]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_70007.png" type="Texture" id=28]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_70002.png" type="Texture" id=29]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_30001.png" type="Texture" id=30]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_30002.png" type="Texture" id=31]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_30006.png" type="Texture" id=32]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_30000.png" type="Texture" id=33]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_30005.png" type="Texture" id=34]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_30008.png" type="Texture" id=35]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_30012.png" type="Texture" id=36]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_30013.png" type="Texture" id=37]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_30014.png" type="Texture" id=38]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_50001.png" type="Texture" id=39]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_50002.png" type="Texture" id=40]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_30011.png" type="Texture" id=41]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_30010.png" type="Texture" id=42]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_50003.png" type="Texture" id=44]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_50004.png" type="Texture" id=45]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_50005.png" type="Texture" id=46]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_50006.png" type="Texture" id=47]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_30003.png" type="Texture" id=48]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_30004.png" type="Texture" id=49]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_50007.png" type="Texture" id=50]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_30009.png" type="Texture" id=51]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_50000.png" type="Texture" id=52]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_30007.png" type="Texture" id=53]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_50008.png" type="Texture" id=54]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_50009.png" type="Texture" id=55]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_50010.png" type="Texture" id=56]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_50011.png" type="Texture" id=57]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_50012.png" type="Texture" id=58]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_50014.png" type="Texture" id=59]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_50013.png" type="Texture" id=60]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_70000.png" type="Texture" id=61]
+[ext_resource path="res://assets/crusader/walk/crusader_walk_70001.png" type="Texture" id=62]
+
+[sub_resource type="CircleShape2D" id=1]
+radius = 16.0
+
+[sub_resource type="SpriteFrames" id=2]
+animations = [ {
+"frames": [ ExtResource( 61 ), ExtResource( 62 ), ExtResource( 29 ), ExtResource( 18 ), ExtResource( 27 ), ExtResource( 21 ), ExtResource( 24 ), ExtResource( 28 ), ExtResource( 19 ), ExtResource( 2 ), ExtResource( 23 ), ExtResource( 26 ), ExtResource( 25 ), ExtResource( 20 ), ExtResource( 22 ) ],
+"loop": true,
+"name": "down",
+"speed": 5.0
+}, {
+"frames": [ ExtResource( 52 ), ExtResource( 39 ), ExtResource( 40 ), ExtResource( 44 ), ExtResource( 45 ), ExtResource( 46 ), ExtResource( 47 ), ExtResource( 50 ), ExtResource( 54 ), ExtResource( 55 ), ExtResource( 56 ), ExtResource( 57 ), ExtResource( 58 ), ExtResource( 60 ), ExtResource( 59 ) ],
+"loop": true,
+"name": "left",
+"speed": 5.0
+}, {
+"frames": [ ExtResource( 17 ), ExtResource( 10 ), ExtResource( 14 ), ExtResource( 16 ), ExtResource( 11 ), ExtResource( 15 ), ExtResource( 9 ), ExtResource( 7 ), ExtResource( 8 ), ExtResource( 6 ), ExtResource( 13 ), ExtResource( 4 ), ExtResource( 12 ), ExtResource( 3 ), ExtResource( 5 ) ],
+"loop": true,
+"name": "right",
+"speed": 5.0
+}, {
+"frames": [ ExtResource( 33 ), ExtResource( 30 ), ExtResource( 31 ), ExtResource( 48 ), ExtResource( 49 ), ExtResource( 34 ), ExtResource( 32 ), ExtResource( 53 ), ExtResource( 35 ), ExtResource( 51 ), ExtResource( 42 ), ExtResource( 41 ), ExtResource( 36 ), ExtResource( 37 ), ExtResource( 38 ) ],
+"loop": true,
+"name": "up",
+"speed": 5.0
+} ]
+
+[node name="Troll" type="KinematicBody2D"]
+script = ExtResource( 1 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource( 1 )
+
+[node name="AnimatedSprite" type="AnimatedSprite" parent="."]
+position = Vector2( 1.1892, -24.9734 )
+scale = Vector2( 0.729545, 0.682878 )
+frames = SubResource( 2 )
+animation = "left"
+frame = 1
+speed_scale = 4.0

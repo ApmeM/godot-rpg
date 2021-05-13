@@ -1,0 +1,10 @@
+<Project Sdk="Godot.NET.Sdk/3.2.3">
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <RootNamespace>IsometricGame</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="BrainAI" Version="2.2.0" />
+    <PackageReference Include="MazeGenerators" Version="1.1.0" />
+  </ItemGroup>
+</Project>
