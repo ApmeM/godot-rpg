@@ -36,15 +36,20 @@ public class Dungeon : Node2D
 
 		server.Start();
 		var firstPlayer = server.Connect("First");
+		this.PlayerIdx = firstPlayer;
 
 		var initialData = server.GetInitialData(firstPlayer);
 		astar = new AstarGridGraph(initialData.MapWidth, initialData.MapHeight);
 
-		var troll = GetNode<Troll>("Walls/Troll");
+		var trollScene = ResourceLoader.Load<PackedScene>("Troll.tscn");
+
+		var troll = (Troll)trollScene.Instance();
+		tileMapWalls.AddChild(troll);
 		troll.PlayerIdx = firstPlayer;
-		this.PlayerIdx = firstPlayer;
 		troll.Position = tileMapWalls.MapToWorld(new Vector2(initialData.PositionX, initialData.PositionY));
 		troll.Position += Vector2.Down * tileMapWalls.CellSize.y / 2;
+
+		GetNode<Camera2D>("DraggableCamera").Position = troll.Position;
 	}
 
 	public override void _Process(float delta)

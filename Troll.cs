@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 public class Troll : KinematicBody2D
 {
-	const int MOTION_SPEED = 80;
+	const int MOTION_SPEED = 800;
 	private readonly Queue<Point> path = new Queue<Point>();
 	private Vector2 oldTarget;
 
@@ -67,9 +67,8 @@ public class Troll : KinematicBody2D
 		if (newTarget != this.oldTarget)
 		{
 			this.oldTarget = newTarget;
-			var cellCoord = tileMapWalls.WorldToMap(tileMapWalls.GetLocalMousePosition());
 			var playerPosition = tileMapWalls.WorldToMap(Position);
-			var path = AStarPathfinder.Search(Dungeon.astar, new Point((int)playerPosition.x, (int)playerPosition.y), new Point((int)cellCoord.x, (int)cellCoord.y));
+			var path = AStarPathfinder.Search(Dungeon.astar, new Point((int)playerPosition.x, (int)playerPosition.y), new Point((int)newTarget.x, (int)newTarget.y));
 			if (path != null)
 			{
 				MoveBy(path);

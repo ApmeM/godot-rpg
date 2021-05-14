@@ -18,8 +18,8 @@ namespace IsometricGame.Logic
             var generator = new RoomMazeGenerator();
             this.Map = generator.Generate(new RoomMazeGenerator.Settings
             {
-                Width = 21,
-                Height = 21
+                Width = 51,
+                Height = 51
             });
 
             this.Astar = new AstarGridGraph(21, 21);

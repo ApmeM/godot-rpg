@@ -100,4 +100,4 @@ scale = Vector2( 0.729545, 0.682878 )
 frames = SubResource( 2 )
 animation = "left"
 frame = 1
-speed_scale = 4.0
+speed_scale = 16.0
