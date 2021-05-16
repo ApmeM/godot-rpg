@@ -5,6 +5,7 @@ using IsometricGame.Logic.Models;
 using MazeGenerators;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace IsometricGame.Logic
 {
@@ -12,7 +13,7 @@ namespace IsometricGame.Logic
     {
         private RoomMazeGenerator.Result Map;
         private AstarGridGraph Astar;
-        private List<Player> Players = new List<Player>();
+        private Dictionary<int, Player> Players = new Dictionary<int, Player>();
 
         public void Start()
         {
@@ -37,12 +38,20 @@ namespace IsometricGame.Logic
         public int Connect(string playerName)
         {
             var idx = Players.Count;
-            Players.Add(new Player
+            var player = new Player
             {
                 PlayerName = playerName,
-                PositionX = Map.Rooms[idx].X + Map.Rooms[idx].Width / 2,
-                PositionY = Map.Rooms[idx].Y + Map.Rooms[idx].Height / 2,
-            });
+            };
+
+            var centerX = Map.Rooms[idx].X + Map.Rooms[idx].Width / 2;
+            var centerY = this.Map.Rooms[idx].Y + this.Map.Rooms[idx].Height / 2;
+
+            player.Units.Add(1, new Unit { UnitId = 1, PositionX = centerX - 1, PositionY = centerY });
+            player.Units.Add(2, new Unit { UnitId = 2, PositionX = centerX + 1, PositionY = centerY });
+            player.Units.Add(3, new Unit { UnitId = 3, PositionX = centerX, PositionY = centerY + 1 });
+            player.Units.Add(4, new Unit { UnitId = 4, PositionX = centerX, PositionY = centerY - 1 });
+
+            this.Players.Add(idx, player);
 
             return idx;
         }
@@ -52,15 +61,14 @@ namespace IsometricGame.Logic
             return new InitialData {
                 MapWidth = Map.Regions.GetLength(0),
                 MapHeight = Map.Regions.GetLength(1),
-                PositionX = Players[forPlayer].PositionX,
-                PositionY = Players[forPlayer].PositionY
+                Units = Players[forPlayer].Units.Values.ToList()
             };
         }
 
-        public void PlayerMove(int forPlayer, Vector2 newTarget)
+        public void PlayerMove(int forPlayer, int forUnit, Vector2 newTarget)
         {
-            Players[forPlayer].PositionX = (int)newTarget.x;
-            Players[forPlayer].PositionY = (int)newTarget.y;
+            Players[forPlayer].Units[forUnit].PositionX = (int)newTarget.x;
+            Players[forPlayer].Units[forUnit].PositionY = (int)newTarget.y;
         }
 
         public Player GetPlayer(int forPlayer)
@@ -76,7 +84,7 @@ namespace IsometricGame.Logic
             for (var x = 0; x < Map.Regions.GetLength(0); x++)
                 for (var y = 0; y < Map.Regions.GetLength(1); y++)
                 {
-                    if ((Math.Abs(x - player.PositionX) + Math.Abs(y - player.PositionY)) > 5)
+                    if (!IsVisible(player, x, y))
                     {
                         result[x, y] = MapTile.Unknown;
                     }
@@ -91,6 +99,18 @@ namespace IsometricGame.Logic
                 }
 
             return result;
+        }
+
+        private static bool IsVisible(Player player, int x, int y)
+        {
+            foreach(var unit in player.Units.Values)
+            {
+                if ((Math.Abs(x - unit.PositionX) + Math.Abs(y - unit.PositionY)) <= 5){
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

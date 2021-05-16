@@ -41,25 +41,28 @@ public class Dungeon : Node2D
 
 		var trollScene = ResourceLoader.Load<PackedScene>("Troll.tscn");
 
-		var troll = (Troll)trollScene.Instance();
-		maze.AddChild(troll);
-		troll.PlayerIdx = firstPlayer;
-		troll.Position = maze.MapToWorld(new Vector2(initialData.PositionX, initialData.PositionY));
-		troll.Position += Vector2.Down * maze.CellSize.y / 2;
+		foreach(var unit in initialData.Units)
+		{
+			var troll = (Troll)trollScene.Instance();
+			maze.AddChild(troll);
+			troll.PlayerIdx = firstPlayer;
+			troll.UnitIdx = unit.UnitId;
+			troll.Position = maze.MapToWorld(new Vector2(unit.PositionX, unit.PositionY));
+			troll.Position += Vector2.Down * maze.CellSize.y / 2;
 
-		GetNode<Camera2D>("DraggableCamera").Position = troll.Position;
+			GetNode<Camera2D>("DraggableCamera").Position = troll.Position;
+		}
 	}
 
 	public override void _Process(float delta)
 	{
 		base._Process(delta);
 
-
 		var maze = GetNode<Maze>("Maze");
 		var newTarget = controllerTypes[Controller].GetNewTarget(maze);
 		if (newTarget != Vector2.Zero)
 		{
-			server.PlayerMove(this.PlayerIdx, newTarget);
+			server.PlayerMove(this.PlayerIdx, 1, newTarget);
 		}
 
 		var visibleMap = server.GetVisibleMap(this.PlayerIdx);

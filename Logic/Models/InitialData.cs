@@ -1,9 +1,10 @@
-﻿namespace IsometricGame.Logic.Models
+﻿using System.Collections.Generic;
+
+namespace IsometricGame.Logic.Models
 {
     public class InitialData
     {
-        public int PositionX;
-        public int PositionY;
+        public List<Unit> Units;
         public int MapWidth;
         public int MapHeight;
     }

@@ -3,13 +3,14 @@ using BrainAI.Pathfinding.AStar;
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public class Troll : KinematicBody2D
 {
 	const int MOTION_SPEED = 800;
 	private readonly Queue<Point> path = new Queue<Point>();
 	private Vector2 oldTarget;
-
+	public int UnitIdx { get; set; }
 	public int PlayerIdx { get; set; }
 
 	public override void _PhysicsProcess(float delta)
@@ -63,7 +64,7 @@ public class Troll : KinematicBody2D
 
 		var player = Dungeon.server.GetPlayer(this.PlayerIdx);
 
-		var newTarget = new Vector2(player.PositionX, player.PositionY);
+		var newTarget = new Vector2(player.Units[this.UnitIdx].PositionX, player.Units[this.UnitIdx].PositionY);
 		if (newTarget != this.oldTarget)
 		{
 			this.oldTarget = newTarget;
