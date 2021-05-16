@@ -1,6 +1,7 @@
 ﻿using BrainAI.Pathfinding;
 using BrainAI.Pathfinding.AStar;
 using Godot;
+using IsometricGame.Logic.Models;
 using MazeGenerators;
 using System;
 using System.Collections.Generic;
@@ -44,14 +45,6 @@ namespace IsometricGame.Logic
             });
 
             return idx;
-        }
-
-        public class InitialData
-        {
-            public int PositionX;
-            public int PositionY;
-            public int MapWidth;
-            public int MapHeight;
         }
 
         public InitialData GetInitialData(int forPlayer)

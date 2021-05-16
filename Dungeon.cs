@@ -3,6 +3,7 @@ using BrainAI.Pathfinding.AStar;
 using Godot;
 using IsometricGame.Controllers;
 using IsometricGame.Logic;
+using IsometricGame.Logic.Models;
 using System.Collections.Generic;
 
 public class Dungeon : Node2D
@@ -29,10 +30,7 @@ public class Dungeon : Node2D
 
 	public override void _Ready()
 	{
-		var tileMapWalls = GetNode<TileMap>("Walls");
-		var tileMapFloor = GetNode<TileMap>("Floor");
-		tileMapWalls.Clear();
-		tileMapFloor.Clear();
+		var maze = GetNode<Maze>("Maze");
 
 		server.Start();
 		var firstPlayer = server.Connect("First");
@@ -44,10 +42,10 @@ public class Dungeon : Node2D
 		var trollScene = ResourceLoader.Load<PackedScene>("Troll.tscn");
 
 		var troll = (Troll)trollScene.Instance();
-		tileMapWalls.AddChild(troll);
+		maze.AddChild(troll);
 		troll.PlayerIdx = firstPlayer;
-		troll.Position = tileMapWalls.MapToWorld(new Vector2(initialData.PositionX, initialData.PositionY));
-		troll.Position += Vector2.Down * tileMapWalls.CellSize.y / 2;
+		troll.Position = maze.MapToWorld(new Vector2(initialData.PositionX, initialData.PositionY));
+		troll.Position += Vector2.Down * maze.CellSize.y / 2;
 
 		GetNode<Camera2D>("DraggableCamera").Position = troll.Position;
 	}
@@ -56,30 +54,25 @@ public class Dungeon : Node2D
 	{
 		base._Process(delta);
 
-		var tileMapWalls = GetNode<TileMap>("Walls");
-		var tileMapFloor = GetNode<TileMap>("Floor");
-		
-		var newTarget = controllerTypes[Controller].GetNewTarget(tileMapWalls);
+
+		var maze = GetNode<Maze>("Maze");
+		var newTarget = controllerTypes[Controller].GetNewTarget(maze);
 		if (newTarget != Vector2.Zero)
 		{
 			server.PlayerMove(this.PlayerIdx, newTarget);
 		}
 
-		var maze = server.GetVisibleMap(this.PlayerIdx);
+		var visibleMap = server.GetVisibleMap(this.PlayerIdx);
 
-		for (var x = 0; x < maze.GetLength(0); x++)
-			for (var y = 0; y < maze.GetLength(1); y++)
+		maze.NewVisibleMap(visibleMap);
+
+		for (var x = 0; x < visibleMap.GetLength(0); x++)
+			for (var y = 0; y < visibleMap.GetLength(1); y++)
 			{
-				switch (maze[x, y])
+				switch (visibleMap[x, y])
 				{
-					case MapTile.Path:
-						{
-							tileMapFloor.SetCellv(new Vector2(x, y), 0);
-							break;
-						}
 					case MapTile.Wall:
 						{
-							tileMapWalls.SetCellv(new Vector2(x, y), 2);
 							astar.Walls.Add(new Point(x, y));
 							break;
 						}

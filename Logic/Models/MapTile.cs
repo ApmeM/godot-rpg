@@ -1,4 +1,4 @@
-﻿namespace IsometricGame.Logic
+﻿namespace IsometricGame.Logic.Models
 {
     public enum MapTile
     {
