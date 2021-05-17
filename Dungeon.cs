@@ -5,6 +5,7 @@ using IsometricGame.Controllers;
 using IsometricGame.Logic;
 using IsometricGame.Logic.Models;
 using System.Collections.Generic;
+using System.Linq;
 
 public class Dungeon : Node2D
 {
@@ -49,6 +50,8 @@ public class Dungeon : Node2D
 			troll.UnitIdx = unit.UnitId;
 			troll.Position = maze.MapToWorld(new Vector2(unit.PositionX, unit.PositionY));
 			troll.Position += Vector2.Down * maze.CellSize.y / 2;
+			troll.IsSelected = unit.UnitId == 1;
+			troll.AddToGroup("ControllableUnit");
 
 			GetNode<Camera2D>("DraggableCamera").Position = troll.Position;
 		}
@@ -60,9 +63,23 @@ public class Dungeon : Node2D
 
 		var maze = GetNode<Maze>("Maze");
 		var newTarget = controllerTypes[Controller].GetNewTarget(maze);
+
 		if (newTarget != Vector2.Zero)
 		{
-			server.PlayerMove(this.PlayerIdx, 1, newTarget);
+			var trolls = this.GetTree().GetNodesInGroup("ControllableUnit").Cast<Troll>().ToList();
+
+			var clickOnTroll = trolls.FirstOrDefault(a => maze.WorldToMap(a.Position) == newTarget);
+			var currentTroll = trolls.First(a => a.IsSelected);
+
+			if (clickOnTroll != null)
+			{
+				currentTroll.IsSelected = false;
+				clickOnTroll.IsSelected = true;
+			}
+			else
+			{
+				server.PlayerMove(currentTroll.PlayerIdx, currentTroll.UnitIdx, newTarget);
+			}
 		}
 
 		var visibleMap = server.GetVisibleMap(this.PlayerIdx);

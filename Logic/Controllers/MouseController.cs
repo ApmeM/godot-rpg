@@ -28,7 +28,6 @@ namespace IsometricGame.Controllers
                     mouseButtonPressed = Input.IsMouseButtonPressed(1);
                     mousePositionOnPress = map.GetViewport().GetMousePosition();
                 }
-
             }
 
             return Vector2.Zero;

@@ -3,7 +3,6 @@ using BrainAI.Pathfinding.AStar;
 using Godot;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 public class Troll : KinematicBody2D
 {
@@ -12,6 +11,7 @@ public class Troll : KinematicBody2D
 	private Vector2 oldTarget;
 	public int UnitIdx { get; set; }
 	public int PlayerIdx { get; set; }
+	public bool IsSelected { get; set; }
 
 	public override void _PhysicsProcess(float delta)
 	{
@@ -59,6 +59,9 @@ public class Troll : KinematicBody2D
 	public override void _Process(float delta)
 	{
 		base._Process(delta);
+
+		GetNode<AnimatedSprite>("SelectionMarker").Visible = IsSelected;
+
 
 		var tileMapWalls = GetParent<TileMap>();
 
