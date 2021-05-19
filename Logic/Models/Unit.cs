@@ -5,6 +5,6 @@
         public int UnitId;
         public int PositionX;
         public int PositionY;
-
+        public int MoveDistance = 5;
     }
 }

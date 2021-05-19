@@ -1,5 +1,6 @@
 ﻿using BrainAI.Pathfinding;
 using BrainAI.Pathfinding.AStar;
+using BrainAI.Pathfinding.BreadthFirst;
 using Godot;
 using IsometricGame.Logic.Models;
 using MazeGenerators;
@@ -24,7 +25,7 @@ namespace IsometricGame.Logic
                 Height = 51
             });
 
-            this.Astar = new AstarGridGraph(21, 21);
+            this.Astar = new AstarGridGraph(Map.Regions.GetLength(0), Map.Regions.GetLength(1));
             for (var x = 0; x < Map.Regions.GetLength(0); x++)
                 for (var y = 0; y < Map.Regions.GetLength(1); y++)
                 {
@@ -67,8 +68,17 @@ namespace IsometricGame.Logic
 
         public void PlayerMove(int forPlayer, int forUnit, Vector2 newTarget)
         {
-            Players[forPlayer].Units[forUnit].PositionX = (int)newTarget.x;
-            Players[forPlayer].Units[forUnit].PositionY = (int)newTarget.y;
+            var unit = Players[forPlayer].Units[forUnit];
+            var unitPosition = new Point(unit.PositionX, unit.PositionY);
+            var targetPosition = new Point((int)newTarget.x, (int)newTarget.y);
+
+            BreadthFirstPathfinder.Search(this.Astar, unitPosition, unit.MoveDistance, out var result);
+
+            if (result.ContainsKey(targetPosition))
+            {
+                unit.PositionX = targetPosition.X;
+                unit.PositionY = targetPosition.Y;
+            }
         }
 
         public Player GetPlayer(int forPlayer)
