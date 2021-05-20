@@ -1,8 +1,11 @@
+using BrainAI.Pathfinding;
+using BrainAI.Pathfinding.AStar;
 using Godot;
 using IsometricGame.Logic.Models;
 
 public class Maze : TileMap
 {
+	public AstarGridGraph astar;
 
 	public override void _Ready()
 	{
@@ -28,6 +31,7 @@ public class Maze : TileMap
 					case MapTile.Wall:
 						{
 							this.SetCellv(new Vector2(x, y), 2);
+							astar.Walls.Add(new Point(x, y));
 							break;
 						}
 					default:
@@ -36,5 +40,10 @@ public class Maze : TileMap
 						}
 				}
 			}
+	}
+
+	public void Initialize(int mapWidth, int mapHeight)
+	{
+		astar = new AstarGridGraph(mapWidth, mapHeight);
 	}
 }

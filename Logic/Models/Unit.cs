@@ -2,6 +2,7 @@
 {
     public class Unit
     {
+        public int PlayerId;
         public int UnitId;
         public int PositionX;
         public int PositionY;

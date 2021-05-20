@@ -1,9 +1,6 @@
-using BrainAI.Pathfinding;
-using BrainAI.Pathfinding.AStar;
 using Godot;
 using IsometricGame.Controllers;
 using IsometricGame.Logic;
-using IsometricGame.Logic.Models;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -11,8 +8,7 @@ public class Dungeon : Node2D
 {
 	public static Server server = new Server();
 	private int PlayerIdx;
-	public static AstarGridGraph astar;
-
+	
 	public enum ControllerType
 	{
 		Mouse,
@@ -38,7 +34,7 @@ public class Dungeon : Node2D
 		this.PlayerIdx = firstPlayer;
 
 		var initialData = server.GetInitialData(firstPlayer);
-		astar = new AstarGridGraph(initialData.MapWidth, initialData.MapHeight);
+		maze.Initialize(initialData.MapWidth, initialData.MapHeight);
 
 		var trollScene = ResourceLoader.Load<PackedScene>("Troll.tscn");
 
@@ -46,8 +42,7 @@ public class Dungeon : Node2D
 		{
 			var troll = (Troll)trollScene.Instance();
 			maze.AddChild(troll);
-			troll.PlayerIdx = firstPlayer;
-			troll.UnitIdx = unit.UnitId;
+			troll.Unit = unit;
 			troll.Position = maze.MapToWorld(new Vector2(unit.PositionX, unit.PositionY));
 			troll.Position += Vector2.Down * maze.CellSize.y / 2;
 			troll.IsSelected = unit.UnitId == 1;
@@ -64,10 +59,10 @@ public class Dungeon : Node2D
 		var maze = GetNode<Maze>("Maze");
 		var newTarget = controllerTypes[Controller].GetNewTarget(maze);
 
+		var trolls = this.GetTree().GetNodesInGroup("ControllableUnit").Cast<Troll>().ToList();
+
 		if (newTarget != Vector2.Zero)
 		{
-			var trolls = this.GetTree().GetNodesInGroup("ControllableUnit").Cast<Troll>().ToList();
-
 			var clickOnTroll = trolls.FirstOrDefault(a => maze.WorldToMap(a.Position) == newTarget);
 			var currentTroll = trolls.First(a => a.IsSelected);
 
@@ -78,29 +73,20 @@ public class Dungeon : Node2D
 			}
 			else
 			{
-				server.PlayerMove(currentTroll.PlayerIdx, currentTroll.UnitIdx, newTarget);
+				currentTroll.MoveShadowTo(newTarget);
+				//server.PlayerMove(currentTroll.Unit.PlayerId, currentTroll.Unit.UnitId, newTarget);
+			}
+		}
+
+		if (trolls.All(a => a.NewTarget != Vector2.Zero))
+		{
+			foreach(var troll in trolls)
+			{
+				server.PlayerMove(troll.Unit.PlayerId, troll.Unit.UnitId, troll.NewTarget);
 			}
 		}
 
 		var visibleMap = server.GetVisibleMap(this.PlayerIdx);
-
 		maze.NewVisibleMap(visibleMap);
-
-		for (var x = 0; x < visibleMap.GetLength(0); x++)
-			for (var y = 0; y < visibleMap.GetLength(1); y++)
-			{
-				switch (visibleMap[x, y])
-				{
-					case MapTile.Wall:
-						{
-							astar.Walls.Add(new Point(x, y));
-							break;
-						}
-					default:
-						{
-							break;
-						}
-				}
-			}
 	}
 }

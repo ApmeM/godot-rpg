@@ -1,58 +1,98 @@
 using BrainAI.Pathfinding;
 using BrainAI.Pathfinding.AStar;
 using Godot;
+using IsometricGame.Logic.Models;
 using System;
 using System.Collections.Generic;
 
-public class Troll : KinematicBody2D
+public class Troll : Node2D
 {
-	const int MOTION_SPEED = 800;
+	private const int MOTION_SPEED = 800;
 	private readonly Queue<Point> path = new Queue<Point>();
+	private readonly Queue<Point> shadowPath = new Queue<Point>();
 	private Vector2 oldTarget;
-	public int UnitIdx { get; set; }
-	public int PlayerIdx { get; set; }
-	public bool IsSelected { get; set; }
+	
+	public Unit Unit;
+	public bool IsSelected;
+	public Vector2 NewTarget = Vector2.Zero;
 
-	public override void _PhysicsProcess(float delta)
+	public void ProcessMove(float delta, bool isShadow)
 	{
-		base._PhysicsProcess(delta);
-		if (path.Count == 0)
+		var animation = isShadow ? GetNode<AnimatedSprite>("Shadow") : GetNode<AnimatedSprite>("AnimatedSprite");
+		var currentPath = isShadow ? this.shadowPath : this.path;
+		var position = isShadow ? animation.Position : Position;
+		animation.Playing = currentPath.Count != 0;
+
+		if (currentPath.Count == 0)
 		{
-			return;
-		}
-		
-		var current = path.Peek();
-		if (Math.Abs(current.X - Position.x) < 1 && Math.Abs(current.Y - Position.y) < 1)
-		{
-			path.Dequeue();
 			return;
 		}
 
-		var motion = new Vector2(current.X - Position.x, current.Y - Position.y) / delta;
+		var current = currentPath.Peek();
+		if (Math.Abs(current.X - position.x) < 1 && Math.Abs(current.Y - position.y) < 1)
+		{
+			currentPath.Dequeue();
+			return;
+		}
+
+		var motion = new Vector2(current.X - position.x, current.Y - position.y) / delta;
 		if (motion.Length() > MOTION_SPEED)
 		{
 			motion = motion.Normalized() * MOTION_SPEED;
 		}
-		
-		MoveAndSlide(motion);
+
+		position += motion * delta;
+		if (isShadow)
+		{
+			animation.Position = position;
+		}
+		else
+		{
+			Position = position;
+		}
+
+		if (motion.x > 0)
+		{
+			if (motion.y > 0)
+			{
+				animation.Animation = "right";
+			}
+			else if (motion.y < 0)
+			{
+				animation.Animation = "up";
+			}
+		}
+		else if (motion.x < 0)
+		{
+			if (motion.y > 0)
+			{
+				animation.Animation = "down";
+			}
+			else if (motion.y < 0)
+			{
+				animation.Animation = "left";
+			}
+		}
 	}
 
-	public void MoveBy(List<Point> path)
+	public void MoveBy(List<Point> path, bool isShadow)
 	{
-		if (this.path.Count > 0)
+		var currentPath = isShadow ? this.shadowPath : this.path;
+
+		if (currentPath.Count > 0)
 		{
-			var current = this.path.Peek();
-			this.path.Clear();
-			this.path.Enqueue(current);
+			var current = currentPath.Peek();
+			currentPath.Clear();
+			currentPath.Enqueue(current);
 		}
 
 		var tileMapWalls = GetParent<TileMap>();
 
 		for (var i = 0; i < path.Count; i++)
 		{
-			var worldPos = tileMapWalls.MapToWorld(new Vector2(path[i].X, path[i].Y));
+			var worldPos = tileMapWalls.MapToWorld(new Vector2(path[i].X, path[i].Y)) - (isShadow ? Position : Vector2.Zero);
 			worldPos += Vector2.Down * tileMapWalls.CellSize.y / 2;
-			this.path.Enqueue(new Point((int)worldPos.x, (int)worldPos.y));
+			currentPath.Enqueue(new Point((int)worldPos.x, (int)worldPos.y));
 		}
 	}
 
@@ -60,52 +100,44 @@ public class Troll : KinematicBody2D
 	{
 		base._Process(delta);
 
-		GetNode<AnimatedSprite>("SelectionMarker").Visible = IsSelected;
+		GetNode<AnimatedSprite>("Shadow/SelectionMarker").Visible = IsSelected;
+		GetNode<AnimatedSprite>("AnimatedSprite/SelectionMarker").Visible = IsSelected;
+		//((ShaderMaterial)this.Material).SetShaderParam("grayscale", !IsSelected);
 
+		var maze = GetParent<Maze>();
 
-		var tileMapWalls = GetParent<TileMap>();
+		var player = Dungeon.server.GetPlayer(this.Unit.PlayerId);
 
-		var player = Dungeon.server.GetPlayer(this.PlayerIdx);
-
-		var newTarget = new Vector2(player.Units[this.UnitIdx].PositionX, player.Units[this.UnitIdx].PositionY);
+		var newTarget = new Vector2(player.Units[this.Unit.UnitId].PositionX, player.Units[this.Unit.UnitId].PositionY);
 		if (newTarget != this.oldTarget)
 		{
 			this.oldTarget = newTarget;
-			var playerPosition = tileMapWalls.WorldToMap(Position);
-			var path = AStarPathfinder.Search(Dungeon.astar, new Point((int)playerPosition.x, (int)playerPosition.y), new Point((int)newTarget.x, (int)newTarget.y));
+			this.NewTarget = Vector2.Zero;
+			this.shadowPath.Clear();
+			GetNode<AnimatedSprite>("Shadow").Position = new Vector2(0, -25);
+			var playerPosition = maze.WorldToMap(Position);
+			var path = AStarPathfinder.Search(maze.astar, new Point((int)playerPosition.x, (int)playerPosition.y), new Point((int)newTarget.x, (int)newTarget.y));
 			if (path != null)
 			{
-				MoveBy(path);
+				MoveBy(path, false);
 			}
 		}
-		
-		var animation = GetNode<AnimatedSprite>("AnimatedSprite");
-		animation.Playing = this.path.Count != 0;
-		if (this.path.Count != 0)
+
+		ProcessMove(delta, false);
+		ProcessMove(delta, true);
+	}
+
+	public void MoveShadowTo(Vector2 newTarget)
+	{
+		var maze = GetParent<Maze>();
+
+		var playerPosition = maze.WorldToMap(Position + GetNode<AnimatedSprite>("Shadow").Position);
+		var path = AStarPathfinder.Search(maze.astar, new Point((int)playerPosition.x, (int)playerPosition.y), new Point((int)newTarget.x, (int)newTarget.y));
+		if (path != null)
 		{
-			var current = this.path.Peek();
-			if (current.X > Position.x)
-			{
-				if (current.Y > Position.y)
-				{
-					animation.Animation = "right";
-				}
-				else if (current.Y < Position.y)
-				{
-					animation.Animation = "up";
-				}
-			}
-			else if (current.X < Position.x)
-			{
-				if (current.Y > Position.y)
-				{
-					animation.Animation = "down";
-				}
-				else if (current.Y < Position.y)
-				{
-					animation.Animation = "left";
-				}
-			}
+			MoveBy(path, true);
 		}
+
+		this.NewTarget = newTarget;
 	}
 }

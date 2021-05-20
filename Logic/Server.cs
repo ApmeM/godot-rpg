@@ -47,10 +47,10 @@ namespace IsometricGame.Logic
             var centerX = Map.Rooms[idx].X + Map.Rooms[idx].Width / 2;
             var centerY = this.Map.Rooms[idx].Y + this.Map.Rooms[idx].Height / 2;
 
-            player.Units.Add(1, new Unit { UnitId = 1, PositionX = centerX - 1, PositionY = centerY });
-            player.Units.Add(2, new Unit { UnitId = 2, PositionX = centerX + 1, PositionY = centerY });
-            player.Units.Add(3, new Unit { UnitId = 3, PositionX = centerX, PositionY = centerY + 1 });
-            player.Units.Add(4, new Unit { UnitId = 4, PositionX = centerX, PositionY = centerY - 1 });
+            player.Units.Add(1, new Unit { PlayerId = idx, UnitId = 1, PositionX = centerX - 1, PositionY = centerY });
+            player.Units.Add(2, new Unit { PlayerId = idx, UnitId = 2, PositionX = centerX + 1, PositionY = centerY });
+            player.Units.Add(3, new Unit { PlayerId = idx, UnitId = 3, PositionX = centerX, PositionY = centerY + 1 });
+            player.Units.Add(4, new Unit { PlayerId = idx, UnitId = 4, PositionX = centerX, PositionY = centerY - 1 });
 
             this.Players.Add(idx, player);
 
