@@ -74,7 +74,6 @@ public class Dungeon : Node2D
 			else
 			{
 				currentTroll.MoveShadowTo(newTarget);
-				//server.PlayerMove(currentTroll.Unit.PlayerId, currentTroll.Unit.UnitId, newTarget);
 			}
 		}
 
