@@ -1,4 +1,4 @@
-﻿using BrainAI.Pathfinding;
+using BrainAI.Pathfinding;
 using BrainAI.Pathfinding.AStar;
 using BrainAI.Pathfinding.BreadthFirst;
 using Godot;
@@ -23,7 +23,8 @@ namespace IsometricGame.Logic
             {
                 Width = 51,
                 Height = 51,
-                RoomSize = 8
+                MinRoomSize = 5,
+                MaxRoomSize = 9,
             });
 
             this.Astar = new AstarGridGraph(Map.Regions.GetLength(0), Map.Regions.GetLength(1));
