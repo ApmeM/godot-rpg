@@ -7,7 +7,7 @@ using System.Linq;
 public class Dungeon : Node2D
 {
 	public static Server server = new Server();
-	private int PlayerIdx;
+	private int PlayerId;
 	
 	public enum ControllerType
 	{
@@ -31,7 +31,7 @@ public class Dungeon : Node2D
 
 		server.Start();
 		var firstPlayer = server.Connect("First");
-		this.PlayerIdx = firstPlayer;
+		this.PlayerId = firstPlayer;
 
 		var initialData = server.GetInitialData(firstPlayer);
 		maze.Initialize(initialData.MapWidth, initialData.MapHeight);
@@ -85,7 +85,14 @@ public class Dungeon : Node2D
 			}
 		}
 
-		var visibleMap = server.GetVisibleMap(this.PlayerIdx);
+		var player = server.GetPlayer(this.PlayerId);
+		foreach (var troll in trolls)
+		{
+			var moveTarget = new Vector2(player.Units[troll.Unit.UnitId].PositionX, player.Units[troll.Unit.UnitId].PositionY);
+			troll.MoveUnitTo(moveTarget);
+		}
+
+		var visibleMap = server.GetVisibleMap(this.PlayerId);
 		maze.NewVisibleMap(visibleMap);
 	}
 }
