@@ -11,3 +11,18 @@ script = ExtResource( 3 )
 
 [node name="DraggableCamera" parent="." instance=ExtResource( 2 )]
 zoom = Vector2( 2, 2 )
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="NextTurnButton" type="Button" parent="CanvasLayer"]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -127.0
+margin_top = -105.0
+margin_right = 8.0
+text = ">"
+__meta__ = {
+"_edit_use_anchors_": false
+}

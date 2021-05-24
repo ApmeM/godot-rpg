@@ -7,5 +7,6 @@ namespace IsometricGame.Logic.Models
         public List<Unit> Units;
         public int MapWidth;
         public int MapHeight;
+        public MapTile[,] VisibleMap;
     }
 }

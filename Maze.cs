@@ -8,6 +8,9 @@ public class Maze : TileMap
 {
 	public AstarGridGraph astar;
 
+	[Signal]
+	public delegate void CellSelected(Vector2 cell, Vector2 cellPosition);
+
 	public override void _Ready()
 	{
 		var floor = GetNode<TileMap>("Floor");
@@ -71,5 +74,23 @@ public class Maze : TileMap
 	public void Initialize(int mapWidth, int mapHeight)
 	{
 		astar = new AstarGridGraph(mapWidth, mapHeight);
+	}
+
+	public override void _UnhandledInput(InputEvent @event)
+	{
+		base._Input(@event);
+
+		if (@event is InputEventScreenTouch eventMouseButton && eventMouseButton.Pressed)
+		{
+			var position = this.GetGlobalMousePosition(); // eventMouseButton.Position;
+			var cell = this.WorldToMap(position);
+			
+			var floor = GetNode<TileMap>("Floor");
+			if (floor.GetCellv(cell) == 0 || floor.GetCellv(cell) == 1)
+			{
+				var cellPosition = this.MapToWorld(cell);
+				EmitSignal(nameof(CellSelected), cell, cellPosition);
+			}
+		}
 	}
 }

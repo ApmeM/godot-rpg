@@ -1,7 +1,5 @@
 using Godot;
-using IsometricGame.Controllers;
 using IsometricGame.Logic;
-using System.Collections.Generic;
 using System.Linq;
 
 public class Dungeon : Node2D
@@ -9,22 +7,6 @@ public class Dungeon : Node2D
 	public static Server server = new Server();
 	private int PlayerId;
 	
-	public enum ControllerType
-	{
-		Mouse,
-		AI,
-		Network
-	}
-
-	public Dictionary<ControllerType, IController> controllerTypes = new Dictionary<ControllerType, IController>
-	{
-		{ControllerType.Mouse, new MouseController() },
-		{ControllerType.AI, new AIController() },
-	};
-
-	[Export]
-	public ControllerType Controller;
-
 	public override void _Ready()
 	{
 		var maze = GetNode<Maze>("Maze");
@@ -35,6 +17,8 @@ public class Dungeon : Node2D
 
 		var initialData = server.GetInitialData(firstPlayer);
 		maze.Initialize(initialData.MapWidth, initialData.MapHeight);
+		maze.NewVisibleMap(initialData.VisibleMap);
+		maze.Connect(nameof(Maze.CellSelected), this, nameof(CellSelected));
 
 		var trollScene = ResourceLoader.Load<PackedScene>("Troll.tscn");
 
@@ -50,39 +34,37 @@ public class Dungeon : Node2D
 
 			GetNode<Camera2D>("DraggableCamera").Position = troll.Position;
 		}
+
+		GetNode<Button>("CanvasLayer/NextTurnButton").Connect("pressed", this, nameof(NextTurnPressed));
 	}
 
-	public override void _Process(float delta)
+	public void CellSelected(Vector2 cell, Vector2 cellPosition)
 	{
-		base._Process(delta);
-
 		var maze = GetNode<Maze>("Maze");
-		var newTarget = controllerTypes[Controller].GetNewTarget(maze);
-
 		var trolls = this.GetTree().GetNodesInGroup("ControllableUnit").Cast<Troll>().ToList();
 
-		if (newTarget != Vector2.Zero)
-		{
-			var clickOnTroll = trolls.FirstOrDefault(a => maze.WorldToMap(a.Position) == newTarget);
-			var currentTroll = trolls.First(a => a.IsSelected);
+		var clickOnTroll = trolls.FirstOrDefault(a => maze.WorldToMap(a.Position) == cell);
+		var currentTroll = trolls.First(a => a.IsSelected);
 
-			if (clickOnTroll != null)
-			{
-				currentTroll.IsSelected = false;
-				clickOnTroll.IsSelected = true;
-			}
-			else
-			{
-				currentTroll.MoveShadowTo(newTarget);
-			}
+		if (clickOnTroll != null)
+		{
+			currentTroll.IsSelected = false;
+			clickOnTroll.IsSelected = true;
 		}
-
-		if (trolls.All(a => a.NewTarget != Vector2.Zero))
+		else
 		{
-			foreach(var troll in trolls)
-			{
-				server.PlayerMove(troll.Unit.PlayerId, troll.Unit.UnitId, troll.NewTarget);
-			}
+			currentTroll.MoveShadowTo(cell);
+		}
+	}
+
+	public void NextTurnPressed()
+	{
+		var maze = GetNode<Maze>("Maze");
+		var trolls = this.GetTree().GetNodesInGroup("ControllableUnit").Cast<Troll>().ToList();
+
+		foreach (var troll in trolls)
+		{
+			server.PlayerMove(troll.Unit.PlayerId, troll.Unit.UnitId, troll.NewTarget);
 		}
 
 		var player = server.GetPlayer(this.PlayerId);

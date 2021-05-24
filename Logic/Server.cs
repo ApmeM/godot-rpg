@@ -64,7 +64,8 @@ namespace IsometricGame.Logic
 			return new InitialData {
 				MapWidth = Map.Regions.GetLength(0),
 				MapHeight = Map.Regions.GetLength(1),
-				Units = Players[forPlayer].Units.Values.ToList()
+				Units = Players[forPlayer].Units.Values.ToList(),
+				VisibleMap = GetVisibleMap(forPlayer)
 			};
 		}
 
