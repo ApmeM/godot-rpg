@@ -9,6 +9,12 @@ texture = ExtResource( 1 )
 region_enabled = true
 region_rect = Rect2( 28, 75, 135, 105 )
 
+[node name="BaseAvailable" type="Sprite" parent="."]
+position = Vector2( 955, 0 )
+texture = ExtResource( 1 )
+region_enabled = true
+region_rect = Rect2( 1180, 75, 135, 105 )
+
 [node name="Base2" type="Sprite" parent="."]
 position = Vector2( 200, 0 )
 texture = ExtResource( 1 )

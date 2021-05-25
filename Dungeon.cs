@@ -29,7 +29,7 @@ public class Dungeon : Node2D
 			troll.Unit = unit;
 			troll.Position = maze.MapToWorld(new Vector2(unit.PositionX, unit.PositionY));
 			troll.Position += Vector2.Down * maze.CellSize.y / 2;
-			troll.IsSelected = unit.UnitId == 1;
+			troll.IsSelected = false;
 			troll.AddToGroup("ControllableUnit");
 
 			GetNode<Camera2D>("DraggableCamera").Position = troll.Position;
@@ -38,22 +38,27 @@ public class Dungeon : Node2D
 		GetNode<Button>("CanvasLayer/NextTurnButton").Connect("pressed", this, nameof(NextTurnPressed));
 	}
 
-	public void CellSelected(Vector2 cell, Vector2 cellPosition)
+	public void CellSelected(Vector2 cell, Vector2 cellPosition, bool moveAvailable)
 	{
 		var maze = GetNode<Maze>("Maze");
 		var trolls = this.GetTree().GetNodesInGroup("ControllableUnit").Cast<Troll>().ToList();
 
 		var clickOnTroll = trolls.FirstOrDefault(a => maze.WorldToMap(a.Position) == cell);
-		var currentTroll = trolls.First(a => a.IsSelected);
+		var currentTroll = trolls.FirstOrDefault(a => a.IsSelected);
 
 		if (clickOnTroll != null)
 		{
-			currentTroll.IsSelected = false;
+			if (currentTroll != null)
+			{
+				currentTroll.IsSelected = false;
+			}
+
 			clickOnTroll.IsSelected = true;
+			maze.HighliteAvailableMoves(cell, clickOnTroll.Unit.MoveDistance);
 		}
-		else
+		else if(moveAvailable)
 		{
-			currentTroll.MoveShadowTo(cell);
+			currentTroll?.MoveShadowTo(cell);
 		}
 	}
 
@@ -68,13 +73,18 @@ public class Dungeon : Node2D
 		}
 
 		var player = server.GetPlayer(this.PlayerId);
+
+		var visibleMap = server.GetVisibleMap(this.PlayerId);
+		maze.NewVisibleMap(visibleMap);
+
 		foreach (var troll in trolls)
 		{
 			var moveTarget = new Vector2(player.Units[troll.Unit.UnitId].PositionX, player.Units[troll.Unit.UnitId].PositionY);
 			troll.MoveUnitTo(moveTarget);
+			if (troll.IsSelected)
+			{
+				maze.HighliteAvailableMoves(moveTarget, troll.Unit.MoveDistance);
+			}
 		}
-
-		var visibleMap = server.GetVisibleMap(this.PlayerId);
-		maze.NewVisibleMap(visibleMap);
 	}
 }
