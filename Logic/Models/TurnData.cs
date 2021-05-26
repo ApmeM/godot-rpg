@@ -2,11 +2,9 @@
 
 namespace IsometricGame.Logic.Models
 {
-    public class InitialData
+    public class TurnData
     {
-        public List<Unit> YourUnits;
-        public int MapWidth;
-        public int MapHeight;
+        public Dictionary<int, Unit> YourUnits;
         public MapTile[,] VisibleMap;
         public Dictionary<int, Player> Players;
     }
