@@ -6,5 +6,6 @@ namespace IsometricGame.Logic.Models
     {
         public Vector2 Position;
         public int MoveDistance = 5;
+        public int VisibleDistance = 6;
     }
 }

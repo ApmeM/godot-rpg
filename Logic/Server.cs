@@ -165,7 +165,7 @@ namespace IsometricGame.Logic
 		{
 			foreach(var unit in player.Units.Values)
 			{
-				if ((Math.Abs(x - unit.Position.x) + Math.Abs(y - unit.Position.y)) <= 5){
+				if ((Math.Abs(x - unit.Position.x) + Math.Abs(y - unit.Position.y)) <= unit.VisibleDistance){
 					return true;
 				}
 			}
