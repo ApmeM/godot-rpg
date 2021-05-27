@@ -16,7 +16,7 @@ public class Dungeon : Node2D
 		this.PlayerId = server.Connect("First");
 
 		var initialData = server.GetInitialData(this.PlayerId);
-		maze.Initialize(initialData.MapWidth, initialData.MapHeight);
+		maze.Initialize(initialData.VisibleMap.GetLength(0), initialData.VisibleMap.GetLength(1));
 		maze.NewVisibleMap(initialData.VisibleMap);
 		maze.Connect(nameof(Maze.CellSelected), this, nameof(CellSelected));
 
@@ -26,8 +26,13 @@ public class Dungeon : Node2D
 		{
 			var troll = (Troll)trollScene.Instance();
 			maze.AddChild(troll);
-			troll.Unit = unit;
-			troll.Position = maze.MapToWorld(new Vector2(unit.PositionX, unit.PositionY));
+			troll.Unit = new ClientUnit
+			{
+				PlayerId = this.PlayerId,
+				UnitId = unit.UnitId,
+				MoveDistance = unit.MoveDistance
+			};
+			troll.Position = maze.MapToWorld(unit.Position);
 			troll.Position += Vector2.Down * maze.CellSize.y / 2;
 			troll.IsSelected = false;
 			troll.AddToGroup(Groups.MyUnits);
@@ -35,18 +40,18 @@ public class Dungeon : Node2D
 			GetNode<Camera2D>("DraggableCamera").Position = troll.Position;
 		}
 
-		foreach(var player in initialData.Players)
+		foreach(var player in initialData.OtherPlayers)
 		{
-			if (player.Key == this.PlayerId)
-			{
-				continue;
-			}
-
-			foreach (var unit in player.Value.Units.Values)
+			foreach (var unit in player.Units)
 			{
 				var troll = (Troll)trollScene.Instance();
 				maze.AddChild(troll);
-				troll.Unit = unit;
+				troll.Unit = new ClientUnit
+				{
+					PlayerId = player.PlayerId,
+					UnitId = unit,
+					MoveDistance = null
+				};
 				troll.Visible = false;
 				troll.AddToGroup(Groups.OtherUnits);
 			}
@@ -92,32 +97,30 @@ public class Dungeon : Node2D
 
 		foreach (var unit in myUnits)
 		{
-			var moveTarget = new Vector2(turnData.YourUnits[unit.Unit.UnitId].PositionX, turnData.YourUnits[unit.Unit.UnitId].PositionY);
-			unit.MoveUnitTo(moveTarget);
+			unit.MoveUnitTo(turnData.YourUnits[unit.Unit.UnitId].Position);
 			if (unit.IsSelected)
 			{
-				maze.HighliteAvailableMoves(moveTarget, unit.Unit.MoveDistance);
+				maze.HighliteAvailableMoves(turnData.YourUnits[unit.Unit.UnitId].Position, unit.Unit.MoveDistance);
 			}
 		}
 
 		var otherUnits = this.GetTree().GetNodesInGroup(Groups.OtherUnits).Cast<Troll>().ToList();
 		foreach (var unit in otherUnits)
 		{
-			var player = turnData.Players[unit.Unit.PlayerId];
+			var player = turnData.OtherPlayers[unit.Unit.PlayerId];
 			if (!player.Units.ContainsKey(unit.Unit.UnitId))
 			{
 				unit.Visible = false;
 				continue;
 			}
 
-			var moveTarget = new Vector2(player.Units[unit.Unit.UnitId].PositionX, player.Units[unit.Unit.UnitId].PositionY);
 			if (unit.Visible)
 			{
-				unit.MoveUnitTo(moveTarget);
+				unit.MoveUnitTo(player.Units[unit.Unit.UnitId].Position);
 			}
 			else
 			{
-				unit.Position = maze.MapToWorld(moveTarget);
+				unit.Position = maze.MapToWorld(player.Units[unit.Unit.UnitId].Position);
 				unit.Visible = true;
 			}
 		}

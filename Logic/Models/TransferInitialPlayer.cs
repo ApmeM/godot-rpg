@@ -2,9 +2,10 @@
 
 namespace IsometricGame.Logic.Models
 {
-    public class Player
+    public class TransferInitialPlayer
     {
+        public int PlayerId;
         public string PlayerName;
-        public Dictionary<int, Unit> Units = new Dictionary<int, Unit>();
+        public List<int> Units;
     }
 }

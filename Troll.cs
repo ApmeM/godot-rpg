@@ -9,7 +9,7 @@ public class Troll : Node2D
 	private readonly Queue<Vector2> path = new Queue<Vector2>();
 	private Vector2 oldTarget;
 	
-	public Unit Unit;
+	public ClientUnit Unit;
 	public bool IsSelected;
 	public Vector2 NewTarget = Vector2.Zero;
 

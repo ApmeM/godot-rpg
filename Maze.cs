@@ -1,13 +1,14 @@
-using BrainAI.Pathfinding;
-using BrainAI.Pathfinding.AStar;
+using BrainAI.Pathfinding.BreadthFirst;
 using FateRandom;
 using Godot;
 using IsometricGame.Logic.Models;
+using IsometricGame.Logic.ScriptHelpers;
+using System;
 using System.Collections.Generic;
 
 public class Maze : TileMap
 {
-	public AstarGridGraph astar;
+	public VectorGridGraph astar;
 
 	[Signal]
 	public delegate void CellSelected(Vector2 cell, Vector2 cellPosition, bool moveAvailable);
@@ -39,8 +40,9 @@ public class Maze : TileMap
 						}
 					case MapTile.Wall:
 						{
-							this.SetCellv(new Vector2(x, y), 2);
-							astar.Walls.Add(new Point(x, y));
+							var position = new Vector2(x, y);
+							this.SetCellv(position, 2);
+							astar.Walls.Add(position);
 							break;
 						}
 					default:
@@ -74,7 +76,7 @@ public class Maze : TileMap
 
 	public void Initialize(int mapWidth, int mapHeight)
 	{
-		astar = new AstarGridGraph(mapWidth, mapHeight);
+		astar = new VectorGridGraph(mapWidth, mapHeight);
 	}
 
 	public override void _UnhandledInput(InputEvent @event)
@@ -104,19 +106,23 @@ public class Maze : TileMap
 		Vector2.Right
 	};
 
-	public void HighliteAvailableMoves(Vector2 unitCell, int moveDistance)
+	public void HighliteAvailableMoves(Vector2 unitCell, int? moveDistance)
 	{
+		if(moveDistance == null)
+		{
+			throw new Exception("Unknown move distance to highlite. Possible reason - trying to highlite distance for enemy unit.");
+		}
+
 		var floor = GetNode<TileMap>("Floor");
 		foreach (var cell in highlitedCells)
 		{
 			floor.SetCellv(cell, Fate.GlobalFate.Chance(90) ? 1 : 0);
 		}
 
-		BrainAI.Pathfinding.BreadthFirst.BreadthFirstPathfinder.Search(this.astar, new Point((int)unitCell.x, (int)unitCell.y), moveDistance, out var visited);
+		BreadthFirstPathfinder.Search(this.astar, unitCell, moveDistance.Value, out var visited);
 
-		foreach(var pos in visited.Keys)
+		foreach(var cell in visited.Keys)
 		{
-			var cell = new Vector2(pos.X, pos.Y);
 			floor.SetCellv(cell, 5);
 			highlitedCells.Add(cell);
 		}

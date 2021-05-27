@@ -50,7 +50,7 @@ namespace IsometricGame.Logic.ScriptHelpers
 				return null;
 			}
 
-			var motion = new Vector2(current.x - currentPosition.x, current.y - currentPosition.y) / delta;
+			var motion = (current - currentPosition) / delta;
 			if (motion.Length() > motionSpeed)
 			{
 				motion = motion.Normalized() * motionSpeed;
@@ -62,7 +62,7 @@ namespace IsometricGame.Logic.ScriptHelpers
 		public static void MoveBy(Queue<Vector2> currentPath, Vector2 currentPosition, Vector2 newTarget, Maze maze)
         {
 			var playerPosition = maze.WorldToMap(currentPosition);
-			var newPath = AStarPathfinder.Search(maze.astar, new Point((int)playerPosition.x, (int)playerPosition.y), new Point((int)newTarget.x, (int)newTarget.y));
+			var newPath = AStarPathfinder.Search(maze.astar, playerPosition, newTarget);
 			if (newPath == null)
             {
 				return;
@@ -77,7 +77,7 @@ namespace IsometricGame.Logic.ScriptHelpers
 
 			for (var i = 0; i < newPath.Count; i++)
 			{
-				var worldPos = maze.MapToWorld(new Vector2(newPath[i].X, newPath[i].Y));
+				var worldPos = maze.MapToWorld(newPath[i]);
 				worldPos += Vector2.Down * maze.CellSize.y / 2;
 				currentPath.Enqueue(worldPos);
 			}
