@@ -3,13 +3,13 @@ using IsometricGame.Logic.Models;
 using IsometricGame.Logic.ScriptHelpers;
 using System.Collections.Generic;
 
-public class Troll : Node2D
+public class Unit : Node2D
 {
 	private const int MOTION_SPEED = 800;
 	private readonly Queue<Vector2> path = new Queue<Vector2>();
 	private Vector2 oldTarget;
 	
-	public ClientUnit Unit;
+	public ClientUnit ClientUnit;
 	public bool IsSelected;
 	public Vector2 NewTarget = Vector2.Zero;
 
