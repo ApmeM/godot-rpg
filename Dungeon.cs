@@ -30,7 +30,8 @@ public class Dungeon : Node2D
 			{
 				PlayerId = this.PlayerId,
 				UnitId = unit.UnitId,
-				MoveDistance = unit.MoveDistance
+				MoveDistance = unit.MoveDistance,
+				SightRange = unit.SightRange
 			};
 			unitSceneInstance.Position = maze.MapToWorld(unit.Position);
 			unitSceneInstance.Position += Vector2.Down * maze.CellSize.y / 2;
@@ -76,6 +77,7 @@ public class Dungeon : Node2D
 			}
 
 			clickOnUnit.IsSelected = true;
+			GetNode<UnitDetails>("CanvasLayer/UnitDetails").ShowUnit(clickOnUnit.ClientUnit);
 			maze.HighliteAvailableMoves(cell, clickOnUnit.ClientUnit.MoveDistance);
 		}
 		else if(moveAvailable)

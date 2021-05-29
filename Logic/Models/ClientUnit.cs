@@ -5,5 +5,6 @@
         public int UnitId;
         public int PlayerId;
         public int? MoveDistance;
+        public int? SightRange;
     }
 }

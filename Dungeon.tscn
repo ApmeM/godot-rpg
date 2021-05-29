@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://Maze.tscn" type="PackedScene" id=1]
 [ext_resource path="res://DraggableCamera.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Dungeon.cs" type="Script" id=3]
+[ext_resource path="res://UnitDetails.tscn" type="PackedScene" id=4]
 
 [node name="Dungeon" type="Node2D"]
 script = ExtResource( 3 )
@@ -13,6 +14,8 @@ script = ExtResource( 3 )
 zoom = Vector2( 2, 2 )
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="UnitDetails" parent="CanvasLayer" instance=ExtResource( 4 )]
 
 [node name="NextTurnButton" type="Button" parent="CanvasLayer"]
 anchor_left = 1.0

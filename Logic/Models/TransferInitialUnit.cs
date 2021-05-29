@@ -7,5 +7,6 @@ namespace IsometricGame.Logic.Models
         public Vector2 Position;
         public int UnitId;
         public int MoveDistance;
+        public int SightRange;
     }
 }

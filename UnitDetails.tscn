@@ -1,0 +1,40 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://UnitDetails.cs" type="Script" id=1]
+
+[node name="UnitDetails" type="Panel"]
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = -200.0
+margin_top = -150.0
+margin_bottom = 150.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Close" type="Button" parent="."]
+anchor_left = 1.0
+anchor_right = 1.0
+margin_left = -12.0
+margin_bottom = 20.0
+text = "x"
+
+[node name="MoveRange" type="Label" parent="."]
+margin_right = 55.0
+margin_bottom = 14.0
+text = "Speed: 50"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="SightRange" type="Label" parent="."]
+margin_top = 20.0
+margin_right = 63.0
+margin_bottom = 34.0
+text = "Vision: 70"
+__meta__ = {
+"_edit_use_anchors_": false
+}

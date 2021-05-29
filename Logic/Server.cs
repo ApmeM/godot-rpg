@@ -1,4 +1,5 @@
 using BrainAI.Pathfinding.BreadthFirst;
+using FateRandom;
 using Godot;
 using IsometricGame.Logic.Models;
 using IsometricGame.Logic.ScriptHelpers;
@@ -50,10 +51,10 @@ namespace IsometricGame.Logic
 			var centerX = Map.Rooms[playerId].X + Map.Rooms[playerId].Width / 2;
 			var centerY = this.Map.Rooms[playerId].Y + this.Map.Rooms[playerId].Height / 2;
 
-			player.Units.Add(1, new ServerUnit { Position = new Vector2(centerX - 1, centerY) });
-			player.Units.Add(2, new ServerUnit { Position = new Vector2(centerX + 1, centerY) });
-			player.Units.Add(3, new ServerUnit { Position = new Vector2(centerX, centerY + 1) });
-			player.Units.Add(4, new ServerUnit { Position = new Vector2(centerX, centerY - 1) });
+			player.Units.Add(1, new ServerUnit { Position = new Vector2(centerX - 1, centerY), MoveDistance = Fate.GlobalFate.Range(3, 6), SightRange = Fate.GlobalFate.Range(4, 7) });
+			player.Units.Add(2, new ServerUnit { Position = new Vector2(centerX + 1, centerY), MoveDistance = Fate.GlobalFate.Range(3, 6), SightRange = Fate.GlobalFate.Range(4, 7) });
+			player.Units.Add(3, new ServerUnit { Position = new Vector2(centerX, centerY + 1), MoveDistance = Fate.GlobalFate.Range(3, 6), SightRange = Fate.GlobalFate.Range(4, 7) });
+			player.Units.Add(4, new ServerUnit { Position = new Vector2(centerX, centerY - 1), MoveDistance = Fate.GlobalFate.Range(3, 6), SightRange = Fate.GlobalFate.Range(4, 7) });
 
 			this.Players.Add(playerId, player);
 
@@ -68,7 +69,8 @@ namespace IsometricGame.Logic
 				{
 					UnitId = a.Key,
 					Position = a.Value.Position,
-					MoveDistance = a.Value.MoveDistance
+					MoveDistance = a.Value.MoveDistance,
+					SightRange = a.Value.SightRange
 				}).ToList(),
 				VisibleMap = GetVisibleMap(forPlayer),
 				OtherPlayers = Players.Where(a => a.Key != forPlayer).Select(a => new TransferInitialPlayer
@@ -165,7 +167,7 @@ namespace IsometricGame.Logic
 		{
 			foreach(var unit in player.Units.Values)
 			{
-				if ((Math.Abs(x - unit.Position.x) + Math.Abs(y - unit.Position.y)) <= unit.VisibleDistance){
+				if ((Math.Abs(x - unit.Position.x) + Math.Abs(y - unit.Position.y)) <= unit.SightRange){
 					return true;
 				}
 			}
