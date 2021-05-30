@@ -77,7 +77,7 @@ public class Dungeon : Node2D
 			}
 
 			clickOnUnit.IsSelected = true;
-			GetNode<UnitDetails>("CanvasLayer/UnitDetails").ShowUnit(clickOnUnit.ClientUnit);
+			GetNode<UnitDetails>("CanvasLayer/UnitDetails").SelectUnit(clickOnUnit.ClientUnit);
 			maze.HighliteAvailableMoves(cell, clickOnUnit.ClientUnit.MoveDistance);
 		}
 		else if(moveAvailable)

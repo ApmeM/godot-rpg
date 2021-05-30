@@ -93,7 +93,7 @@ namespace IsometricGame.Logic
 				var otherMoves = new Dictionary<int, Vector2>();
 				foreach(var u in p.Units)
 				{
-					otherMoves.Add(u.Key, u.Value.Position + FateRandom.Fate.GlobalFate.Choose(Vector2.Up, Vector2.Down, Vector2.Left, Vector2.Right));
+					otherMoves.Add(u.Key, u.Value.Position + Fate.GlobalFate.Choose(Vector2.Up, Vector2.Down, Vector2.Left, Vector2.Right));
 				}
 
 				ApplyMoves(p, otherMoves);

@@ -1,6 +1,10 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://UnitDetails.cs" type="Script" id=1]
+[ext_resource path="res://assets/fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=2]
+
+[sub_resource type="DynamicFont" id=1]
+font_data = ExtResource( 2 )
 
 [node name="UnitDetails" type="Panel"]
 anchor_left = 1.0
@@ -16,24 +20,28 @@ __meta__ = {
 }
 
 [node name="Close" type="Button" parent="."]
-anchor_left = 1.0
-anchor_right = 1.0
-margin_left = -12.0
-margin_bottom = 20.0
-text = "x"
+margin_left = -35.0
+margin_bottom = 45.0
+custom_fonts/font = SubResource( 1 )
+text = ">"
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="MoveRange" type="Label" parent="."]
-margin_right = 55.0
-margin_bottom = 14.0
+margin_right = 84.0
+margin_bottom = 20.0
+custom_fonts/font = SubResource( 1 )
 text = "Speed: 50"
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="SightRange" type="Label" parent="."]
-margin_top = 20.0
+margin_top = 25.0
 margin_right = 63.0
-margin_bottom = 34.0
+margin_bottom = 39.0
+custom_fonts/font = SubResource( 1 )
 text = "Vision: 70"
 __meta__ = {
 "_edit_use_anchors_": false
