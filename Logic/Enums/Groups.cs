@@ -1,4 +1,4 @@
-﻿namespace IsometricGame.Logic.Models
+﻿namespace IsometricGame.Logic.Enums
 {
     public static class Groups
     {

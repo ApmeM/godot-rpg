@@ -1,7 +1,7 @@
 using BrainAI.Pathfinding.BreadthFirst;
 using FateRandom;
 using Godot;
-using IsometricGame.Logic.Models;
+using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.ScriptHelpers;
 using System;
 using System.Collections.Generic;
@@ -106,22 +106,28 @@ public class Maze : TileMap
 		Vector2.Right
 	};
 
-	public void HighliteAvailableMoves(Vector2 unitCell, int? moveDistance)
-	{
-		if(moveDistance == null)
-		{
-			throw new Exception("Unknown move distance to highlite. Possible reason - trying to highlite distance for enemy unit.");
-		}
-
+	public void RemoveHighliting()
+    {
 		var floor = GetNode<TileMap>("Floor");
 		foreach (var cell in highlitedCells)
 		{
 			floor.SetCellv(cell, Fate.GlobalFate.Chance(90) ? 1 : 0);
 		}
+	}
+
+	public void HighliteAvailableMoves(Vector2 unitCell, int? moveDistance)
+	{
+		if (moveDistance == null)
+		{
+			throw new Exception("Unknown move distance to highlite. Possible reason - trying to highlite distance for enemy unit.");
+		}
+
+		RemoveHighliting();
 
 		BreadthFirstPathfinder.Search(this.astar, unitCell, moveDistance.Value, out var visited);
 
-		foreach(var cell in visited.Keys)
+		var floor = GetNode<TileMap>("Floor");
+		foreach (var cell in visited.Keys)
 		{
 			floor.SetCellv(cell, 5);
 			highlitedCells.Add(cell);

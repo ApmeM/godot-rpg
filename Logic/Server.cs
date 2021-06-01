@@ -1,6 +1,7 @@
 using BrainAI.Pathfinding.BreadthFirst;
 using FateRandom;
 using Godot;
+using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.Models;
 using IsometricGame.Logic.ScriptHelpers;
 using MazeGenerators;
@@ -10,7 +11,7 @@ using System.Linq;
 
 namespace IsometricGame.Logic
 {
-	public class Server
+    public class Server
 	{
 		private RoomMazeGenerator.Result Map;
 		private VectorGridGraph Astar;

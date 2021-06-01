@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using IsometricGame.Logic.Enums;
+using System.Collections.Generic;
 
 namespace IsometricGame.Logic.Models
 {

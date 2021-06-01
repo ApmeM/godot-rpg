@@ -1,5 +1,6 @@
 using Godot;
 using IsometricGame.Logic;
+using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.Models;
 using System.Linq;
 
@@ -7,7 +8,8 @@ public class Dungeon : Node2D
 {
 	public static Server server = new Server();
 	private int PlayerId;
-	
+	private CurrentAction currentAction = CurrentAction.None;
+
 	public override void _Ready()
 	{
 		var maze = GetNode<Maze>("Maze");
@@ -59,6 +61,25 @@ public class Dungeon : Node2D
 		}
 
 		GetNode<Button>("CanvasLayer/NextTurnButton").Connect("pressed", this, nameof(NextTurnPressed));
+		GetNode<UnitActions>("UnitActions").Connect(nameof(UnitActions.ActionSelected), this, nameof(UnitActionSelected));
+	}
+
+	private void UnitActionSelected(CurrentAction action)
+	{
+		this.currentAction = action;
+		GetNode<Control>("UnitActions").Visible = false;
+
+		switch (this.currentAction)
+		{
+			case CurrentAction.Move:
+				{
+					var maze = GetNode<Maze>("Maze");
+					var units = this.GetTree().GetNodesInGroup(Groups.MyUnits).Cast<Unit>().ToList();
+					var currentUnit = units.FirstOrDefault(a => a.IsSelected);
+					maze.HighliteAvailableMoves(maze.WorldToMap(currentUnit.Position), currentUnit.ClientUnit.MoveDistance);
+					break;
+				}
+		}
 	}
 
 	public void CellSelected(Vector2 cell, Vector2 cellPosition, bool moveAvailable)
@@ -66,23 +87,46 @@ public class Dungeon : Node2D
 		var maze = GetNode<Maze>("Maze");
 		var units = this.GetTree().GetNodesInGroup(Groups.MyUnits).Cast<Unit>().ToList();
 
-		var clickOnUnit = units.FirstOrDefault(a => maze.WorldToMap(a.Position) == cell);
 		var currentUnit = units.FirstOrDefault(a => a.IsSelected);
 
-		if (clickOnUnit != null)
+		switch (this.currentAction)
 		{
-			if (currentUnit != null)
-			{
-				currentUnit.IsSelected = false;
-			}
+			case CurrentAction.None:
+				{
+					var clickOnUnit = units.FirstOrDefault(a => maze.WorldToMap(a.Position) == cell || a.NewTarget == cell);
+					if (currentUnit != null)
+					{
+						currentUnit.IsSelected = false;
+					}
+					GetNode<UnitDetails>("CanvasLayer/UnitDetails").SelectUnit(clickOnUnit?.ClientUnit);
+					var unitActions = GetNode<Control>("UnitActions");
+					unitActions.Visible = clickOnUnit != null;
 
-			clickOnUnit.IsSelected = true;
-			GetNode<UnitDetails>("CanvasLayer/UnitDetails").SelectUnit(clickOnUnit.ClientUnit);
-			maze.HighliteAvailableMoves(cell, clickOnUnit.ClientUnit.MoveDistance);
-		}
-		else if(moveAvailable)
-		{
-			currentUnit?.MoveShadowTo(cell);
+					if (clickOnUnit != null)
+					{
+						clickOnUnit.IsSelected = true;
+						unitActions.RectPosition = clickOnUnit.Position;
+					}
+					break;
+				}
+			case CurrentAction.Move:
+				{
+					if (moveAvailable)
+					{
+						this.currentAction = CurrentAction.None;
+						currentUnit.MoveShadowTo(cell);
+						var unitActions = GetNode<Control>("UnitActions");
+						unitActions.RectPosition = cellPosition;
+						unitActions.Visible = true;
+						maze.RemoveHighliting();
+					}
+					break;
+				}
+			case CurrentAction.Attack:
+				{
+					this.currentAction = CurrentAction.None;
+					break;
+				}
 		}
 	}
 

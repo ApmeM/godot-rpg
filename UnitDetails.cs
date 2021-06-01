@@ -30,8 +30,8 @@ public class UnitDetails : Panel
 
 	public void SelectUnit(ClientUnit unit)
 	{
-		GetNode<Label>("MoveRange").Text = "Speed " + unit.MoveDistance;
-		GetNode<Label>("SightRange").Text = "Vision " + unit.SightRange;
+		GetNode<Label>("MoveRange").Text = "Speed " + unit?.MoveDistance.ToString() ?? "unknown";
+		GetNode<Label>("SightRange").Text = "Vision " + unit?.SightRange.ToString() ?? "unknown";
 	}
 
 	public override void _Process(float delta)
