@@ -107,11 +107,25 @@ public class Maze : TileMap
 	};
 
 	public void RemoveHighliting()
-    {
+	{
 		var floor = GetNode<TileMap>("Floor");
 		foreach (var cell in highlitedCells)
 		{
 			floor.SetCellv(cell, Fate.GlobalFate.Chance(90) ? 1 : 0);
+		}
+	}
+
+	public void HighliteAvailableAttacks(Vector2 shadowCell, int? attackDistance, int? attackRadius)
+	{
+		RemoveHighliting();
+
+		BreadthFirstPathfinder.Search(this.astar, shadowCell, attackDistance.Value, out var visited);
+
+		var floor = GetNode<TileMap>("Floor");
+		foreach (var cell in visited.Keys)
+		{
+			floor.SetCellv(cell, 5);
+			highlitedCells.Add(cell);
 		}
 	}
 

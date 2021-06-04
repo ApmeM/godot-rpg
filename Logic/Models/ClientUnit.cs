@@ -6,5 +6,7 @@
         public int PlayerId;
         public int? MoveDistance;
         public int? SightRange;
+        public int? AttackDistance;
+        public int? AttackRadius;
     }
 }

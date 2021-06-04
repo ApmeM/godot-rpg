@@ -1,5 +1,4 @@
-﻿using BrainAI.Pathfinding;
-using BrainAI.Pathfinding.AStar;
+﻿using BrainAI.Pathfinding.AStar;
 using Godot;
 using System;
 using System.Collections.Generic;
@@ -8,17 +7,17 @@ namespace IsometricGame.Logic.ScriptHelpers
 {
     public static class IsometricMove
     {
-        public static string Animate(Vector2 motion, string left = "left", string right = "right", string up = "up", string down = "down")
+        public static string Animate(Vector2 motion, string left = "Left", string right = "Right", string up = "Up", string down = "Down")
         {
 			if (motion.x > 0)
 			{
-				if (motion.y > 0)
-				{
-					return right;
-				}
-				else if (motion.y < 0)
+				if (motion.y < 0)
 				{
 					return up;
+				}
+				else
+				{
+					return right;
 				}
 			}
 			else if (motion.x < 0)
@@ -27,13 +26,26 @@ namespace IsometricGame.Logic.ScriptHelpers
 				{
 					return down;
 				}
-				else if (motion.y < 0)
+				else
 				{
 					return left;
 				}
 			}
-
-			return null;
+			else
+			{
+				if (motion.y > 0)
+				{
+					return down;
+				}
+				else if (motion.y < 0)
+				{
+					return up;
+				}
+                else
+                {
+					return null;
+                }
+			}
 		}
 
 		public static Vector2? GetMotion(Queue<Vector2> currentPath, Vector2 currentPosition, float delta, int motionSpeed)

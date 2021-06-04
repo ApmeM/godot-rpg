@@ -7,12 +7,14 @@ public class Unit : Node2D
 {
 	private const int MOTION_SPEED = 800;
 	private readonly Queue<Vector2> path = new Queue<Vector2>();
-	private Vector2 oldTarget;
-	
 	public ClientUnit ClientUnit;
-	public bool IsSelected;
-	public Vector2 NewTarget = Vector2.Zero;
+	public bool IsSelected
+	{
+		get { return GetNode<AnimatedSprite>("SelectionMarker").Visible; }
+		set { GetNode<AnimatedSprite>("SelectionMarker").Visible = value; shadow.IsSelected = value; }
+	}
 
+	public Vector2 NewTarget => shadow.NewPosition ?? Vector2.Zero;
 	private UnitShadow shadow;
 
 	public override void _Ready()
@@ -29,31 +31,27 @@ public class Unit : Node2D
 	{
 		base._Process(delta);
 
-		shadow.IsSelected = IsSelected;
-		GetNode<AnimatedSprite>("SelectionMarker").Visible = IsSelected;
-
 		var animation = GetNode<AnimatedSprite>("AnimatedSprite");
-
-		var motion = IsometricMove.GetMotion(path, Position, delta, MOTION_SPEED);
-		Position += motion ?? Vector2.Zero;
-
-		animation.Playing = motion.HasValue;
-		if (motion.HasValue)
+		if (path.Count > 0)
 		{
-			animation.Animation = IsometricMove.Animate(motion.Value) ?? animation.Animation;
+			var motion = IsometricMove.GetMotion(path, Position, delta, MOTION_SPEED);
+			animation.Playing = motion.HasValue;
+			if (motion.HasValue)
+			{
+				Position += motion ?? Vector2.Zero;
+				var direction = IsometricMove.Animate(motion.Value);
+				if (!string.IsNullOrWhiteSpace(direction))
+				{
+					animation.Animation = $"move{direction}";
+				}
+			}
 		}
 	}
 
 	public void MoveUnitTo(Vector2 newTarget)
 	{
-		if (newTarget != this.oldTarget)
-		{
-			this.oldTarget = newTarget;
-			this.NewTarget = Vector2.Zero;
-			shadow.Visible = false;
-
-			IsometricMove.MoveBy(this.path, Position, newTarget, GetParent<Maze>());
-		}
+		shadow.HideShadow();
+		IsometricMove.MoveBy(this.path, Position, newTarget, GetParent<Maze>());
 	}
 
 	public void MoveShadowTo(Vector2 newTarget)
@@ -63,8 +61,18 @@ public class Unit : Node2D
 			shadow.Position = Position;
 			shadow.Visible = true;
 		}
-		this.NewTarget = newTarget;
 
 		shadow.MoveShadowTo(newTarget);
+	}
+
+	public void AttackShadowTo(Vector2 newTarget)
+	{
+		if (!shadow.Visible)
+		{
+			shadow.Position = Position;
+			shadow.Visible = true;
+		}
+
+		shadow.AttackShadowTo(newTarget);
 	}
 }

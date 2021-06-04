@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace IsometricGame.Logic
 {
-    public class Server
+	public class Server
 	{
 		private RoomMazeGenerator.Result Map;
 		private VectorGridGraph Astar;
@@ -71,7 +71,9 @@ namespace IsometricGame.Logic
 					UnitId = a.Key,
 					Position = a.Value.Position,
 					MoveDistance = a.Value.MoveDistance,
-					SightRange = a.Value.SightRange
+					SightRange = a.Value.SightRange,
+					AttackDistance = a.Value.AttackDistance,
+					AttackRadius = a.Value.AttackRadius
 				}).ToList(),
 				VisibleMap = GetVisibleMap(forPlayer),
 				OtherPlayers = Players.Where(a => a.Key != forPlayer).Select(a => new TransferInitialPlayer
@@ -83,7 +85,7 @@ namespace IsometricGame.Logic
 			};
 		}
 
-		public void PlayerMove(int forPlayer, Dictionary<int, Vector2> moves)
+		public void PlayerMove(int forPlayer, TransferTurnDoneData moves)
 		{
 			var player = Players[forPlayer];
 			ApplyMoves(player, moves);
@@ -91,30 +93,39 @@ namespace IsometricGame.Logic
 			var otherPlayers = Players.Where(a => a.Key != forPlayer).Select(a => a.Value).ToList();
 			foreach(var p in otherPlayers)
 			{
-				var otherMoves = new Dictionary<int, Vector2>();
+				var otherMoves = new Dictionary<int, TransferTurnDoneUnit>();
 				foreach(var u in p.Units)
 				{
-					otherMoves.Add(u.Key, u.Value.Position + Fate.GlobalFate.Choose(Vector2.Up, Vector2.Down, Vector2.Left, Vector2.Right));
+					otherMoves.Add(u.Key, new TransferTurnDoneUnit
+					{
+						Move = u.Value.Position + Fate.GlobalFate.Choose(Vector2.Up, Vector2.Down, Vector2.Left, Vector2.Right)
+					});
 				}
 
-				ApplyMoves(p, otherMoves);
+				ApplyMoves(p, new TransferTurnDoneData
+				{
+					UnitActions = otherMoves
+				});
 			}
 		}
 
-		private void ApplyMoves(ServerPlayer player, Dictionary<int, Vector2> moves)
+		private void ApplyMoves(ServerPlayer player, TransferTurnDoneData moves)
 		{
-			foreach (var move in moves)
+			foreach (var move in moves.UnitActions)
 			{
 				var forUnit = move.Key;
 				var newTarget = move.Value;
 
 				var unit = player.Units[forUnit];
 
-				BreadthFirstPathfinder.Search(this.Astar, unit.Position, unit.MoveDistance, out var result);
-
-				if (result.ContainsKey(newTarget))
+				if (newTarget.Move.HasValue)
 				{
-					unit.Position = newTarget;
+					BreadthFirstPathfinder.Search(this.Astar, unit.Position, unit.MoveDistance, out var result);
+
+					if (result.ContainsKey(newTarget.Move.Value))
+					{
+						unit.Position = newTarget.Move.Value;
+					}
 				}
 			}
 		}

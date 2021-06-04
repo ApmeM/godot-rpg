@@ -47,3 +47,13 @@ text = "Vision: 70"
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="AttackDistance" type="Label" parent="."]
+margin_top = 50.0
+margin_right = 135.587
+margin_bottom = 80.0
+custom_fonts/font = SubResource( 1 )
+text = "Attack: 70"
+__meta__ = {
+"_edit_use_anchors_": false
+}

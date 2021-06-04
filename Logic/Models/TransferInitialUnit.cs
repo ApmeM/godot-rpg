@@ -8,5 +8,7 @@ namespace IsometricGame.Logic.Models
         public int UnitId;
         public int MoveDistance;
         public int SightRange;
+        public int AttackDistance;
+        public int AttackRadius;
     }
 }
