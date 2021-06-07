@@ -35,16 +35,6 @@ public class UnitShadow : Node2D
 				}
 			}
 		}
-		else if (AttackDirection.HasValue)
-		{
-			animation.Playing = true;
-			var direction = IsometricMove.Animate(AttackDirection.Value);
-			
-			if (!string.IsNullOrWhiteSpace(direction))
-			{
-				animation.Animation = $"attack{direction}";
-			}
-		}
 	}
 
 	public void MoveShadowTo(Vector2 newTarget)
@@ -65,5 +55,14 @@ public class UnitShadow : Node2D
 	{
 		var maze = GetParent<Maze>();
 		AttackDirection = newTarget - maze.WorldToMap(Position);
+
+		var animation = GetNode<AnimatedSprite>("Shadow");
+		animation.Playing = true;
+		var direction = IsometricMove.Animate(AttackDirection.Value);
+
+		if (!string.IsNullOrWhiteSpace(direction))
+		{
+			animation.Animation = $"attack{direction}";
+		}
 	}
 }

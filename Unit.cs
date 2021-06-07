@@ -14,8 +14,15 @@ public class Unit : Node2D
 		set { GetNode<AnimatedSprite>("SelectionMarker").Visible = value; shadow.IsSelected = value; }
 	}
 
-	public Vector2 NewTarget => shadow.NewPosition ?? Vector2.Zero;
+	public Vector2? NewTarget => shadow.NewPosition;
+	public Vector2? AttackDirection => shadow.AttackDirection;
+
 	private UnitShadow shadow;
+
+	[Signal]
+	public delegate void MoveDone();
+	[Signal]
+	public delegate void AttackDone();
 
 	public override void _Ready()
 	{
@@ -45,7 +52,30 @@ public class Unit : Node2D
 					animation.Animation = $"move{direction}";
 				}
 			}
+
+			if (path.Count == 0)
+			{
+				this.EmitSignal(nameof(MoveDone));
+			}
 		}
+	}
+
+	private void AttackAnimationFinished()
+	{
+		var animation = GetNode<AnimatedSprite>("AnimatedSprite");
+		animation.Disconnect("animation_finished", this, nameof(AttackAnimationFinished));
+		EmitSignal(nameof(AttackDone));
+		animation.Playing = false;
+	}
+
+	public void AttackUnitTo(Vector2 attackDirection)
+	{
+		var animation = GetNode<AnimatedSprite>("AnimatedSprite");
+		animation.Playing = true;
+		var direction = IsometricMove.Animate(attackDirection);
+
+		animation.Animation = $"attack{direction}";
+		animation.Connect("animation_finished", this, nameof(AttackAnimationFinished));
 	}
 
 	public void MoveUnitTo(Vector2 newTarget)

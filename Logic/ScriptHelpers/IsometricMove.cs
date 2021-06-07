@@ -56,7 +56,7 @@ namespace IsometricGame.Logic.ScriptHelpers
 			}
 
 			var current = currentPath.Peek();
-			if (Math.Abs(current.x - currentPosition.x) < 1 && Math.Abs(current.y - currentPosition.y) < 1)
+			if (Distance(current, currentPosition) < 1)
 			{
 				currentPath.Dequeue();
 				return null;
@@ -93,6 +93,12 @@ namespace IsometricGame.Logic.ScriptHelpers
 				worldPos += Vector2.Down * maze.CellSize.y / 2;
 				currentPath.Enqueue(worldPos);
 			}
+		}
+
+		public static int Distance(Vector2 from, Vector2 to)
+        {
+			var vector = from - to;
+			return (int)(Math.Abs(vector.x) + Math.Abs(vector.y));
 		}
 	}
 }

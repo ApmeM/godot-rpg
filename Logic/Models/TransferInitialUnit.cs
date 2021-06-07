@@ -10,5 +10,7 @@ namespace IsometricGame.Logic.Models
         public int SightRange;
         public int AttackDistance;
         public int AttackRadius;
+        public int AttackPower;
+        public int Hp;
     }
 }

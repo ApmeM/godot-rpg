@@ -15,7 +15,9 @@ namespace IsometricGame.Logic
 	{
 		private RoomMazeGenerator.Result Map;
 		private VectorGridGraph Astar;
-		private Dictionary<int, ServerPlayer> Players = new Dictionary<int, ServerPlayer>();
+		private readonly Dictionary<int, ServerPlayer> Players = new Dictionary<int, ServerPlayer>();
+		private readonly Dictionary<int, TransferTurnDoneData> PlayersMove = new Dictionary<int, TransferTurnDoneData>();
+		private readonly Dictionary<long, ServerTurnDelta> UnitsTurnDelta = new Dictionary<long, ServerTurnDelta>();
 
 		public void Start()
 		{
@@ -73,58 +75,110 @@ namespace IsometricGame.Logic
 					MoveDistance = a.Value.MoveDistance,
 					SightRange = a.Value.SightRange,
 					AttackDistance = a.Value.AttackDistance,
-					AttackRadius = a.Value.AttackRadius
+					AttackRadius = a.Value.AttackRadius,
+					AttackPower = a.Value.AttackPower,
+					Hp = a.Value.Hp,
 				}).ToList(),
 				VisibleMap = GetVisibleMap(forPlayer),
 				OtherPlayers = Players.Where(a => a.Key != forPlayer).Select(a => new TransferInitialPlayer
 				{
 					PlayerId = a.Key,
 					PlayerName = a.Value.PlayerName,
-					Units = a.Value.Units.Keys.ToList()
+					Units = a.Value.Units.Keys.ToList(),
 				}).ToList()
 			};
 		}
 
 		public void PlayerMove(int forPlayer, TransferTurnDoneData moves)
 		{
-			var player = Players[forPlayer];
-			ApplyMoves(player, moves);
+			// Put player move into dictionary
+			PlayersMove[forPlayer] = moves;
 
-			var otherPlayers = Players.Where(a => a.Key != forPlayer).Select(a => a.Value).ToList();
-			foreach(var p in otherPlayers)
+			// Act as other players also did their turns
+			foreach (var p in Players)
 			{
+				if (p.Key == forPlayer)
+				{
+					continue;
+				}
+
 				var otherMoves = new Dictionary<int, TransferTurnDoneUnit>();
-				foreach(var u in p.Units)
+				foreach (var u in p.Value.Units)
 				{
 					otherMoves.Add(u.Key, new TransferTurnDoneUnit
 					{
-						Move = u.Value.Position + Fate.GlobalFate.Choose(Vector2.Up, Vector2.Down, Vector2.Left, Vector2.Right)
+						Move = u.Value.Position + Fate.GlobalFate.Choose(Vector2.Up, Vector2.Down, Vector2.Left, Vector2.Right),
+						Attack = Fate.GlobalFate.Choose(Vector2.Up, Vector2.Down, Vector2.Left, Vector2.Right)
 					});
 				}
 
-				ApplyMoves(p, new TransferTurnDoneData
+				PlayersMove[p.Key] = new TransferTurnDoneData
 				{
 					UnitActions = otherMoves
-				});
+				};
 			}
-		}
 
-		private void ApplyMoves(ServerPlayer player, TransferTurnDoneData moves)
-		{
-			foreach (var move in moves.UnitActions)
+			// When all players send their turns - apply all.
+			if (PlayersMove.Count == Players.Count)
 			{
-				var forUnit = move.Key;
-				var newTarget = move.Value;
-
-				var unit = player.Units[forUnit];
-
-				if (newTarget.Move.HasValue)
+				this.UnitsTurnDelta.Clear();
+				foreach (var p in Players)
 				{
-					BreadthFirstPathfinder.Search(this.Astar, unit.Position, unit.MoveDistance, out var result);
-
-					if (result.ContainsKey(newTarget.Move.Value))
+					foreach (var u in p.Value.Units)
 					{
-						unit.Position = newTarget.Move.Value;
+						var fullId = GetFullUnitId(p.Key, u.Key);
+						UnitsTurnDelta[fullId] = new ServerTurnDelta
+						{
+							MovedFrom = u.Value.Position,
+							MovedTo = u.Value.Position,
+							HpBefore = u.Value.Hp,
+						};
+					}
+				}
+
+				foreach (var pm in PlayersMove)
+				{
+					foreach (var um in pm.Value.UnitActions)
+					{
+						var fullId = GetFullUnitId(pm.Key, um.Key);
+						var delta = UnitsTurnDelta[fullId];
+						var unit = Players[pm.Key].Units[um.Key];
+						if (um.Value.Move.HasValue)
+						{
+							BreadthFirstPathfinder.Search(this.Astar, unit.Position, unit.MoveDistance, out var result);
+
+							if (result.ContainsKey(um.Value.Move.Value))
+							{
+								delta.MovedTo = um.Value.Move.Value;
+								unit.Position = um.Value.Move.Value;
+							}
+						}
+					}
+				}
+
+
+				foreach (var pm in PlayersMove)
+				{
+					foreach (var um in pm.Value.UnitActions)
+					{
+						var fullId = GetFullUnitId(pm.Key, um.Key);
+						var delta = UnitsTurnDelta[fullId];
+						var unit = Players[pm.Key].Units[um.Key];
+						if (um.Value.Attack.HasValue)
+						{
+							delta.AttackDirection = um.Value.Attack.Value;
+							foreach (var p in Players)
+							{
+								foreach (var u in p.Value.Units)
+								{
+									if (IsometricMove.Distance(u.Value.Position, unit.Position + delta.AttackDirection.Value) <= unit.AttackRadius)
+									{
+										delta.HpChanges += unit.AttackPower;
+										unit.Hp -= unit.AttackPower;
+									}
+								}
+							}
+						}
 					}
 				}
 			}
@@ -135,16 +189,31 @@ namespace IsometricGame.Logic
 			var player = Players[forPlayer];
 			return new TransferTurnData
 			{
-				YourUnits = player.Units.ToDictionary(a => a.Key, a => new TransferTurnUnit
+				YourUnits = player.Units.ToDictionary(a => a.Key, a =>
 				{
-					Position = a.Value.Position
+					var fullId = GetFullUnitId(forPlayer, a.Key);
+					var delta = UnitsTurnDelta[fullId];
+					return new TransferTurnUnit
+					{
+						Position = delta.MovedTo,
+						AttackDirection = delta.AttackDirection,
+						HpReduced = delta.HpChanges
+					};
 				}),
 				VisibleMap = this.GetVisibleMap(forPlayer),
 				OtherPlayers = this.Players.Where(a => a.Key != forPlayer).ToDictionary(a => a.Key, a => new TransferTurnPlayer
 				{
-					Units = a.Value.Units.Where(b => IsVisible(player, (int)b.Value.Position.x, (int)b.Value.Position.y)).ToDictionary(b => b.Key, b => new TransferTurnPlayerUnit
+					Units = a.Value.Units.Where(b => IsVisible(player, (int)b.Value.Position.x, (int)b.Value.Position.y)).ToDictionary(b => b.Key, b =>
 					{
-						Position = b.Value.Position
+						var fullId = GetFullUnitId(a.Key, b.Key);
+						var delta = UnitsTurnDelta[fullId];
+
+						return new TransferTurnPlayerUnit
+						{
+							Position = delta.MovedTo,
+							AttackDirection = delta.AttackDirection,
+							HpReduced = delta.HpChanges
+						};
 					})
 				})
 			};
@@ -185,6 +254,11 @@ namespace IsometricGame.Logic
 			}
 
 			return false;
+		}
+
+		public static long GetFullUnitId(int playerId, int unitId)
+		{
+			return ((long)playerId << 32) | ((long)unitId & 0xFFFFFFFFL);
 		}
 	}
 }
