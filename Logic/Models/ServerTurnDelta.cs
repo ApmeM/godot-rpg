@@ -8,6 +8,7 @@ namespace IsometricGame.Logic.Models
         public Vector2 MovedTo;
         public Vector2? AttackDirection;
         public int HpBefore;
-        public int HpChanges;
+        public int? HpChanges;
+        public Vector2? AttackFrom;
     }
 }

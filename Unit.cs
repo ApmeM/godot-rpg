@@ -23,6 +23,8 @@ public class Unit : Node2D
 	public delegate void MoveDone();
 	[Signal]
 	public delegate void AttackDone();
+	[Signal]
+	public delegate void UnitHitDone();
 
 	public override void _Ready()
 	{
@@ -60,7 +62,7 @@ public class Unit : Node2D
 		}
 	}
 
-	private void AttackAnimationFinished()
+	public void AttackAnimationFinished()
 	{
 		var animation = GetNode<AnimatedSprite>("AnimatedSprite");
 		animation.Disconnect("animation_finished", this, nameof(AttackAnimationFinished));
@@ -71,11 +73,29 @@ public class Unit : Node2D
 	public void AttackUnitTo(Vector2 attackDirection)
 	{
 		var animation = GetNode<AnimatedSprite>("AnimatedSprite");
-		animation.Playing = true;
 		var direction = IsometricMove.Animate(attackDirection);
 
 		animation.Animation = $"attack{direction}";
 		animation.Connect("animation_finished", this, nameof(AttackAnimationFinished));
+		animation.Playing = true;
+	}
+
+	public void UnitHitAnimationFinished()
+	{
+		var animation = GetNode<AnimatedSprite>("AnimatedSprite");
+		animation.Disconnect("animation_finished", this, nameof(UnitHitAnimationFinished));
+		EmitSignal(nameof(UnitHitDone));
+		animation.Playing = false;
+	}
+
+	public void UnitHit(Vector2 attackDirection)
+	{
+		var animation = GetNode<AnimatedSprite>("AnimatedSprite");
+		var direction = IsometricMove.Animate(attackDirection);
+
+		animation.Animation = $"hit{direction}";
+		animation.Connect("animation_finished", this, nameof(UnitHitAnimationFinished));
+		animation.Playing = true;
 	}
 
 	public void MoveUnitTo(Vector2 newTarget)

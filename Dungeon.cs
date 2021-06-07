@@ -255,6 +255,43 @@ public class Dungeon : Node2D
 		}
 		signals.Clear();
 
+		foreach (var unit in myUnits)
+		{
+			var hpReduced = turnData.YourUnits[unit.ClientUnit.UnitId].HpReduced;
+			if (!hpReduced.HasValue)
+			{
+				continue;
+			}
+			unit.UnitHit(turnData.YourUnits[unit.ClientUnit.UnitId].AttackFrom.Value);
+			signals.Add(ToSignal(unit, nameof(Unit.UnitHitDone)));
+		}
+
+		foreach (var unit in otherUnits)
+		{
+			var player = turnData.OtherPlayers[unit.ClientUnit.PlayerId];
+			if (!player.Units.ContainsKey(unit.ClientUnit.UnitId))
+			{
+				continue;
+			}
+
+			if (unit.Visible)
+			{
+				var hpReduced = player.Units[unit.ClientUnit.UnitId].HpReduced;
+				if (!hpReduced.HasValue)
+				{
+					continue;
+				}
+				unit.UnitHit(player.Units[unit.ClientUnit.UnitId].AttackFrom.Value);
+				signals.Add(ToSignal(unit, nameof(Unit.UnitHitDone)));
+			}
+		}
+
+		foreach (var signal in signals)
+		{
+			await signal;
+		}
+		signals.Clear();
+
 		GetNode<Button>("CanvasLayer/NextTurnButton").Visible = true;
 	}
 }
