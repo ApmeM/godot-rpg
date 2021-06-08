@@ -8,5 +8,6 @@ namespace IsometricGame.Logic.Models
         public Vector2? AttackDirection;
         public int? HpReduced;
         public Vector2? AttackFrom;
+        public bool IsDead;
     }
 }

@@ -16,15 +16,13 @@ public class Unit : Node2D
 
 	public Vector2? NewTarget => shadow.NewPosition;
 	public Vector2? AttackDirection => shadow.AttackDirection;
-
+	public bool IsDead;
 	private UnitShadow shadow;
 
 	[Signal]
 	public delegate void MoveDone();
 	[Signal]
-	public delegate void AttackDone();
-	[Signal]
-	public delegate void UnitHitDone();
+	public delegate void UnitAnimationDone();
 
 	public override void _Ready()
 	{
@@ -61,41 +59,20 @@ public class Unit : Node2D
 			}
 		}
 	}
-
-	public void AttackAnimationFinished()
+	
+	private void UnitAnimationFinished()
 	{
 		var animation = GetNode<AnimatedSprite>("AnimatedSprite");
-		animation.Disconnect("animation_finished", this, nameof(AttackAnimationFinished));
-		EmitSignal(nameof(AttackDone));
-		animation.Playing = false;
+		animation.Disconnect("animation_finished", this, nameof(UnitAnimationFinished));
+		animation.Stop();
+		EmitSignal(nameof(UnitAnimationDone));
 	}
 
-	public void AttackUnitTo(Vector2 attackDirection)
+	public void AnimateUnit(string animationPrefix, Vector2 animationDirection)
 	{
 		var animation = GetNode<AnimatedSprite>("AnimatedSprite");
-		var direction = IsometricMove.Animate(attackDirection);
-
-		animation.Animation = $"attack{direction}";
-		animation.Connect("animation_finished", this, nameof(AttackAnimationFinished));
-		animation.Playing = true;
-	}
-
-	public void UnitHitAnimationFinished()
-	{
-		var animation = GetNode<AnimatedSprite>("AnimatedSprite");
-		animation.Disconnect("animation_finished", this, nameof(UnitHitAnimationFinished));
-		EmitSignal(nameof(UnitHitDone));
-		animation.Playing = false;
-	}
-
-	public void UnitHit(Vector2 attackDirection)
-	{
-		var animation = GetNode<AnimatedSprite>("AnimatedSprite");
-		var direction = IsometricMove.Animate(attackDirection);
-
-		animation.Animation = $"hit{direction}";
-		animation.Connect("animation_finished", this, nameof(UnitHitAnimationFinished));
-		animation.Playing = true;
+		animation.Connect("animation_finished", this, nameof(UnitAnimationFinished));
+		animation.Play($"{animationPrefix}{IsometricMove.Animate(animationDirection)}");
 	}
 
 	public void MoveUnitTo(Vector2 newTarget)

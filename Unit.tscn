@@ -39,9 +39,10 @@ script = ExtResource( 1 )
 position = Vector2( 0, -188.432 )
 scale = Vector2( 2, 2 )
 frames = SubResource( 5 )
+frame = 1
 playing = true
 
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
 position = Vector2( 0, -50 )
 frames = ExtResource( 2 )
-animation = "moveDown"
+animation = "deadRight"

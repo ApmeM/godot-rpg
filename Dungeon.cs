@@ -109,19 +109,12 @@ public class Dungeon : Node2D
 					}
 
 					GetNode<UnitDetails>("CanvasLayer/UnitDetails").SelectUnit(clickOnUnit?.ClientUnit);
-					unitActions.Visible = clickOnUnit != null;
+					unitActions.Visible = clickOnUnit != null && !clickOnUnit.IsDead;
+					unitActions.RectPosition = this.GetViewport().CanvasTransform.AffineInverse().Xform(GetViewport().GetMousePosition());
 
 					if (clickOnUnit != null)
 					{
 						clickOnUnit.IsSelected = true;
-						if (clickOnUnit.NewTarget == cell)
-						{
-							unitActions.RectPosition = cellPosition;
-						}
-						else
-						{
-							unitActions.RectPosition = clickOnUnit.Position;
-						}
 					}
 					break;
 				}
@@ -131,7 +124,7 @@ public class Dungeon : Node2D
 					{
 						this.currentAction = CurrentAction.None;
 						currentUnit.MoveShadowTo(cell);
-						unitActions.RectPosition = cellPosition;
+						unitActions.RectPosition = this.GetViewport().CanvasTransform.AffineInverse().Xform(GetViewport().GetMousePosition());
 						unitActions.Visible = true;
 						maze.RemoveHighliting();
 					}
@@ -143,6 +136,7 @@ public class Dungeon : Node2D
 					{
 						this.currentAction = CurrentAction.None;
 						currentUnit.AttackShadowTo(cell);
+						unitActions.RectPosition = this.GetViewport().CanvasTransform.AffineInverse().Xform(GetViewport().GetMousePosition());
 						unitActions.Visible = true;
 						maze.RemoveHighliting();
 					}
@@ -225,8 +219,8 @@ public class Dungeon : Node2D
 			{
 				continue;
 			}
-			unit.AttackUnitTo(attackDirection.Value);
-			signals.Add(ToSignal(unit, nameof(Unit.AttackDone)));
+			unit.AnimateUnit("attack", attackDirection.Value);
+			signals.Add(ToSignal(unit, nameof(Unit.UnitAnimationDone)));
 		}
 
 		foreach (var unit in otherUnits)
@@ -244,8 +238,8 @@ public class Dungeon : Node2D
 				{
 					continue;
 				}
-				unit.AttackUnitTo(attackDirection.Value);
-				signals.Add(ToSignal(unit, nameof(Unit.AttackDone)));
+				unit.AnimateUnit("attack", attackDirection.Value);
+				signals.Add(ToSignal(unit, nameof(Unit.UnitAnimationDone)));
 			}
 		}
 
@@ -262,8 +256,8 @@ public class Dungeon : Node2D
 			{
 				continue;
 			}
-			unit.UnitHit(turnData.YourUnits[unit.ClientUnit.UnitId].AttackFrom.Value);
-			signals.Add(ToSignal(unit, nameof(Unit.UnitHitDone)));
+			unit.AnimateUnit("hit", turnData.YourUnits[unit.ClientUnit.UnitId].AttackFrom.Value);
+			signals.Add(ToSignal(unit, nameof(Unit.UnitAnimationDone)));
 		}
 
 		foreach (var unit in otherUnits)
@@ -281,8 +275,46 @@ public class Dungeon : Node2D
 				{
 					continue;
 				}
-				unit.UnitHit(player.Units[unit.ClientUnit.UnitId].AttackFrom.Value);
-				signals.Add(ToSignal(unit, nameof(Unit.UnitHitDone)));
+				unit.AnimateUnit("hit", player.Units[unit.ClientUnit.UnitId].AttackFrom.Value);
+				signals.Add(ToSignal(unit, nameof(Unit.UnitAnimationDone)));
+			}
+		}
+
+		foreach (var signal in signals)
+		{
+			await signal;
+		}
+		signals.Clear();
+		foreach (var unit in myUnits)
+		{
+			var attackFrom = turnData.YourUnits[unit.ClientUnit.UnitId].AttackFrom;
+			if (!attackFrom.HasValue || !turnData.YourUnits[unit.ClientUnit.UnitId].IsDead)
+			{
+				continue;
+			}
+			unit.AnimateUnit("dead", turnData.YourUnits[unit.ClientUnit.UnitId].AttackFrom.Value);
+			signals.Add(ToSignal(unit, nameof(Unit.UnitAnimationDone)));
+			unit.IsDead = true;
+		}
+
+		foreach (var unit in otherUnits)
+		{
+			var player = turnData.OtherPlayers[unit.ClientUnit.PlayerId];
+			if (!player.Units.ContainsKey(unit.ClientUnit.UnitId))
+			{
+				continue;
+			}
+
+			if (unit.Visible)
+			{
+				var attackFrom = player.Units[unit.ClientUnit.UnitId].AttackFrom;
+				if (!attackFrom.HasValue || !player.Units[unit.ClientUnit.UnitId].IsDead)
+				{
+					continue;
+				}
+				unit.AnimateUnit("dead", player.Units[unit.ClientUnit.UnitId].AttackFrom.Value);
+				signals.Add(ToSignal(unit, nameof(Unit.UnitAnimationDone)));
+				unit.IsDead = true;
 			}
 		}
 
