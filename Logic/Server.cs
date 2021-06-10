@@ -18,9 +18,11 @@ namespace IsometricGame.Logic
 		private readonly Dictionary<int, ServerPlayer> Players = new Dictionary<int, ServerPlayer>();
 		private readonly Dictionary<int, TransferTurnDoneData> PlayersMove = new Dictionary<int, TransferTurnDoneData>();
 		private readonly Dictionary<long, ServerTurnDelta> UnitsTurnDelta = new Dictionary<long, ServerTurnDelta>();
+		private ServerConfiguration configuration;
 
-		public void Start()
+		public void Start(ServerConfiguration configuration)
 		{
+			this.configuration = configuration;
 			var generator = new RoomMazeGenerator();
 			this.Map = generator.Generate(new RoomMazeGenerator.Settings
 			{
@@ -234,7 +236,7 @@ namespace IsometricGame.Logic
 			for (var x = 0; x < Map.Regions.GetLength(0); x++)
 				for (var y = 0; y < Map.Regions.GetLength(1); y++)
 				{
-					if (!IsVisible(player, x, y))
+					if (!IsVisible(player, x, y) && !configuration.FullMapVisible)
 					{
 						result[x, y] = MapTile.Unknown;
 					}

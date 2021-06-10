@@ -15,7 +15,10 @@ public class Dungeon : Node2D
 	{
 		var maze = GetNode<Maze>("Maze");
 
-		server.Start();
+		server.Start(new ServerConfiguration
+		{
+			FullMapVisible = true
+		});
 		this.PlayerId = server.Connect("First");
 
 		var initialData = server.GetInitialData(this.PlayerId);
