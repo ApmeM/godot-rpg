@@ -171,9 +171,14 @@ namespace IsometricGame.Logic
 							delta.AttackDirection = um.Value.Attack.Value;
 							foreach (var p in Players)
 							{
+								if (!unit.AttackFriendlyFire && p.Key == pm.Key)
+								{
+									continue;
+								}
+
 								foreach (var u in p.Value.Units)
 								{
-									if (IsometricMove.Distance(u.Value.Position, unit.Position + delta.AttackDirection.Value) < unit.AttackRadius && u.Value.Hp > 0)
+									if (IsometricMove.Distance(u.Value.Position, unit.Position + delta.AttackDirection.Value) <= unit.AttackRadius && u.Value.Hp > 0)
 									{
 										var fullIdTarget = GetFullUnitId(p.Key, u.Key);
 										var deltaTarget = UnitsTurnDelta[fullIdTarget];

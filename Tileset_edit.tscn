@@ -1,6 +1,9 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://assets/Isotiles.png" type="Texture" id=1]
+[ext_resource path="res://Redscale.tres" type="Material" id=2]
+[ext_resource path="res://Greenscale.tres" type="Material" id=3]
+[ext_resource path="res://Bluescale.tres" type="Material" id=4]
 
 [node name="TilesetEdit" type="Node2D"]
 
@@ -10,7 +13,28 @@ region_enabled = true
 region_rect = Rect2( 28, 75, 135, 105 )
 
 [node name="BaseAvailable" type="Sprite" parent="."]
-position = Vector2( 955, 0 )
+position = Vector2( 1000, 0 )
+texture = ExtResource( 1 )
+region_enabled = true
+region_rect = Rect2( 1180, 75, 135, 105 )
+
+[node name="BaseUnderAttack" type="Sprite" parent="."]
+material = ExtResource( 2 )
+position = Vector2( 0, 125 )
+texture = ExtResource( 1 )
+region_enabled = true
+region_rect = Rect2( 1180, 75, 135, 105 )
+
+[node name="BaseAvailableMove" type="Sprite" parent="."]
+material = ExtResource( 3 )
+position = Vector2( 200, 125 )
+texture = ExtResource( 1 )
+region_enabled = true
+region_rect = Rect2( 1180, 75, 135, 105 )
+
+[node name="BaseAvailableMove2" type="Sprite" parent="."]
+material = ExtResource( 4 )
+position = Vector2( 400, 125 )
 texture = ExtResource( 1 )
 region_enabled = true
 region_rect = Rect2( 1180, 75, 135, 105 )

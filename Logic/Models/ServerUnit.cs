@@ -10,6 +10,7 @@ namespace IsometricGame.Logic.Models
         public int AttackDistance = 1;
         public int AttackRadius = 1;
         public int AttackPower = 50;
+        public bool AttackFriendlyFire = false;
         public int Hp = 100;
     }
 }
