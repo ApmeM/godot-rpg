@@ -18,8 +18,11 @@ namespace IsometricGame.Logic
 		private readonly Dictionary<int, ServerPlayer> Players = new Dictionary<int, ServerPlayer>();
 		private readonly Dictionary<int, TransferTurnDoneData> PlayersMove = new Dictionary<int, TransferTurnDoneData>();
 		private readonly Dictionary<long, ServerTurnDelta> UnitsTurnDelta = new Dictionary<long, ServerTurnDelta>();
-		private ServerConfiguration configuration;
 
+		private ServerConfiguration configuration;
+		private readonly Dictionary<int, Action<TransferInitialData>> initializeMethods = new Dictionary<int, Action<TransferInitialData>>();
+		private readonly Dictionary<int, Action<TransferTurnData>> turnDoneMethods = new Dictionary<int, Action<TransferTurnData>>();
+		
 		public void Start(ServerConfiguration configuration)
 		{
 			this.configuration = configuration;
@@ -41,11 +44,9 @@ namespace IsometricGame.Logic
 						this.Astar.Walls.Add(new Vector2(x, y));
 					}
 				}
-
-			Connect("Bot1");
 		}
 
-		public int Connect(string playerName)
+		public void Connect(string playerName, Action<TransferInitialData> initialize, Action<TransferTurnData> turnDone)
 		{
 			var playerId = Players.Count + 1;
 			var player = new ServerPlayer
@@ -63,62 +64,22 @@ namespace IsometricGame.Logic
 
 			this.Players.Add(playerId, player);
 
-			return playerId;
-		}
+			this.initializeMethods[playerId] = initialize;
+			this.turnDoneMethods[playerId] = turnDone;
 
-		public TransferInitialData GetInitialData(int forPlayer)
-		{
-			return new TransferInitialData
+			if (playerId == configuration.PlayersCount)
 			{
-				YourUnits = Players[forPlayer].Units.Select(a => new TransferInitialUnit
+				foreach(var initMethod in initializeMethods)
 				{
-					UnitId = a.Key,
-					Position = a.Value.Position,
-					MoveDistance = a.Value.MoveDistance,
-					SightRange = a.Value.SightRange,
-					AttackDistance = a.Value.AttackDistance,
-					AttackRadius = a.Value.AttackRadius,
-					AttackPower = a.Value.AttackPower,
-					Hp = a.Value.Hp,
-				}).ToList(),
-				VisibleMap = GetVisibleMap(forPlayer),
-				OtherPlayers = Players.Where(a => a.Key != forPlayer).Select(a => new TransferInitialPlayer
-				{
-					PlayerId = a.Key,
-					PlayerName = a.Value.PlayerName,
-					Units = a.Value.Units.Keys.ToList(),
-				}).ToList()
-			};
+					initMethod.Value(GetInitialData(initMethod.Key));
+				}
+			}
 		}
 
 		public void PlayerMove(int forPlayer, TransferTurnDoneData moves)
 		{
 			// Put player move into dictionary
 			PlayersMove[forPlayer] = moves;
-
-			// Act as other players also did their turns
-			foreach (var p in Players)
-			{
-				if (p.Key == forPlayer)
-				{
-					continue;
-				}
-
-				var otherMoves = new Dictionary<int, TransferTurnDoneUnit>();
-				foreach (var u in p.Value.Units)
-				{
-					otherMoves.Add(u.Key, new TransferTurnDoneUnit
-					{
-						Move = u.Value.Position + Fate.GlobalFate.Choose(Vector2.Up, Vector2.Down, Vector2.Left, Vector2.Right),
-						Attack = Fate.GlobalFate.Choose(Vector2.Up, Vector2.Down, Vector2.Left, Vector2.Right)
-					});
-				}
-
-				PlayersMove[p.Key] = new TransferTurnDoneData
-				{
-					UnitActions = otherMoves
-				};
-			}
 
 			// When all players send their turns - apply all.
 			if (PlayersMove.Count == Players.Count)
@@ -158,7 +119,6 @@ namespace IsometricGame.Logic
 					}
 				}
 
-
 				foreach (var pm in PlayersMove)
 				{
 					foreach (var um in pm.Value.UnitActions)
@@ -191,10 +151,43 @@ namespace IsometricGame.Logic
 						}
 					}
 				}
+
+				PlayersMove.Clear();
+
+				foreach (var turnDoneMethod in turnDoneMethods)
+				{
+					turnDoneMethod.Value(GetTurnData(turnDoneMethod.Key));
+				}
 			}
 		}
 
-		public TransferTurnData GetTurnData(int forPlayer)
+		private TransferInitialData GetInitialData(int forPlayer)
+		{
+			return new TransferInitialData
+			{
+				YourPlayerId = forPlayer,
+				YourUnits = Players[forPlayer].Units.Select(a => new TransferInitialUnit
+				{
+					UnitId = a.Key,
+					Position = a.Value.Position,
+					MoveDistance = a.Value.MoveDistance,
+					SightRange = a.Value.SightRange,
+					AttackDistance = a.Value.AttackDistance,
+					AttackRadius = a.Value.AttackRadius,
+					AttackPower = a.Value.AttackPower,
+					Hp = a.Value.Hp,
+				}).ToList(),
+				VisibleMap = GetVisibleMap(forPlayer),
+				OtherPlayers = Players.Where(a => a.Key != forPlayer).Select(a => new TransferInitialPlayer
+				{
+					PlayerId = a.Key,
+					PlayerName = a.Value.PlayerName,
+					Units = a.Value.Units.Keys.ToList(),
+				}).ToList()
+			};
+		}
+
+		private TransferTurnData GetTurnData(int forPlayer)
 		{
 			var player = Players[forPlayer];
 			return new TransferTurnData
@@ -233,7 +226,7 @@ namespace IsometricGame.Logic
 			};
 		}
 
-		public MapTile[,] GetVisibleMap(int forPlayer)
+		private MapTile[,] GetVisibleMap(int forPlayer)
 		{
 			var player = Players[forPlayer];
 
@@ -270,7 +263,7 @@ namespace IsometricGame.Logic
 			return false;
 		}
 
-		public static long GetFullUnitId(int playerId, int unitId)
+		private static long GetFullUnitId(int playerId, int unitId)
 		{
 			return ((long)playerId << 32) | ((long)unitId & 0xFFFFFFFFL);
 		}

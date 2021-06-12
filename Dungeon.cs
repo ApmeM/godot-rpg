@@ -13,15 +13,26 @@ public class Dungeon : Node2D
 
 	public override void _Ready()
 	{
-		var maze = GetNode<Maze>("Maze");
-
 		server.Start(new ServerConfiguration
 		{
 			FullMapVisible = true
 		});
-		this.PlayerId = server.Connect("First");
 
-		var initialData = server.GetInitialData(this.PlayerId);
+		GetNode<Button>("CanvasLayer/NextTurnButton").Connect("pressed", this, nameof(NextTurnPressed));
+		GetNode<UnitActions>("UnitActions").Connect(nameof(UnitActions.ActionSelected), this, nameof(UnitActionSelected));
+	}
+
+	public void NewGame()
+	{
+		server.Connect("First", Initialize, TurnDone);
+		GetNode<Bot>("Bot").NewGame(server);
+	}
+
+	private void Initialize(TransferInitialData initialData)
+	{
+		var maze = GetNode<Maze>("Maze");
+		this.PlayerId = initialData.YourPlayerId;
+
 		maze.Initialize(initialData.VisibleMap.GetLength(0), initialData.VisibleMap.GetLength(1));
 		maze.NewVisibleMap(initialData.VisibleMap);
 		maze.Connect(nameof(Maze.CellSelected), this, nameof(CellSelected));
@@ -45,10 +56,9 @@ public class Dungeon : Node2D
 			unitSceneInstance.Position += Vector2.Down * maze.CellSize.y / 2;
 			unitSceneInstance.IsSelected = false;
 			unitSceneInstance.AddToGroup(Groups.MyUnits);
-
 		}
 
-		foreach(var player in initialData.OtherPlayers)
+		foreach (var player in initialData.OtherPlayers)
 		{
 			foreach (var unit in player.Units)
 			{
@@ -65,8 +75,6 @@ public class Dungeon : Node2D
 		}
 
 		GetNode<Camera2D>("DraggableCamera").Position = maze.MapToWorld(initialData.YourUnits[0].Position) + Vector2.Down * maze.CellSize.y / 2;
-		GetNode<Button>("CanvasLayer/NextTurnButton").Connect("pressed", this, nameof(NextTurnPressed));
-		GetNode<UnitActions>("UnitActions").Connect(nameof(UnitActions.ActionSelected), this, nameof(UnitActionSelected));
 	}
 
 	private void UnitActionSelected(CurrentAction action)
@@ -169,15 +177,12 @@ public class Dungeon : Node2D
 				Attack = a.AttackDirection
 			})
 		});
-		var turnData = server.GetTurnData(this.PlayerId);
-
-		maze.NewVisibleMap(turnData.VisibleMap);
-		TurnDone(turnData);
 	}
 
 	private async void TurnDone(TransferTurnData turnData)
 	{
 		var maze = GetNode<Maze>("Maze");
+		maze.NewVisibleMap(turnData.VisibleMap);
 		var myUnits = this.GetTree().GetNodesInGroup(Groups.MyUnits).Cast<Unit>().ToList();
 		var otherUnits = this.GetTree().GetNodesInGroup(Groups.OtherUnits).Cast<Unit>().ToList();
 		var signals = new List<SignalAwaiter>();

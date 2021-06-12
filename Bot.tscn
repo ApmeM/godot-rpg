@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://Bot.cs" type="Script" id=1]
+
+[node name="Bot" type="Node"]
+script = ExtResource( 1 )

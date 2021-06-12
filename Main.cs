@@ -28,6 +28,6 @@ public class Main : Node
 	{
 		RemoveChild(this.menu);
 		AddChild(this.game);
-		//this.game.NewGame();
+		this.game.NewGame();
 	}
 }
