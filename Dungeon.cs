@@ -7,25 +7,20 @@ using System.Linq;
 
 public class Dungeon : Node2D
 {
-	public static Server server = new Server();
 	private int PlayerId;
 	private CurrentAction currentAction = CurrentAction.None;
+	private Server server;
 
 	public override void _Ready()
 	{
-		server.Start(new ServerConfiguration
-		{
-			FullMapVisible = true
-		});
-
 		GetNode<Button>("CanvasLayer/NextTurnButton").Connect("pressed", this, nameof(NextTurnPressed));
 		GetNode<UnitActions>("UnitActions").Connect(nameof(UnitActions.ActionSelected), this, nameof(UnitActionSelected));
 	}
 
-	public void NewGame()
+	public void NewGame(Server server)
 	{
-		server.Connect("First", Initialize, TurnDone);
-		GetNode<Bot>("Bot").NewGame(server);
+		this.server = server;
+		this.server.Connect("First", Initialize, TurnDone);
 	}
 
 	private void Initialize(TransferInitialData initialData)

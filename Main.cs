@@ -2,14 +2,14 @@ using Godot;
 
 public class Main : Node
 {
-	private Dungeon game;
+	private Game game;
 	private Menu menu;
 
 	public override void _Ready()
 	{
 		base._Ready();
 
-		this.game = GetNode<Dungeon>("Game");
+		this.game = GetNode<Game>("Game");
 		this.menu = GetNode<Menu>("Menu");
 
 		RemoveChild(this.game);
