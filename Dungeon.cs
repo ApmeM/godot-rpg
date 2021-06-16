@@ -20,7 +20,17 @@ public class Dungeon : Node2D
 	public void NewGame(Server server)
 	{
 		this.server = server;
-		this.server.Connect("First", Initialize, TurnDone);
+		this.server.Connect(new TransferConnectData
+		{
+			PlayerName = "Player",
+			Units = new List<TransferConnectUnitData>
+			{
+				new TransferConnectUnitData{ UnitType = UnitType.Amazon, Skills = new List<Skill>{Skill.VisionRange}},
+				new TransferConnectUnitData{ UnitType = UnitType.Goatman, Skills = new List<Skill>{Skill.VisionRange}},
+				new TransferConnectUnitData{ UnitType = UnitType.Amazon, Skills = new List<Skill>{Skill.VisionRange}},
+				new TransferConnectUnitData{ UnitType = UnitType.Goatman, Skills = new List<Skill>{Skill.VisionRange}},
+			}
+		}, Initialize, TurnDone);
 	}
 
 	private void Initialize(TransferInitialData initialData)

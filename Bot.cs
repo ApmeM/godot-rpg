@@ -1,6 +1,7 @@
 using FateRandom;
 using Godot;
 using IsometricGame.Logic;
+using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.Models;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,17 @@ public class Bot : Node
 	public void NewGame(Server server)
 	{
 		this.server = server;
-		this.server.Connect("Bot", Initialize, TurnDone);
+		this.server.Connect(new TransferConnectData
+		{
+			PlayerName = "Bot",
+			Units = new List<TransferConnectUnitData>
+			{
+				new TransferConnectUnitData{ UnitType = UnitType.Amazon, Skills = new List<Skill>{Skill.VisionRange}},
+				new TransferConnectUnitData{ UnitType = UnitType.Goatman, Skills = new List<Skill>{Skill.VisionRange}},
+				new TransferConnectUnitData{ UnitType = UnitType.Amazon, Skills = new List<Skill>{Skill.VisionRange}},
+				new TransferConnectUnitData{ UnitType = UnitType.Goatman, Skills = new List<Skill>{Skill.VisionRange}},
+			}
+		}, Initialize, TurnDone);
 	}
 
 	private void Initialize(TransferInitialData initialData)

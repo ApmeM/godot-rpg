@@ -46,21 +46,43 @@ namespace IsometricGame.Logic
 				}
 		}
 
-		public void Connect(string playerName, Action<TransferInitialData> initialize, Action<TransferTurnData> turnDone)
+		public void Connect(TransferConnectData connect, Action<TransferInitialData> initialize, Action<TransferTurnData> turnDone)
 		{
 			var playerId = Players.Count + 1;
 			var player = new ServerPlayer
 			{
-				PlayerName = playerName,
+				PlayerName = connect.PlayerName,
 			};
 
 			var centerX = Map.Rooms[playerId].X + Map.Rooms[playerId].Width / 2;
 			var centerY = this.Map.Rooms[playerId].Y + this.Map.Rooms[playerId].Height / 2;
 
-			player.Units.Add(1, new ServerUnit { Position = new Vector2(centerX - 1, centerY), MoveDistance = Fate.GlobalFate.Range(4, 6), SightRange = Fate.GlobalFate.Range(6, 7) });
-			player.Units.Add(2, new ServerUnit { Position = new Vector2(centerX + 1, centerY), MoveDistance = Fate.GlobalFate.Range(4, 6), SightRange = Fate.GlobalFate.Range(6, 7) });
-			player.Units.Add(3, new ServerUnit { Position = new Vector2(centerX, centerY + 1), MoveDistance = Fate.GlobalFate.Range(4, 6), SightRange = Fate.GlobalFate.Range(6, 7) });
-			player.Units.Add(4, new ServerUnit { Position = new Vector2(centerX, centerY - 1), MoveDistance = Fate.GlobalFate.Range(4, 6), SightRange = Fate.GlobalFate.Range(6, 7) });
+			var unitId = 0;
+			foreach(var u in connect.Units)
+			{
+				unitId++;
+				if(unitId > configuration.MaxUnits)
+				{
+					break;
+				}
+
+				var unit = UnitUtils.BuildUnit(u.UnitType);
+				player.Units.Add(unitId, unit);
+				for (var i = 0; i < u.Skills.Count; i++)
+				{
+					if (i == configuration.MaxSkills)
+					{
+						break;
+					}
+					var skill = u.Skills[i];
+					UnitUtils.ApplySkill(player, unit, skill);
+				}
+			}
+
+			player.Units[1].Position = new Vector2(centerX - 1, centerY);
+			player.Units[2].Position = new Vector2(centerX + 1, centerY);
+			player.Units[3].Position = new Vector2(centerX, centerY + 1);
+			player.Units[4].Position = new Vector2(centerX, centerY - 1);
 
 			this.Players.Add(playerId, player);
 
@@ -142,9 +164,9 @@ namespace IsometricGame.Logic
 									{
 										var fullIdTarget = GetFullUnitId(p.Key, u.Key);
 										var deltaTarget = UnitsTurnDelta[fullIdTarget];
-										deltaTarget.HpChanges = (delta.HpChanges ?? 0) + unit.AttackPower;
+										deltaTarget.HpChanges = (delta.HpChanges ?? 0) + unit.AttackDamage;
 										deltaTarget.AttackFrom = unit.Position - u.Value.Position;
-										u.Value.Hp -= unit.AttackPower;
+										u.Value.Hp -= unit.AttackDamage;
 									}
 								}
 							}
@@ -171,10 +193,10 @@ namespace IsometricGame.Logic
 					UnitId = a.Key,
 					Position = a.Value.Position,
 					MoveDistance = a.Value.MoveDistance,
-					SightRange = a.Value.SightRange,
+					SightRange = a.Value.VisionRange,
 					AttackDistance = a.Value.AttackDistance,
 					AttackRadius = a.Value.AttackRadius,
-					AttackPower = a.Value.AttackPower,
+					AttackPower = a.Value.AttackDamage,
 					Hp = a.Value.Hp,
 				}).ToList(),
 				VisibleMap = GetVisibleMap(forPlayer),
@@ -255,7 +277,7 @@ namespace IsometricGame.Logic
 		{
 			foreach(var unit in player.Units.Values)
 			{
-				if ((Math.Abs(x - unit.Position.x) + Math.Abs(y - unit.Position.y)) <= unit.SightRange){
+				if ((Math.Abs(x - unit.Position.x) + Math.Abs(y - unit.Position.y)) <= unit.VisionRange){
 					return true;
 				}
 			}

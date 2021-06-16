@@ -1,7 +1,7 @@
 [gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://UnitShadow.cs" type="Script" id=1]
-[ext_resource path="res://Units/Crusader.tres" type="SpriteFrames" id=2]
+[ext_resource path="res://Units/Amazon.tres" type="SpriteFrames" id=2]
 [ext_resource path="res://assets/Arrow.png" type="Texture" id=43]
 [ext_resource path="res://Grayscale.tres" type="Material" id=63]
 
@@ -42,10 +42,12 @@ use_parent_material = true
 position = Vector2( 0, -184.432 )
 scale = Vector2( 2, 2 )
 frames = SubResource( 5 )
+frame = 2
 playing = true
 
 [node name="Shadow" type="AnimatedSprite" parent="."]
 use_parent_material = true
-position = Vector2( 0, -50 )
+position = Vector2( 0, -60 )
+scale = Vector2( 2, 2 )
 frames = ExtResource( 2 )
 animation = "moveDown"
