@@ -188,7 +188,7 @@ namespace IsometricGame.Logic
 			return new TransferInitialData
 			{
 				YourPlayerId = forPlayer,
-				YourUnits = Players[forPlayer].Units.Select(a => new TransferInitialUnit
+				YourUnits = Players[forPlayer].Units.Select(a => new TransferInitialData.YourUnitsData
 				{
 					UnitId = a.Key,
 					Position = a.Value.Position,
@@ -198,13 +198,18 @@ namespace IsometricGame.Logic
 					AttackRadius = a.Value.AttackRadius,
 					AttackPower = a.Value.AttackDamage,
 					Hp = a.Value.Hp,
+					UnitType = a.Value.UnitType
 				}).ToList(),
 				VisibleMap = GetVisibleMap(forPlayer),
-				OtherPlayers = Players.Where(a => a.Key != forPlayer).Select(a => new TransferInitialPlayer
+				OtherPlayers = Players.Where(a => a.Key != forPlayer).Select(a => new TransferInitialData.OtherPlayerData
 				{
 					PlayerId = a.Key,
 					PlayerName = a.Value.PlayerName,
-					Units = a.Value.Units.Keys.ToList(),
+					Units = a.Value.Units.Select(b => new TransferInitialData.OtherUnitsData
+					{
+						Id = b.Key,
+						UnitType = b.Value.UnitType
+					}).ToList(),
 				}).ToList()
 			};
 		}
@@ -218,7 +223,7 @@ namespace IsometricGame.Logic
 				{
 					var fullId = GetFullUnitId(forPlayer, a.Key);
 					var delta = UnitsTurnDelta[fullId];
-					return new TransferTurnUnit
+					return new TransferTurnData.YourUnitsData
 					{
 						Position = delta.MovedTo,
 						AttackDirection = delta.AttackDirection,
@@ -228,14 +233,14 @@ namespace IsometricGame.Logic
 					};
 				}),
 				VisibleMap = this.GetVisibleMap(forPlayer),
-				OtherPlayers = this.Players.Where(a => a.Key != forPlayer).ToDictionary(a => a.Key, a => new TransferTurnPlayer
+				OtherPlayers = this.Players.Where(a => a.Key != forPlayer).ToDictionary(a => a.Key, a => new TransferTurnData.OtherPlayersData
 				{
 					Units = a.Value.Units.Where(b => IsVisible(player, (int)b.Value.Position.x, (int)b.Value.Position.y)).ToDictionary(b => b.Key, b =>
 					{
 						var fullId = GetFullUnitId(a.Key, b.Key);
 						var delta = UnitsTurnDelta[fullId];
 
-						return new TransferTurnPlayerUnit
+						return new TransferTurnData.OtherUnitsData
 						{
 							Position = delta.MovedTo,
 							AttackDirection = delta.AttackDirection,

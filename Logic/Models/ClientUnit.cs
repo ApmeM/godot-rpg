@@ -1,4 +1,6 @@
-﻿namespace IsometricGame.Logic.Models
+﻿using IsometricGame.Logic.Enums;
+
+namespace IsometricGame.Logic.Models
 {
     public class ClientUnit
     {
@@ -8,5 +10,6 @@
         public int? SightRange;
         public int? AttackDistance;
         public int? AttackRadius;
+        public UnitType UnitType;
     }
 }

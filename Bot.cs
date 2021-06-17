@@ -18,12 +18,12 @@ public class Bot : Node
 		this.server.Connect(new TransferConnectData
 		{
 			PlayerName = "Bot",
-			Units = new List<TransferConnectUnitData>
+			Units = new List<TransferConnectData.UnitData>
 			{
-				new TransferConnectUnitData{ UnitType = UnitType.Amazon, Skills = new List<Skill>{Skill.VisionRange}},
-				new TransferConnectUnitData{ UnitType = UnitType.Goatman, Skills = new List<Skill>{Skill.VisionRange}},
-				new TransferConnectUnitData{ UnitType = UnitType.Amazon, Skills = new List<Skill>{Skill.VisionRange}},
-				new TransferConnectUnitData{ UnitType = UnitType.Goatman, Skills = new List<Skill>{Skill.VisionRange}},
+				new TransferConnectData.UnitData{ UnitType = UnitType.Amazon, Skills = new List<Skill>{Skill.VisionRange}},
+				new TransferConnectData.UnitData{ UnitType = UnitType.Goatman, Skills = new List<Skill>{Skill.VisionRange}},
+				new TransferConnectData.UnitData{ UnitType = UnitType.Amazon, Skills = new List<Skill>{Skill.VisionRange}},
+				new TransferConnectData.UnitData{ UnitType = UnitType.Goatman, Skills = new List<Skill>{Skill.VisionRange}},
 			}
 		}, Initialize, TurnDone);
 	}
@@ -49,10 +49,10 @@ public class Bot : Node
 		}
 
 		this.waitForMove = false;
-		var otherMoves = new Dictionary<int, TransferTurnDoneUnit>();
+		var otherMoves = new Dictionary<int, TransferTurnDoneData.UnitActionData>();
 		foreach (var u in this.initialData.YourUnits)
 		{
-			otherMoves.Add(u.UnitId, new TransferTurnDoneUnit
+			otherMoves.Add(u.UnitId, new TransferTurnDoneData.UnitActionData
 			{
 				Move = u.Position + Fate.GlobalFate.Choose(Vector2.Up, Vector2.Down, Vector2.Left, Vector2.Right),
 				Attack = Fate.GlobalFate.Choose(Vector2.Up, Vector2.Down, Vector2.Left, Vector2.Right)

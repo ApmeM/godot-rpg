@@ -23,12 +23,12 @@ public class Dungeon : Node2D
 		this.server.Connect(new TransferConnectData
 		{
 			PlayerName = "Player",
-			Units = new List<TransferConnectUnitData>
+			Units = new List<TransferConnectData.UnitData>
 			{
-				new TransferConnectUnitData{ UnitType = UnitType.Amazon, Skills = new List<Skill>{Skill.VisionRange}},
-				new TransferConnectUnitData{ UnitType = UnitType.Goatman, Skills = new List<Skill>{Skill.VisionRange}},
-				new TransferConnectUnitData{ UnitType = UnitType.Amazon, Skills = new List<Skill>{Skill.VisionRange}},
-				new TransferConnectUnitData{ UnitType = UnitType.Goatman, Skills = new List<Skill>{Skill.VisionRange}},
+				new TransferConnectData.UnitData{ UnitType = UnitType.Amazon, Skills = new List<Skill>{Skill.VisionRange}},
+				new TransferConnectData.UnitData{ UnitType = UnitType.Goatman, Skills = new List<Skill>{Skill.VisionRange}},
+				new TransferConnectData.UnitData{ UnitType = UnitType.Amazon, Skills = new List<Skill>{Skill.VisionRange}},
+				new TransferConnectData.UnitData{ UnitType = UnitType.Goatman, Skills = new List<Skill>{Skill.VisionRange}},
 			}
 		}, Initialize, TurnDone);
 	}
@@ -47,11 +47,11 @@ public class Dungeon : Node2D
 		foreach (var unit in initialData.YourUnits)
 		{
 			var unitSceneInstance = (Unit)unitScene.Instance();
-			maze.AddChild(unitSceneInstance);
 			unitSceneInstance.ClientUnit = new ClientUnit
 			{
 				PlayerId = this.PlayerId,
 				UnitId = unit.UnitId,
+				UnitType = unit.UnitType,
 				MoveDistance = unit.MoveDistance,
 				SightRange = unit.SightRange,
 				AttackDistance = unit.AttackDistance,
@@ -59,8 +59,8 @@ public class Dungeon : Node2D
 			};
 			unitSceneInstance.Position = maze.MapToWorld(unit.Position);
 			unitSceneInstance.Position += Vector2.Down * maze.CellSize.y / 2;
-			unitSceneInstance.IsSelected = false;
 			unitSceneInstance.AddToGroup(Groups.MyUnits);
+			maze.AddChild(unitSceneInstance);
 		}
 
 		foreach (var player in initialData.OtherPlayers)
@@ -68,14 +68,14 @@ public class Dungeon : Node2D
 			foreach (var unit in player.Units)
 			{
 				var unitSceneInstance = (Unit)unitScene.Instance();
-				maze.AddChild(unitSceneInstance);
 				unitSceneInstance.ClientUnit = new ClientUnit
 				{
 					PlayerId = player.PlayerId,
-					UnitId = unit,
+					UnitId = unit.Id,
+					UnitType = unit.UnitType
 				};
-				unitSceneInstance.Visible = false;
 				unitSceneInstance.AddToGroup(Groups.OtherUnits);
+				maze.AddChild(unitSceneInstance);
 			}
 		}
 
@@ -176,7 +176,7 @@ public class Dungeon : Node2D
 
 		server.PlayerMove(this.PlayerId, new TransferTurnDoneData
 		{
-			UnitActions = myUnits.ToDictionary(a => a.ClientUnit.UnitId, a => new TransferTurnDoneUnit
+			UnitActions = myUnits.ToDictionary(a => a.ClientUnit.UnitId, a => new TransferTurnDoneData.UnitActionData
 			{
 				Move = a.NewTarget,
 				Attack = a.AttackDirection

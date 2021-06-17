@@ -32,6 +32,10 @@ public class Unit : Node2D
 		this.shadow.Position = Position;
 		this.shadow.Visible = false;
 		this.GetParent<Maze>().AddChild(this.shadow);
+
+		this.GetNode<AnimatedSprite>("AnimatedSprite").Frames = ResourceLoader.Load<SpriteFrames>($"Units/{ClientUnit.UnitType}.tres");
+		this.shadow.GetNode<AnimatedSprite>("Shadow").Frames = ResourceLoader.Load<SpriteFrames>($"Units/{ClientUnit.UnitType}.tres");
+
 	}
 
 	public override void _Process(float delta)
