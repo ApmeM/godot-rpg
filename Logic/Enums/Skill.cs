@@ -3,6 +3,7 @@
     public enum Skill
     {
         VisionRange,
-        MoveRange
+        MoveRange,
+        AttackRadius
     };
 }

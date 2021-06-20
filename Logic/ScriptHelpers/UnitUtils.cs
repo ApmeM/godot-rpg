@@ -60,6 +60,7 @@ namespace IsometricGame.Logic.ScriptHelpers
         {
             { Skill.VisionRange, new VisionRangeSkill() },
             { Skill.MoveRange, new MoveRangeSkill() },
+            { Skill.AttackRadius, new AttackRadiusSkill() },
         };
 
         public static void ApplySkill(ServerPlayer player, ServerUnit unit, Skill skill)

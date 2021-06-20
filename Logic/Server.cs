@@ -197,7 +197,7 @@ namespace IsometricGame.Logic
 					AttackDistance = a.Value.AttackDistance,
 					AttackRadius = a.Value.AttackRadius,
 					AttackPower = a.Value.AttackDamage,
-					Hp = a.Value.Hp,
+					MaxHp = a.Value.MaxHp,
 					UnitType = a.Value.UnitType
 				}).ToList(),
 				VisibleMap = GetVisibleMap(forPlayer),
@@ -208,7 +208,8 @@ namespace IsometricGame.Logic
 					Units = a.Value.Units.Select(b => new TransferInitialData.OtherUnitsData
 					{
 						Id = b.Key,
-						UnitType = b.Value.UnitType
+						UnitType = b.Value.UnitType,
+						MaxHp = b.Value.MaxHp
 					}).ToList(),
 				}).ToList()
 			};
@@ -227,9 +228,8 @@ namespace IsometricGame.Logic
 					{
 						Position = delta.MovedTo,
 						AttackDirection = delta.AttackDirection,
-						HpReduced = delta.HpChanges,
+						Hp = a.Value.Hp,
 						AttackFrom = delta.AttackFrom,
-						IsDead = a.Value.Hp <= 0
 					};
 				}),
 				VisibleMap = this.GetVisibleMap(forPlayer),
@@ -244,9 +244,8 @@ namespace IsometricGame.Logic
 						{
 							Position = delta.MovedTo,
 							AttackDirection = delta.AttackDirection,
-							HpReduced = delta.HpChanges,
+							Hp = b.Value.Hp,
 							AttackFrom = delta.AttackFrom,
-							IsDead = b.Value.Hp <= 0
 						};
 					})
 				})

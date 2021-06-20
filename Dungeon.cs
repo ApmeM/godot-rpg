@@ -25,10 +25,10 @@ public class Dungeon : Node2D
 			PlayerName = "Player",
 			Units = new List<TransferConnectData.UnitData>
 			{
-				new TransferConnectData.UnitData{ UnitType = UnitType.Amazon, Skills = new List<Skill>{Skill.VisionRange}},
-				new TransferConnectData.UnitData{ UnitType = UnitType.Goatman, Skills = new List<Skill>{Skill.VisionRange}},
-				new TransferConnectData.UnitData{ UnitType = UnitType.Amazon, Skills = new List<Skill>{Skill.VisionRange}},
-				new TransferConnectData.UnitData{ UnitType = UnitType.Goatman, Skills = new List<Skill>{Skill.VisionRange}},
+				new TransferConnectData.UnitData{ UnitType = UnitType.Amazon, Skills = new List<Skill>{Skill.VisionRange, Skill.AttackRadius}},
+				new TransferConnectData.UnitData{ UnitType = UnitType.Goatman, Skills = new List<Skill>{Skill.VisionRange, Skill.AttackRadius}},
+				new TransferConnectData.UnitData{ UnitType = UnitType.Amazon, Skills = new List<Skill>{Skill.VisionRange, Skill.AttackRadius}},
+				new TransferConnectData.UnitData{ UnitType = UnitType.Goatman, Skills = new List<Skill>{Skill.VisionRange, Skill.AttackRadius}},
 			}
 		}, Initialize, TurnDone);
 	}
@@ -55,7 +55,9 @@ public class Dungeon : Node2D
 				MoveDistance = unit.MoveDistance,
 				SightRange = unit.SightRange,
 				AttackDistance = unit.AttackDistance,
-				AttackRadius = unit.AttackRadius
+				AttackRadius = unit.AttackRadius,
+				MaxHp = unit.MaxHp,
+				Hp = unit.MaxHp
 			};
 			unitSceneInstance.Position = maze.MapToWorld(unit.Position);
 			unitSceneInstance.Position += Vector2.Down * maze.CellSize.y / 2;
@@ -72,9 +74,12 @@ public class Dungeon : Node2D
 				{
 					PlayerId = player.PlayerId,
 					UnitId = unit.Id,
-					UnitType = unit.UnitType
+					UnitType = unit.UnitType,
+					MaxHp = unit.MaxHp,
+					Hp = unit.MaxHp
 				};
 				unitSceneInstance.AddToGroup(Groups.OtherUnits);
+				unitSceneInstance.Visible = false;
 				maze.AddChild(unitSceneInstance);
 			}
 		}
@@ -190,33 +195,35 @@ public class Dungeon : Node2D
 		maze.NewVisibleMap(turnData.VisibleMap);
 		var myUnits = this.GetTree().GetNodesInGroup(Groups.MyUnits).Cast<Unit>().ToList();
 		var otherUnits = this.GetTree().GetNodesInGroup(Groups.OtherUnits).Cast<Unit>().ToList();
-		var signals = new List<SignalAwaiter>();
-
-		foreach (var unit in myUnits)
+		var unitsToHide = otherUnits.Where(a => !turnData.OtherPlayers[a.ClientUnit.PlayerId].Units.ContainsKey(a.ClientUnit.UnitId));
+		var visibleUnits = otherUnits.Where(a => turnData.OtherPlayers[a.ClientUnit.PlayerId].Units.ContainsKey(a.ClientUnit.UnitId));
+		
+		foreach (var unitToHide in unitsToHide)
 		{
-			unit.MoveUnitTo(turnData.YourUnits[unit.ClientUnit.UnitId].Position);
-			signals.Add(ToSignal(unit, nameof(Unit.MoveDone)));
+			unitToHide.Visible = false;
 		}
 
-		foreach (var unit in otherUnits)
+		foreach (var unitToShow in visibleUnits)
+		{
+			if (!unitToShow.Visible)
+			{
+				var player = turnData.OtherPlayers[unitToShow.ClientUnit.PlayerId];
+				unitToShow.Visible = true;
+				unitToShow.Position = maze.MapToWorld(player.Units[unitToShow.ClientUnit.UnitId].Position);
+			}
+		}
+
+		var signals = new List<SignalAwaiter>();
+		
+		foreach (var unit in myUnits)
+		{
+			signals.Add(unit.MoveUnitTo(turnData.YourUnits[unit.ClientUnit.UnitId].Position));
+		}
+
+		foreach (var unit in visibleUnits)
 		{
 			var player = turnData.OtherPlayers[unit.ClientUnit.PlayerId];
-			if (!player.Units.ContainsKey(unit.ClientUnit.UnitId))
-			{
-				unit.Visible = false;
-				continue;
-			}
-
-			if (unit.Visible)
-			{
-				unit.MoveUnitTo(player.Units[unit.ClientUnit.UnitId].Position);
-				signals.Add(ToSignal(unit, nameof(Unit.MoveDone)));
-			}
-			else
-			{
-				unit.Position = maze.MapToWorld(player.Units[unit.ClientUnit.UnitId].Position);
-				unit.Visible = true;
-			}
+			signals.Add(unit.MoveUnitTo(player.Units[unit.ClientUnit.UnitId].Position));
 		}
 
 		foreach(var signal in signals)
@@ -227,33 +234,13 @@ public class Dungeon : Node2D
 
 		foreach (var unit in myUnits)
 		{
-			var attackDirection = turnData.YourUnits[unit.ClientUnit.UnitId].AttackDirection;
-			if (!attackDirection.HasValue)
-			{
-				continue;
-			}
-			unit.AnimateUnit("attack", attackDirection.Value);
-			signals.Add(ToSignal(unit, nameof(Unit.UnitAnimationDone)));
+			signals.Add(unit.Attack(turnData.YourUnits[unit.ClientUnit.UnitId].AttackDirection));
 		}
 
-		foreach (var unit in otherUnits)
+		foreach (var unit in visibleUnits)
 		{
 			var player = turnData.OtherPlayers[unit.ClientUnit.PlayerId];
-			if (!player.Units.ContainsKey(unit.ClientUnit.UnitId))
-			{
-				continue;
-			}
-
-			if (unit.Visible)
-			{
-				var attackDirection = player.Units[unit.ClientUnit.UnitId].AttackDirection;
-				if (!attackDirection.HasValue)
-				{
-					continue;
-				}
-				unit.AnimateUnit("attack", attackDirection.Value);
-				signals.Add(ToSignal(unit, nameof(Unit.UnitAnimationDone)));
-			}
+			signals.Add(unit.Attack(player.Units[unit.ClientUnit.UnitId].AttackDirection));
 		}
 
 		foreach (var signal in signals)
@@ -264,33 +251,13 @@ public class Dungeon : Node2D
 
 		foreach (var unit in myUnits)
 		{
-			var hpReduced = turnData.YourUnits[unit.ClientUnit.UnitId].HpReduced;
-			if (!hpReduced.HasValue)
-			{
-				continue;
-			}
-			unit.AnimateUnit("hit", turnData.YourUnits[unit.ClientUnit.UnitId].AttackFrom.Value);
-			signals.Add(ToSignal(unit, nameof(Unit.UnitAnimationDone)));
+			signals.Add(unit.UnitHit(turnData.YourUnits[unit.ClientUnit.UnitId].AttackFrom, turnData.YourUnits[unit.ClientUnit.UnitId].Hp));
 		}
 
-		foreach (var unit in otherUnits)
+		foreach (var unit in visibleUnits)
 		{
 			var player = turnData.OtherPlayers[unit.ClientUnit.PlayerId];
-			if (!player.Units.ContainsKey(unit.ClientUnit.UnitId))
-			{
-				continue;
-			}
-
-			if (unit.Visible)
-			{
-				var hpReduced = player.Units[unit.ClientUnit.UnitId].HpReduced;
-				if (!hpReduced.HasValue)
-				{
-					continue;
-				}
-				unit.AnimateUnit("hit", player.Units[unit.ClientUnit.UnitId].AttackFrom.Value);
-				signals.Add(ToSignal(unit, nameof(Unit.UnitAnimationDone)));
-			}
+			signals.Add(unit.UnitHit(player.Units[unit.ClientUnit.UnitId].AttackFrom, player.Units[unit.ClientUnit.UnitId].Hp));
 		}
 
 		foreach (var signal in signals)
@@ -298,45 +265,7 @@ public class Dungeon : Node2D
 			await signal;
 		}
 		signals.Clear();
-		foreach (var unit in myUnits)
-		{
-			var attackFrom = turnData.YourUnits[unit.ClientUnit.UnitId].AttackFrom;
-			if (!attackFrom.HasValue || !turnData.YourUnits[unit.ClientUnit.UnitId].IsDead)
-			{
-				continue;
-			}
-			unit.AnimateUnit("dead", turnData.YourUnits[unit.ClientUnit.UnitId].AttackFrom.Value);
-			signals.Add(ToSignal(unit, nameof(Unit.UnitAnimationDone)));
-			unit.IsDead = true;
-		}
-
-		foreach (var unit in otherUnits)
-		{
-			var player = turnData.OtherPlayers[unit.ClientUnit.PlayerId];
-			if (!player.Units.ContainsKey(unit.ClientUnit.UnitId))
-			{
-				continue;
-			}
-
-			if (unit.Visible)
-			{
-				var attackFrom = player.Units[unit.ClientUnit.UnitId].AttackFrom;
-				if (!attackFrom.HasValue || !player.Units[unit.ClientUnit.UnitId].IsDead)
-				{
-					continue;
-				}
-				unit.AnimateUnit("dead", player.Units[unit.ClientUnit.UnitId].AttackFrom.Value);
-				signals.Add(ToSignal(unit, nameof(Unit.UnitAnimationDone)));
-				unit.IsDead = true;
-			}
-		}
-
-		foreach (var signal in signals)
-		{
-			await signal;
-		}
-		signals.Clear();
-
+		
 		GetNode<Button>("CanvasLayer/NextTurnButton").Visible = true;
 	}
 }

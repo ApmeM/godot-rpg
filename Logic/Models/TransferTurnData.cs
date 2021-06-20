@@ -14,9 +14,8 @@ namespace IsometricGame.Logic.Models
         {
             public Vector2 Position;
             public Vector2? AttackDirection;
-            public int? HpReduced;
+            public int Hp;
             public Vector2? AttackFrom;
-            public bool IsDead;
         }
 
         public class OtherPlayersData
@@ -27,9 +26,8 @@ namespace IsometricGame.Logic.Models
         {
             public Vector2 Position;
             public Vector2? AttackDirection;
-            public int? HpReduced;
+            public int Hp;
             public Vector2? AttackFrom;
-            public bool IsDead;
         }
     }
 }

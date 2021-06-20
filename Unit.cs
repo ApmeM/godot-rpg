@@ -16,7 +16,7 @@ public class Unit : Node2D
 
 	public Vector2? NewTarget => shadow.NewPosition;
 	public Vector2? AttackDirection => shadow.AttackDirection;
-	public bool IsDead;
+	public bool IsDead { get; private set; }
 	private UnitShadow shadow;
 
 	[Signal]
@@ -35,7 +35,8 @@ public class Unit : Node2D
 
 		this.GetNode<AnimatedSprite>("AnimatedSprite").Frames = ResourceLoader.Load<SpriteFrames>($"Units/{ClientUnit.UnitType}.tres");
 		this.shadow.GetNode<AnimatedSprite>("Shadow").Frames = ResourceLoader.Load<SpriteFrames>($"Units/{ClientUnit.UnitType}.tres");
-
+		this.GetNode<TextureProgress>("TextureProgress").MaxValue = ClientUnit.MaxHp;
+		this.GetNode<TextureProgress>("TextureProgress").Value = ClientUnit.Hp;
 	}
 
 	public override void _Process(float delta)
@@ -72,17 +73,72 @@ public class Unit : Node2D
 		EmitSignal(nameof(UnitAnimationDone));
 	}
 
-	public void AnimateUnit(string animationPrefix, Vector2 animationDirection)
+	private void AnimateUnit(string animationPrefix, Vector2 animationDirection)
 	{
 		var animation = GetNode<AnimatedSprite>("AnimatedSprite");
 		animation.Connect("animation_finished", this, nameof(UnitAnimationFinished));
 		animation.Play($"{animationPrefix}{IsometricMove.Animate(animationDirection)}");
 	}
 
-	public void MoveUnitTo(Vector2 newTarget)
+	public SignalAwaiter UnitHit(Vector2? attackFrom, int newHp)
+	{
+		var oldHp = this.ClientUnit.Hp;
+		
+		this.GetNode<TextureProgress>("TextureProgress").Value = newHp;
+		if (this.ClientUnit.MaxHp * 0.75 < newHp)
+		{
+			this.GetNode<TextureProgress>("TextureProgress").TextureProgress_ = ResourceLoader.Load<Texture>("assets/Hp/Green.png");
+		}
+		else if (this.ClientUnit.MaxHp * 0.33 < newHp)
+		{
+			this.GetNode<TextureProgress>("TextureProgress").TextureProgress_ = ResourceLoader.Load<Texture>("assets/Hp/Yellow.png");
+		}
+		else
+		{
+			this.GetNode<TextureProgress>("TextureProgress").TextureProgress_ = ResourceLoader.Load<Texture>("assets/Hp/Red.png");
+		}
+		this.ClientUnit.Hp = newHp;
+		if (newHp <= 0 && !IsDead)
+		{
+			this.IsDead = true;
+			this.AnimateUnit("dead", attackFrom ?? Vector2.Up);
+			return ToSignal(this, nameof(UnitAnimationDone));
+		}
+		else if (newHp > 0 && IsDead)
+		{
+			this.IsDead = false;
+			return ToSignal(GetTree().CreateTimer(0), "timeout");
+		}
+		else if (attackFrom.HasValue)
+		{
+			this.AnimateUnit("hit", attackFrom.Value);
+			return ToSignal(this, nameof(UnitAnimationDone));
+		}
+		else if (oldHp != newHp)
+		{
+			this.AnimateUnit("hit", Vector2.Up);
+			return ToSignal(this, nameof(UnitAnimationDone));
+		}
+		
+		return ToSignal(GetTree().CreateTimer(0), "timeout");
+	}
+
+	public SignalAwaiter Attack(Vector2? attackDirection)
+	{
+		if (!attackDirection.HasValue)
+		{
+			return ToSignal(GetTree().CreateTimer(0), "timeout");
+		}
+
+		this.AnimateUnit("attack", attackDirection.Value);
+		return ToSignal(this, nameof(UnitAnimationDone));
+	}
+
+	public SignalAwaiter MoveUnitTo(Vector2 newTarget)
 	{
 		shadow.HideShadow();
 		IsometricMove.MoveBy(this.path, Position, newTarget, GetParent<Maze>());
+		return ToSignal(this, nameof(MoveDone));
 	}
 
 	public void MoveShadowTo(Vector2 newTarget)

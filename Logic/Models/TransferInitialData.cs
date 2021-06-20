@@ -22,6 +22,7 @@ namespace IsometricGame.Logic.Models
         {
             public int Id;
             public UnitType UnitType;
+            public int MaxHp;
         }
 
         public class YourUnitsData
@@ -33,8 +34,8 @@ namespace IsometricGame.Logic.Models
             public int AttackDistance;
             public int AttackRadius;
             public int AttackPower;
-            public int Hp;
             public UnitType UnitType;
+            public int MaxHp;
         }
     }
 }
