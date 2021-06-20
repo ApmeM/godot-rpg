@@ -53,10 +53,11 @@ visible = false
 position = Vector2( 0, -188.432 )
 scale = Vector2( 2, 2 )
 frames = SubResource( 5 )
+frame = 1
 playing = true
 
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
-position = Vector2( 0, -61 )
 scale = Vector2( 2, 2 )
 frames = ExtResource( 2 )
-animation = "moveUp"
+animation = "moveRight"
+offset = Vector2( -0.076355, -29.8558 )

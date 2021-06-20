@@ -217,13 +217,13 @@ public class Dungeon : Node2D
 		
 		foreach (var unit in myUnits)
 		{
-			signals.Add(unit.MoveUnitTo(turnData.YourUnits[unit.ClientUnit.UnitId].Position));
+			await unit.MoveUnitTo(turnData.YourUnits[unit.ClientUnit.UnitId].Position);
 		}
 
 		foreach (var unit in visibleUnits)
 		{
 			var player = turnData.OtherPlayers[unit.ClientUnit.PlayerId];
-			signals.Add(unit.MoveUnitTo(player.Units[unit.ClientUnit.UnitId].Position));
+			await unit.MoveUnitTo(player.Units[unit.ClientUnit.UnitId].Position);
 		}
 
 		foreach(var signal in signals)
