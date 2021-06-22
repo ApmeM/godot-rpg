@@ -2,8 +2,33 @@
 {
     public enum Skill
     {
-        VisionRange,
-        MoveRange,
-        AttackRadius
+        Archery,
+        Ballistics,
+        Diplomacy,
+        EagleEye,
+        Estates,
+        Leadership,
+        Logistics,
+        Luck,
+        Mysticism,
+        Navigation,
+        Necromancy,
+        Pathfinding,
+        Scouting,
+        Wisdom,
+        FireMagic,
+        AirMagic,
+        WaterMagic,
+        EarthMagic,
+        Scholar,
+        Tactics,
+        Artillery,
+        Learning,
+        Offence,
+        Armourer,
+        Intelligence,
+        Sorcery,
+        Resistance,
+        FirstAid,
     };
 }

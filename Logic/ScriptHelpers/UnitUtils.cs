@@ -17,7 +17,7 @@ namespace IsometricGame.Logic.ScriptHelpers
                     MaxHp = 20,
                     Hp = 20,
                     AttackDamage = 3,
-                    Usables = new List<Usable>{ Usable.AmazonAOEAttack }
+                    Usables = new HashSet<Usable>{ Usable.AmazonAOEAttack }
                 }
             },
             {
@@ -25,7 +25,7 @@ namespace IsometricGame.Logic.ScriptHelpers
                 {
                     VisionRange = 7,
                     AttackDistance = 3,
-                    Usables = new List<Usable>{ Usable.AmazonAOEAttack, Usable.Heal }
+                    Usables = new HashSet<Usable>{ Usable.AmazonAOEAttack }
                 }
             },
         };
@@ -51,7 +51,7 @@ namespace IsometricGame.Logic.ScriptHelpers
                 AttackDistance = template.AttackDistance,
                 AttackRadius = template.AttackRadius,
                 AttackDamage = template.AttackDamage,
-                Usables = template.Usables.ToList()
+                Usables = new HashSet<Usable>(template.Usables)
             };
             return unit;
         }
@@ -63,20 +63,26 @@ namespace IsometricGame.Logic.ScriptHelpers
 
         private static Dictionary<Skill, ISkill> SupportedSkills = new Dictionary<Skill, ISkill>
         {
-            { Skill.VisionRange, new VisionRangeSkill() },
-            { Skill.MoveRange, new MoveRangeSkill() },
-            { Skill.AttackRadius, new AttackRadiusSkill() },
+            { Skill.EagleEye, new EagleEyeSkill() },
+            { Skill.Logistics, new LogisticsSkill() },
+            { Skill.Ballistics, new BallisticsSkill() },
+            { Skill.FirstAid, new FirstAidSkill() },
         };
 
         public static void ApplySkill(ServerPlayer player, ServerUnit unit, Skill skill)
         {
+            unit.Skills.Add(skill);
+            if (!SupportedSkills. ContainsKey(skill))
+            {
+                return;
+            }
             SupportedSkills[skill].Apply(player, unit);
         }
 
         private static Dictionary<Usable, IUsable> SupportedUsables = new Dictionary<Usable, IUsable>
         {
             { Usable.AmazonAOEAttack, new AmazonAOEAttackUsable() },
-             {Usable.Heal, new HealUsable()},
+            { Usable.Heal, new HealUsable() },
         };
 
         public static IUsable FindUsable(Usable usable)

@@ -15,6 +15,7 @@ public class UnitActions : Control
 		{
 			foreach(var b in buttons)
 			{
+				b.Disconnect("pressed", this, nameof(AttackButtonPressed));
 				this.RemoveChild(b);
 			}
 			buttons.Clear();

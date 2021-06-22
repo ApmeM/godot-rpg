@@ -2,7 +2,7 @@
 
 namespace IsometricGame.Logic.ScriptHelpers.Skills
 {
-    public class MoveRangeSkill : ISkill
+    public class LogisticsSkill : ISkill
     {
         public void Apply(ServerPlayer player, ServerUnit unit)
         {
