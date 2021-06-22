@@ -25,7 +25,7 @@ namespace IsometricGame.Logic.ScriptHelpers
                 {
                     VisionRange = 7,
                     AttackDistance = 3,
-                    Usables = new List<Usable>{ Usable.AmazonAOEAttack }
+                    Usables = new List<Usable>{ Usable.AmazonAOEAttack, Usable.Heal }
                 }
             },
         };
@@ -76,6 +76,7 @@ namespace IsometricGame.Logic.ScriptHelpers
         private static Dictionary<Usable, IUsable> SupportedUsables = new Dictionary<Usable, IUsable>
         {
             { Usable.AmazonAOEAttack, new AmazonAOEAttackUsable() },
+             {Usable.Heal, new HealUsable()},
         };
 
         public static IUsable FindUsable(Usable usable)

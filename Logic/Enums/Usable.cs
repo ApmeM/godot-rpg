@@ -3,6 +3,7 @@
     public enum Usable
     {
         None,
-        AmazonAOEAttack
+        AmazonAOEAttack, 
+        Heal
     };
 }
