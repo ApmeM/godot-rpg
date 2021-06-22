@@ -1,0 +1,48 @@
+name: Build
+
+on:
+  push:
+    paths-ignore:
+      - '**.md'
+    branches:
+      - 'main'
+
+jobs:
+  export_game:
+    runs-on: ubuntu-latest
+    name: Export Game Job
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v2.3.1
+      with:
+        fetch-depth: 0
+
+    - name: Setup nuget
+      uses: nuget/setup-nuget@v1
+      with:
+        nuget-version: 'latest'
+
+    - name: Restore packages with nuget
+      run: |
+        nuget sources add -Name github -Source https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json -UserName ${{ github.repository_owner }} -Password ${{secrets.GITHUB_TOKEN}}
+        nuget restore ./src/Godot.sln
+
+    - name: Export game
+      uses: firebelley/godot-export@v2.6.1
+      with:
+        godot_executable_download_url: https://downloads.tuxfamily.org/godotengine/3.2.3/mono/Godot_v3.2.3-stable_mono_linux_headless_64.zip
+        godot_export_templates_download_url: https://downloads.tuxfamily.org/godotengine/3.2.3/mono/Godot_v3.2.3-stable_mono_export_templates.tpz
+        relative_project_path: ./
+        relative_export_path: ./build/
+        create_release: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Deploy
+      uses: JamesIves/github-pages-deploy-action@4.1.1
+      with:
+        branch: gh-pages
+        folder: ./build/HTML5
+        git-config-name: Autodeploy
+        git-config-email: autodeploy@noreply.github.com
