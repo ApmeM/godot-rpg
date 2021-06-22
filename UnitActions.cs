@@ -26,8 +26,9 @@ public class UnitActions : Control
 				buttons.Add(button);
 				this.AddChild(button);
 				button.Connect("pressed", this, nameof(AttackButtonPressed), new Godot.Collections.Array { u });
-				button.RectPosition = Vector2.Right * (i + 1) * 100;
+				button.RectPosition = Vector2.Right * 60 + Vector2.Down * i * 70 - Vector2.Down * 33;
 				button.Text = u.ToString();
+				button.RectSize = new Vector2(button.RectSize.x, 66);
 			}
 		}
 	}
