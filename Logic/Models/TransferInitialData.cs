@@ -36,6 +36,7 @@ namespace IsometricGame.Logic.Models
             public int AttackPower;
             public UnitType UnitType;
             public int MaxHp;
+            public List<Usable> Usables;
         }
     }
 }

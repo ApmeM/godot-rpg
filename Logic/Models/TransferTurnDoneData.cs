@@ -1,4 +1,5 @@
 ﻿using Godot;
+using IsometricGame.Logic.Enums;
 using System.Collections.Generic;
 
 namespace IsometricGame.Logic
@@ -10,7 +11,8 @@ namespace IsometricGame.Logic
         public class UnitActionData
         {
             public Vector2? Move;
-            public Vector2? Attack;
+            public Vector2? UsableTarget;
+            public Usable Usable;
         }
     }
 }

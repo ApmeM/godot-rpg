@@ -1,4 +1,6 @@
 ﻿using IsometricGame.Logic.Enums;
+using IsometricGame.Logic.ScriptHelpers;
+using System.Collections.Generic;
 
 namespace IsometricGame.Logic.Models
 {
@@ -13,5 +15,6 @@ namespace IsometricGame.Logic.Models
         public UnitType UnitType;
         public int MaxHp;
         public int Hp;
+        public Dictionary<Usable, IUsable> Usables;
     }
 }

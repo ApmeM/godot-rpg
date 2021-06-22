@@ -23,14 +23,3 @@ text = "Move"
 __meta__ = {
 "_edit_use_anchors_": false
 }
-
-[node name="AttackButton" type="Button" parent="."]
-margin_left = 63.496
-margin_top = -34.9228
-margin_right = 132.496
-margin_bottom = 31.0772
-custom_fonts/font = SubResource( 1 )
-text = "Attack"
-__meta__ = {
-"_edit_use_anchors_": false
-}

@@ -55,7 +55,8 @@ public class Bot : Node
 			otherMoves.Add(u.UnitId, new TransferTurnDoneData.UnitActionData
 			{
 				Move = u.Position + Fate.GlobalFate.Choose(Vector2.Up, Vector2.Down, Vector2.Left, Vector2.Right),
-				Attack = Fate.GlobalFate.Choose(Vector2.Up, Vector2.Down, Vector2.Left, Vector2.Right)
+				UsableTarget = Fate.GlobalFate.Choose(Vector2.Up, Vector2.Down, Vector2.Left, Vector2.Right),
+				Usable = Usable.AmazonAOEAttack
 			});
 		}
 

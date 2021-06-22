@@ -1,4 +1,5 @@
 ﻿using Godot;
+using IsometricGame.Logic.Enums;
 
 namespace IsometricGame.Logic.Models
 {
@@ -6,9 +7,8 @@ namespace IsometricGame.Logic.Models
     {
         public Vector2 MovedFrom;
         public Vector2 MovedTo;
-        public Vector2? AttackDirection;
-        public int HpBefore;
-        public int? HpChanges;
-        public Vector2? AttackFrom;
+        public Vector2? UsableDirection;
+        public Vector2? UsableFrom;
+        public Usable Usable;
     }
 }

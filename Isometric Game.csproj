@@ -4,7 +4,7 @@
     <RootNamespace>IsometricGame</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="BrainAI" Version="2.2.0" />
+    <PackageReference Include="BrainAI" Version="2.3.0" />
     <PackageReference Include="FateRandom" Version="1.0.0" />
     <PackageReference Include="MazeGenerators" Version="1.2.0" />
   </ItemGroup>

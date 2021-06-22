@@ -15,7 +15,8 @@ public class Unit : Node2D
 	}
 
 	public Vector2? NewTarget => shadow.NewPosition;
-	public Vector2? AttackDirection => shadow.AttackDirection;
+	public Vector2? UsableDirection => shadow.UsableDirection;
+	public IUsable Usable => shadow.Usable;
 	public bool IsDead { get; private set; }
 	private UnitShadow shadow;
 
@@ -152,7 +153,7 @@ public class Unit : Node2D
 		shadow.MoveShadowTo(newTarget);
 	}
 
-	public void AttackShadowTo(Vector2 newTarget)
+	public void UsableShadowTo(Vector2 newTarget, IUsable usable)
 	{
 		if (!shadow.Visible)
 		{
@@ -160,6 +161,6 @@ public class Unit : Node2D
 			shadow.Visible = true;
 		}
 
-		shadow.AttackShadowTo(newTarget);
+		shadow.UsableShadowTo(newTarget, usable);
 	}
 }

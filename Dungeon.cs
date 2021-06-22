@@ -2,6 +2,7 @@ using Godot;
 using IsometricGame.Logic;
 using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.Models;
+using IsometricGame.Logic.ScriptHelpers;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -9,6 +10,7 @@ public class Dungeon : Node2D
 {
 	private int PlayerId;
 	private CurrentAction currentAction = CurrentAction.None;
+	private IUsable currentUsable = null;
 	private Server server;
 
 	public override void _Ready()
@@ -57,7 +59,8 @@ public class Dungeon : Node2D
 				AttackDistance = unit.AttackDistance,
 				AttackRadius = unit.AttackRadius,
 				MaxHp = unit.MaxHp,
-				Hp = unit.MaxHp
+				Hp = unit.MaxHp,
+				Usables = unit.Usables.ToDictionary(a => a, a => UnitUtils.FindUsable(a))
 			};
 			unitSceneInstance.Position = maze.MapToWorld(unit.Position);
 			unitSceneInstance.Position += Vector2.Down * maze.CellSize.y / 2;
@@ -87,9 +90,10 @@ public class Dungeon : Node2D
 		GetNode<Camera2D>("DraggableCamera").Position = maze.MapToWorld(initialData.YourUnits[0].Position) + Vector2.Down * maze.CellSize.y / 2;
 	}
 
-	private void UnitActionSelected(CurrentAction action)
+	private void UnitActionSelected(CurrentAction action, Usable usable)
 	{
 		this.currentAction = action;
+		this.currentUsable = null;
 		GetNode<Control>("UnitActions").Visible = false;
 
 		var maze = GetNode<Maze>("Maze");
@@ -103,9 +107,11 @@ public class Dungeon : Node2D
 					maze.HighliteAvailableMoves(maze.WorldToMap(currentUnit.Position), currentUnit.ClientUnit.MoveDistance);
 					break;
 				}
-			case CurrentAction.Attack:
+			case CurrentAction.UsableSkill:
 				{
-					maze.HighliteAvailableAttacks(currentUnit.NewTarget == null ? maze.WorldToMap(currentUnit.Position) : currentUnit.NewTarget.Value, currentUnit.ClientUnit.AttackDistance, currentUnit.ClientUnit.AttackRadius);
+					this.currentUsable = currentUnit.ClientUnit.Usables[usable];
+					var pos = currentUnit.NewTarget == null ? maze.WorldToMap(currentUnit.Position) : currentUnit.NewTarget.Value;
+					this.currentUsable.HighliteMaze(maze, pos, currentUnit.ClientUnit);
 					break;
 				}
 		}
@@ -117,7 +123,7 @@ public class Dungeon : Node2D
 		var units = this.GetTree().GetNodesInGroup(Groups.MyUnits).Cast<Unit>().ToList();
 
 		var currentUnit = units.FirstOrDefault(a => a.IsSelected);
-		var unitActions = GetNode<Control>("UnitActions");
+		var unitActions = GetNode<UnitActions>("UnitActions");
 
 		switch (this.currentAction)
 		{
@@ -132,6 +138,10 @@ public class Dungeon : Node2D
 					GetNode<UnitDetails>("CanvasLayer/UnitDetails").SelectUnit(clickOnUnit?.ClientUnit);
 					unitActions.Visible = clickOnUnit != null && !clickOnUnit.IsDead;
 					unitActions.RectPosition = this.GetViewport().CanvasTransform.AffineInverse().Xform(GetViewport().GetMousePosition());
+					if (unitActions.Visible)
+					{
+						unitActions.Usables = clickOnUnit.ClientUnit.Usables.Select(a => a.Value.Name).ToList();
+					}
 
 					if (clickOnUnit != null)
 					{
@@ -151,12 +161,12 @@ public class Dungeon : Node2D
 					}
 					break;
 				}
-			case CurrentAction.Attack:
+			case CurrentAction.UsableSkill:
 				{
 					if (moveAvailable)
 					{
 						this.currentAction = CurrentAction.None;
-						currentUnit.AttackShadowTo(cell);
+						currentUnit.UsableShadowTo(cell, currentUsable);
 						unitActions.RectPosition = this.GetViewport().CanvasTransform.AffineInverse().Xform(GetViewport().GetMousePosition());
 						unitActions.Visible = true;
 						maze.RemoveHighliting();
@@ -173,6 +183,7 @@ public class Dungeon : Node2D
 		{
 			unit.IsSelected = false;
 		}
+
 		GetNode<Control>("UnitActions").Visible = false;
 		currentAction = CurrentAction.None;
 		var maze = GetNode<Maze>("Maze");
@@ -184,7 +195,8 @@ public class Dungeon : Node2D
 			UnitActions = myUnits.ToDictionary(a => a.ClientUnit.UnitId, a => new TransferTurnDoneData.UnitActionData
 			{
 				Move = a.NewTarget,
-				Attack = a.AttackDirection
+				UsableTarget = a.UsableDirection,
+				Usable = a.Usable?.Name ?? Usable.None
 			})
 		});
 	}

@@ -1,5 +1,6 @@
 ﻿using Godot;
 using IsometricGame.Logic.Enums;
+using System.Collections.Generic;
 
 namespace IsometricGame.Logic.Models
 {
@@ -12,8 +13,8 @@ namespace IsometricGame.Logic.Models
         public int AttackDistance = 1;
         public int AttackRadius = 1;
         public int AttackDamage = 2;
-        public bool AttackFriendlyFire = false;
         public int MaxHp = 10;
         public int Hp = 10;
+        public List<Usable> Usables;
     }
 }

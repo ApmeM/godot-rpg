@@ -6,7 +6,8 @@ public class UnitShadow : Node2D
 {
 	private const int MOTION_SPEED = 800;
 	private readonly Queue<Vector2> path = new Queue<Vector2>();
-	public Vector2? AttackDirection;
+	public Vector2? UsableDirection;
+	public IUsable Usable;
 	public Vector2? NewPosition;
 
 	public bool IsSelected
@@ -40,25 +41,28 @@ public class UnitShadow : Node2D
 	public void MoveShadowTo(Vector2 newTarget)
 	{
 		IsometricMove.MoveBy(this.path, Position, newTarget, GetParent<Maze>());
-		AttackDirection = null;
+		UsableDirection = null;
+		Usable = null;
 		NewPosition = newTarget;
 	}
 
 	public void HideShadow()
 	{
 		NewPosition = null;
-		AttackDirection = null;
+		UsableDirection = null;
+		Usable = null;
 		Visible = false;
 	}
 
-	public void AttackShadowTo(Vector2 newTarget)
+	public void UsableShadowTo(Vector2 newTarget, IUsable usable)
 	{
 		var maze = GetParent<Maze>();
-		AttackDirection = newTarget - maze.WorldToMap(Position);
+		this.UsableDirection = newTarget - maze.WorldToMap(Position);
+		this.Usable = usable;
 
 		var animation = GetNode<AnimatedSprite>("Shadow");
 		animation.Playing = true;
-		var direction = IsometricMove.Animate(AttackDirection.Value);
+		var direction = IsometricMove.Animate(UsableDirection.Value);
 
 		if (!string.IsNullOrWhiteSpace(direction))
 		{
