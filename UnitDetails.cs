@@ -11,7 +11,7 @@ public class UnitDetails : Panel
 	public override void _Ready()
 	{
 		this.GetNode<Button>("Close").Connect("pressed", this, nameof(CloseButtonPressed));
-		RectPosition = new Vector2(1024, RectPosition.y);
+		RectPosition = new Vector2(GetViewportRect().Size.x, RectPosition.y);
 		this.GetNode<Button>("Close").Text = "<";
 	}
 
@@ -39,12 +39,12 @@ public class UnitDetails : Panel
 	{
 		base._Process(delta);
 
-		if (Displayed && RectPosition.x >= 824)
+		if (Displayed && RectPosition.x >= GetViewportRect().Size.x - this.RectSize.x)
 		{
 			RectPosition += Vector2.Left * MoveSpeed * delta;
 		}
 
-		if (!Displayed && RectPosition.x <= 1024)
+		if (!Displayed && RectPosition.x <= GetViewportRect().Size.x)
 		{
 			RectPosition += Vector2.Right * MoveSpeed * delta;
 		}
