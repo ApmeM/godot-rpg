@@ -1,0 +1,115 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://assets/Fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=1]
+[ext_resource path="res://UI/Menu.cs" type="Script" id=2]
+
+[sub_resource type="DynamicFont" id=1]
+size = 32
+font_data = ExtResource( 1 )
+
+[sub_resource type="InputEventAction" id=2]
+action = "ui_select"
+
+[sub_resource type="ShortCut" id=3]
+shortcut = SubResource( 2 )
+
+[node name="Menu" type="CanvasLayer"]
+script = ExtResource( 2 )
+
+[node name="MessageLabel" type="Label" parent="."]
+anchor_right = 1.0
+margin_bottom = 39.0
+custom_fonts/font = SubResource( 1 )
+text = "Welcome to Godot-RPG"
+align = 1
+autowrap = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ChangeTeamsButton" type="Button" parent="."]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -312.0
+margin_top = -525.0
+margin_right = -127.0
+margin_bottom = -425.0
+custom_fonts/font = SubResource( 1 )
+shortcut = SubResource( 3 )
+text = "Your team"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ChangeTeamsLabel" type="Label" parent="."]
+anchor_right = 1.0
+margin_left = 418.0
+margin_top = 109.0
+margin_right = -1.0
+margin_bottom = 148.0
+custom_fonts/font = SubResource( 1 )
+text = "Configure your teams"
+autowrap = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CreateButton" type="Button" parent="."]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -312.0
+margin_top = -328.0
+margin_right = -132.0
+margin_bottom = -228.0
+custom_fonts/font = SubResource( 1 )
+shortcut = SubResource( 3 )
+text = "Create"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CreateLabel" type="Label" parent="."]
+anchor_right = 1.0
+margin_left = 418.0
+margin_top = 299.0
+margin_right = -1.0
+margin_bottom = 338.0
+custom_fonts/font = SubResource( 1 )
+text = "Create new lobby"
+autowrap = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="JoinButton" type="Button" parent="."]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -312.0
+margin_top = -200.0
+margin_right = -132.0
+margin_bottom = -100.0
+custom_fonts/font = SubResource( 1 )
+shortcut = SubResource( 3 )
+text = "Join"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="JoinLabel" type="Label" parent="."]
+anchor_right = 1.0
+margin_left = 418.0
+margin_top = 421.0
+margin_right = -1.0
+margin_bottom = 460.0
+custom_fonts/font = SubResource( 1 )
+text = "Join existing lobby"
+autowrap = true
+__meta__ = {
+"_edit_use_anchors_": false
+}

@@ -1,0 +1,66 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://assets/Fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=1]
+[ext_resource path="res://UI/Lobby.cs" type="Script" id=2]
+
+[sub_resource type="DynamicFont" id=1]
+size = 32
+font_data = ExtResource( 1 )
+
+[sub_resource type="InputEventAction" id=2]
+action = "ui_select"
+
+[sub_resource type="ShortCut" id=3]
+shortcut = SubResource( 2 )
+
+[node name="Lobby" type="CanvasLayer"]
+script = ExtResource( 2 )
+
+[node name="MessageLabel" type="Label" parent="."]
+anchor_right = 1.0
+margin_bottom = 43.0
+custom_fonts/font = SubResource( 1 )
+text = "Lobby"
+align = 1
+autowrap = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="OptionButton" type="OptionButton" parent="."]
+margin_left = 145.0
+margin_top = 83.0
+margin_right = 376.0
+margin_bottom = 128.0
+custom_fonts/font = SubResource( 1 )
+text = "Dream team"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="."]
+margin_left = 150.0
+margin_top = 152.0
+margin_right = 297.0
+margin_bottom = 191.0
+custom_fonts/font = SubResource( 1 )
+text = "Bot easy"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="StartButton" type="Button" parent="."]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -90.0
+margin_top = -200.0
+margin_right = 90.0
+margin_bottom = -100.0
+custom_fonts/font = SubResource( 1 )
+shortcut = SubResource( 3 )
+text = "Start"
+__meta__ = {
+"_edit_use_anchors_": false
+}
