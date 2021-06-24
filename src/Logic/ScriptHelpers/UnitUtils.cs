@@ -23,7 +23,7 @@ namespace IsometricGame.Logic.ScriptHelpers
             {
                 UnitType.Amazon, new ServerUnit
                 {
-                    VisionRange = 7,
+                    SightRange = 7,
                     AttackDistance = 3,
                     Usables = new HashSet<Usable>{ Usable.AmazonAOEAttack }
                 }
@@ -44,7 +44,7 @@ namespace IsometricGame.Logic.ScriptHelpers
             {
                 UnitType = unitType,
                 Position = template.Position,
-                VisionRange = template.VisionRange,
+                SightRange = template.SightRange,
                 MoveDistance = template.MoveDistance,
                 MaxHp = template.MaxHp,
                 Hp = template.Hp,

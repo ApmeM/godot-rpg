@@ -51,7 +51,7 @@ namespace IsometricGame.Logic
 			var playerId = Players.Count + 1;
 			var player = new ServerPlayer
 			{
-				PlayerName = connect.PlayerName,
+				PlayerName = connect.TeamName,
 			};
 
 			var centerX = Map.Rooms[playerId].X + Map.Rooms[playerId].Width / 2;
@@ -198,7 +198,7 @@ namespace IsometricGame.Logic
 					UnitId = a.Key,
 					Position = a.Value.Position,
 					MoveDistance = a.Value.MoveDistance,
-					SightRange = a.Value.VisionRange,
+					SightRange = a.Value.SightRange,
 					AttackDistance = a.Value.AttackDistance,
 					AttackRadius = a.Value.AttackRadius,
 					AttackPower = a.Value.AttackDamage,
@@ -287,7 +287,7 @@ namespace IsometricGame.Logic
 		{
 			foreach(var unit in player.Units.Values)
 			{
-				if ((Math.Abs(x - unit.Position.x) + Math.Abs(y - unit.Position.y)) <= unit.VisionRange){
+				if ((Math.Abs(x - unit.Position.x) + Math.Abs(y - unit.Position.y)) <= unit.SightRange){
 					return true;
 				}
 			}

@@ -17,7 +17,7 @@ public class Bot : Node
 		this.server = server;
 		this.server.Connect(new TransferConnectData
 		{
-			PlayerName = "Bot",
+			TeamName = "Bot",
 			Units = new List<TransferConnectData.UnitData>
 			{
 				new TransferConnectData.UnitData{ UnitType = UnitType.Amazon, Skills = new List<Skill>{Skill.EagleEye}},

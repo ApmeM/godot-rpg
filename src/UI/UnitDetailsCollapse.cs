@@ -1,7 +1,7 @@
 using Godot;
 using IsometricGame.Logic.Models;
 
-public class UnitDetails : Panel
+public class UnitDetailsCollapse : Panel
 {
 	[Export]
 	public int MoveSpeed = 400;

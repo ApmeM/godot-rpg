@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://assets/Fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://UI/TeamSelect.cs" type="Script" id=2]
+[ext_resource path="res://UI/TeamSelectUnit.tscn" type="PackedScene" id=3]
 
 [sub_resource type="DynamicFont" id=1]
 size = 32
@@ -15,6 +16,7 @@ shortcut = SubResource( 2 )
 
 [node name="TeamSelect" type="CanvasLayer"]
 script = ExtResource( 2 )
+UnitConfigurationScene = ExtResource( 3 )
 
 [node name="MessageLabel" type="Label" parent="."]
 anchor_right = 1.0
@@ -27,30 +29,73 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Label" type="Label" parent="."]
-anchor_top = 0.5
-anchor_right = 1.0
-anchor_bottom = 0.5
-margin_top = -19.5
-margin_bottom = 19.5
+[node name="OptionButton" type="OptionButton" parent="."]
+margin_left = 18.7859
+margin_top = 86.7533
+margin_right = 265.786
+margin_bottom = 131.753
 custom_fonts/font = SubResource( 1 )
-text = "Here you will be able to configure your teams and units"
+text = "Choose team"
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="StartButton" type="Button" parent="."]
-anchor_left = 0.5
+anchor_left = 1.0
 anchor_top = 1.0
-anchor_right = 0.5
+anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = -90.0
-margin_top = -200.0
-margin_right = 90.0
-margin_bottom = -100.0
+margin_left = -180.0
+margin_top = -100.0
 custom_fonts/font = SubResource( 1 )
 shortcut = SubResource( 3 )
 text = "Done"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="NewButton" type="Button" parent="."]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -537.818
+margin_top = -537.836
+margin_right = -357.818
+margin_bottom = -437.836
+custom_fonts/font = SubResource( 1 )
+shortcut = SubResource( 3 )
+text = "New"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="."]
+margin_left = 312.313
+margin_top = 91.1426
+margin_right = 423.313
+margin_bottom = 130.143
+custom_fonts/font = SubResource( 1 )
+text = "Or add"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TeamDescription" type="Label" parent="."]
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_top = -122.5
+margin_bottom = -83.5
+custom_fonts/font = SubResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="UnitsContainer" type="HBoxContainer" parent="."]
+margin_top = 221.5
+margin_right = 40.0
+margin_bottom = 261.5
 __meta__ = {
 "_edit_use_anchors_": false
 }
