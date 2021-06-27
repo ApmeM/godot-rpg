@@ -7,7 +7,7 @@ namespace IsometricGame.Logic.ScriptHelpers.Skills
     {
         public void Apply(ServerPlayer player, ServerUnit unit)
         {
-            unit.Usables.Add(Usable.Heal);
+            unit.Abilities.Add(Ability.Heal);
         }
     }
 }

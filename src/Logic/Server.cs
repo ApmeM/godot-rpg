@@ -148,30 +148,30 @@ namespace IsometricGame.Logic
 						var delta = UnitsTurnDelta[fullId];
 						var player = Players[pm.Key];
 						var unit = player.Units[um.Key];
-						if (um.Value.UsableTarget.HasValue && unit.Hp > 0)
+						if (um.Value.AbilityTarget.HasValue && unit.Hp > 0)
 						{
-							delta.UsableDirection = um.Value.UsableTarget.Value;
-							delta.Usable = um.Value.Usable;
-							if (!unit.Usables.Contains(delta.Usable))
+							delta.AbilityDirection = um.Value.AbilityTarget.Value;
+							delta.Ability = um.Value.Ability;
+							if (!unit.Abilities.Contains(delta.Ability))
 							{
 								continue;
 							}
-							var usable = UnitUtils.FindUsable(delta.Usable);
+							var ability = UnitUtils.FindAbility(delta.Ability);
 							foreach (var p in Players)
 							{
 								foreach (var u in p.Value.Units)
 								{
-									if (!usable.IsApplicable(player, unit, p.Value, u.Value))
+									if (!ability.IsApplicable(player, unit, p.Value, u.Value))
 									{
 										continue;
 									}
 
-									if (usable.IsInRange(unit, u.Value, delta.UsableDirection.Value))
+									if (ability.IsInRange(unit, u.Value, delta.AbilityDirection.Value))
 									{
 										var fullIdTarget = GetFullUnitId(p.Key, u.Key);
 										var deltaTarget = UnitsTurnDelta[fullIdTarget];
-										deltaTarget.UsableFrom = unit.Position - u.Value.Position;
-										usable.Apply(unit, u.Value);
+										deltaTarget.AbilityFrom = unit.Position - u.Value.Position;
+										ability.Apply(unit, u.Value);
 									}
 								}
 							}
@@ -204,7 +204,7 @@ namespace IsometricGame.Logic
 					AttackPower = a.Value.AttackDamage,
 					MaxHp = a.Value.MaxHp,
 					UnitType = a.Value.UnitType,
-					Usables = a.Value.Usables.ToList()
+					Abilities = a.Value.Abilities.ToList()
 				}).ToList(),
 				VisibleMap = GetVisibleMap(forPlayer),
 				OtherPlayers = Players.Where(a => a.Key != forPlayer).Select(a => new TransferInitialData.OtherPlayerData
@@ -233,9 +233,9 @@ namespace IsometricGame.Logic
 					return new TransferTurnData.YourUnitsData
 					{
 						Position = delta.MovedTo,
-						AttackDirection = delta.UsableDirection,
+						AttackDirection = delta.AbilityDirection,
 						Hp = a.Value.Hp,
-						AttackFrom = delta.UsableFrom,
+						AttackFrom = delta.AbilityFrom,
 					};
 				}),
 				VisibleMap = this.GetVisibleMap(forPlayer),
@@ -249,9 +249,9 @@ namespace IsometricGame.Logic
 						return new TransferTurnData.OtherUnitsData
 						{
 							Position = delta.MovedTo,
-							AttackDirection = delta.UsableDirection,
+							AttackDirection = delta.AbilityDirection,
 							Hp = b.Value.Hp,
-							AttackFrom = delta.UsableFrom,
+							AttackFrom = delta.AbilityFrom,
 						};
 					})
 				})

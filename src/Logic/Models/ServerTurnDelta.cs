@@ -7,8 +7,8 @@ namespace IsometricGame.Logic.Models
     {
         public Vector2 MovedFrom;
         public Vector2 MovedTo;
-        public Vector2? UsableDirection;
-        public Vector2? UsableFrom;
-        public Usable Usable;
+        public Vector2? AbilityDirection;
+        public Vector2? AbilityFrom;
+        public Ability Ability;
     }
 }

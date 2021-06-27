@@ -4,9 +4,9 @@ using IsometricGame.Logic.Models;
 
 namespace IsometricGame.Logic.ScriptHelpers.Skills
 {
-    public class HealUsable : IUsable
+    public class HealAbility : IAbility
     {
-        public Usable Name => Usable.Heal;
+        public Ability Name => Ability.Heal;
 
         public void Apply(ServerUnit actionUnit, ServerUnit targetUnit)
         {
@@ -23,9 +23,9 @@ namespace IsometricGame.Logic.ScriptHelpers.Skills
             return actionPlayer == targetPlayer && targetUnit.Hp < targetUnit.MaxHp;
         }
 
-        public bool IsInRange(ServerUnit actionUnit, ServerUnit targetUnit, Vector2 usableDirection)
+        public bool IsInRange(ServerUnit actionUnit, ServerUnit targetUnit, Vector2 abilityDirection)
         {
-            return IsometricMove.Distance(targetUnit.Position, actionUnit.Position + usableDirection) <= actionUnit.AttackRadius;
+            return IsometricMove.Distance(targetUnit.Position, actionUnit.Position + abilityDirection) <= actionUnit.AttackRadius;
         }
     }
 }

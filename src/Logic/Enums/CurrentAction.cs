@@ -6,7 +6,7 @@
         None,
         // Actions on click: move shadow to selected cell
         Move,
-        // Actions on click: Specify usable action point
-        UsableSkill
+        // Actions on click: Specify ability action point
+        UseAbility
     }
 }

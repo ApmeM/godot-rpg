@@ -1,6 +1,6 @@
 ﻿namespace IsometricGame.Logic.Enums
 {
-    public enum Usable
+    public enum Ability
     {
         None,
         AmazonAOEAttack, 

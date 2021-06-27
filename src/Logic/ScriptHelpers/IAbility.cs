@@ -4,12 +4,12 @@ using IsometricGame.Logic.Models;
 
 namespace IsometricGame.Logic.ScriptHelpers
 {
-    public interface IUsable
+    public interface IAbility
     {
-        Usable Name { get; }
+        Ability Name { get; }
         void HighliteMaze(Maze maze, Vector2 pos, ClientUnit currentUnit);
         bool IsApplicable(ServerPlayer actionPlayer, ServerUnit actionUnit, ServerPlayer targetPlayer, ServerUnit targetUnit);
         void Apply(ServerUnit actionUnit, ServerUnit targetUnit);
-        bool IsInRange(ServerUnit actionUnit, ServerUnit targetUnit, Vector2 usableDirection);
+        bool IsInRange(ServerUnit actionUnit, ServerUnit targetUnit, Vector2 abilityDirection);
     }
 }

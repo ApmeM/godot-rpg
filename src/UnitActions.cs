@@ -5,11 +5,11 @@ using System.Collections.Generic;
 public class UnitActions : Control
 {
 	[Signal]
-	public delegate void ActionSelected(CurrentAction action, Usable usableName);
+	public delegate void ActionSelected(CurrentAction action, Ability ability);
 
 	private readonly List<Button> buttons = new List<Button>();
 
-	public List<Usable> Usables
+	public List<Ability> Abilities
 	{
 		set
 		{
@@ -41,11 +41,11 @@ public class UnitActions : Control
 
 	private void MoveButtonPressed()
 	{
-		EmitSignal(nameof(ActionSelected), CurrentAction.Move, Usable.None);
+		EmitSignal(nameof(ActionSelected), CurrentAction.Move, Ability.None);
 	}
 
-	private void AttackButtonPressed(Usable usable)
+	private void AttackButtonPressed(Ability ability)
 	{
-		EmitSignal(nameof(ActionSelected), CurrentAction.UsableSkill, usable);
+		EmitSignal(nameof(ActionSelected), CurrentAction.UseAbility, ability);
 	}
 }

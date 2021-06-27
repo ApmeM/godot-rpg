@@ -11,7 +11,7 @@ namespace IsometricGame.Logic.Models
         public int MaxHp = 10;
         public int Hp = 10;
 
-        public HashSet<Usable> Usables;
+        public HashSet<Ability> Abilities;
         public int MoveDistance = 5;
         public int SightRange = 6;
         public int AttackDistance = 1;

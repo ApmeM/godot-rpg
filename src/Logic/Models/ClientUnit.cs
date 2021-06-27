@@ -15,6 +15,6 @@ namespace IsometricGame.Logic.Models
         public UnitType UnitType;
         public int MaxHp;
         public int Hp;
-        public Dictionary<Usable, IUsable> Usables;
+        public Dictionary<Ability, IAbility> Abilities;
     }
 }

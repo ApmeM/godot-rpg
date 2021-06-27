@@ -17,7 +17,7 @@ namespace IsometricGame.Logic.ScriptHelpers
                     MaxHp = 20,
                     Hp = 20,
                     AttackDamage = 3,
-                    Usables = new HashSet<Usable>{ Usable.AmazonAOEAttack }
+                    Abilities = new HashSet<Ability>{ Ability.AmazonAOEAttack }
                 }
             },
             {
@@ -25,7 +25,7 @@ namespace IsometricGame.Logic.ScriptHelpers
                 {
                     SightRange = 7,
                     AttackDistance = 3,
-                    Usables = new HashSet<Usable>{ Usable.AmazonAOEAttack }
+                    Abilities = new HashSet<Ability>{ Ability.AmazonAOEAttack }
                 }
             },
         };
@@ -51,7 +51,7 @@ namespace IsometricGame.Logic.ScriptHelpers
                 AttackDistance = template.AttackDistance,
                 AttackRadius = template.AttackRadius,
                 AttackDamage = template.AttackDamage,
-                Usables = new HashSet<Usable>(template.Usables)
+                Abilities = new HashSet<Ability>(template.Abilities)
             };
             return unit;
         }
@@ -79,15 +79,15 @@ namespace IsometricGame.Logic.ScriptHelpers
             SupportedSkills[skill].Apply(player, unit);
         }
 
-        private static Dictionary<Usable, IUsable> SupportedUsables = new Dictionary<Usable, IUsable>
+        private static Dictionary<Ability, IAbility> SupportedAbilities = new Dictionary<Ability, IAbility>
         {
-            { Usable.AmazonAOEAttack, new AmazonAOEAttackUsable() },
-            { Usable.Heal, new HealUsable() },
+            { Ability.AmazonAOEAttack, new AmazonAOEAttackAbility() },
+            { Ability.Heal, new HealAbility() },
         };
 
-        public static IUsable FindUsable(Usable usable)
+        public static IAbility FindAbility(Ability ability)
         {
-            return SupportedUsables[usable];
+            return SupportedAbilities[ability];
         }
     }
 }
