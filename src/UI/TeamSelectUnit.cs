@@ -29,7 +29,6 @@ public class TeamSelectUnit : VBoxContainer
 			if (unitType == unit.UnitType)
 			{
 				unitTypeCombo.Select(i);
-				UnitTypeChanged(i);
 			}
 		}
 
@@ -49,10 +48,11 @@ public class TeamSelectUnit : VBoxContainer
 				if (skill == unitSkill)
 				{
 					skillsCombo.Select(i);
-					SkillChanged(i, j);
 				}
 			}
 		}
+
+		UpdateUnitDetails();
 	}
 
 	private void SkillChanged(int index, int skillIndex)
