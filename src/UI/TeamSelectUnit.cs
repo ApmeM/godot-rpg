@@ -32,8 +32,9 @@ public class TeamSelectUnit : VBoxContainer
 			}
 		}
 
-		var skillsContainer = this.GetNode<VBoxContainer>("SkillsContainer");
+		var skillsContainer = this.GetNode<Container>("SkillsContainer");
 		var skills = Enum.GetValues(typeof(Skill)).Cast<Skill>().ToList();
+		var texture = ResourceLoader.Load<Texture>("assets/Skills.png");
 		for (var j = 0; j < unit.Skills.Count; j++)
 		{
 			var unitSkill = unit.Skills[j];
@@ -44,7 +45,12 @@ public class TeamSelectUnit : VBoxContainer
 			for (var i = 0; i < skills.Count; i++)
 			{
 				var skill = skills[i];
-				skillsCombo.AddItem(skill.ToString());
+
+				var atlasTexture = new AtlasTexture();
+				atlasTexture.Atlas = texture;
+				atlasTexture.Region = new Rect2(((int)skill) % 4 * texture.GetSize().x / 4, ((int)skill) / 4 * texture.GetSize().y / 7, texture.GetSize().x / 12, texture.GetSize().y / 7);
+
+				skillsCombo.AddIconItem(atlasTexture, string.Empty);
 				if (skill == unitSkill)
 				{
 					skillsCombo.Select(i);

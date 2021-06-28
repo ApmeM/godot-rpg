@@ -28,12 +28,9 @@ __meta__ = {
 [node name="UnitDetails" parent="." instance=ExtResource( 3 )]
 margin_top = 49.0
 margin_right = 200.0
-margin_bottom = 215.0
+margin_bottom = 139.0
 
-[node name="SkillsContainer" type="VBoxContainer" parent="."]
-margin_top = 219.0
+[node name="SkillsContainer" type="HBoxContainer" parent="."]
+margin_top = 143.0
 margin_right = 200.0
-margin_bottom = 219.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
+margin_bottom = 143.0

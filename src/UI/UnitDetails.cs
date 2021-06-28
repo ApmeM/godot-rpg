@@ -29,9 +29,9 @@ public class UnitDetails : VBoxContainer
 		{
 			var label = new Label();
 			label.Text = ability.ToString();
+
 			abilityContainer.AddChild(label);
 		}
-
 
 		this.Visible = false;
 		this.CallDeferred("set_visible", true);
