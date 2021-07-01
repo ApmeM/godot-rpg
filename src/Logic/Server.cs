@@ -56,7 +56,7 @@ namespace IsometricGame.Logic
 
 			var centerX = Map.Rooms[playerId].X + Map.Rooms[playerId].Width / 2;
 			var centerY = this.Map.Rooms[playerId].Y + this.Map.Rooms[playerId].Height / 2;
-
+			var center = new Vector2(centerX, centerY);
 			var unitId = 0;
 			foreach(var u in connect.Units)
 			{
@@ -79,10 +79,21 @@ namespace IsometricGame.Logic
 				}
 			}
 
-			player.Units[1].Position = new Vector2(centerX - 1, centerY);
-			player.Units[2].Position = new Vector2(centerX + 1, centerY);
-			player.Units[3].Position = new Vector2(centerX, centerY + 1);
-			player.Units[4].Position = new Vector2(centerX, centerY - 1);
+			var positions = new List<Vector2>
+			{
+				Vector2.Left,
+				Vector2.Right,
+				Vector2.Up,
+				Vector2.Down,
+				Vector2.Zero
+            };
+
+			var index = 0;
+            foreach (var unit in player.Units)
+            {
+				unit.Value.Position = center + positions[index];
+				index++;
+			}
 
 			this.Players.Add(playerId, player);
 

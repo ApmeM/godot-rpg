@@ -1,12 +1,7 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://UI/TeamSelectUnit.cs" type="Script" id=1]
-[ext_resource path="res://assets/Fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=2]
 [ext_resource path="res://UI/UnitDetails.tscn" type="PackedScene" id=3]
-
-[sub_resource type="DynamicFont" id=1]
-size = 32
-font_data = ExtResource( 2 )
 
 [node name="TeamSelectUnit" type="VBoxContainer"]
 margin_right = 200.0
@@ -16,21 +11,38 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="UnitTypeCombo" type="OptionButton" parent="."]
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
 margin_right = 200.0
-margin_bottom = 45.0
-custom_fonts/font = SubResource( 1 )
+margin_bottom = 20.0
+custom_constants/separation = 15
+
+[node name="UnitTypeCombo" type="OptionButton" parent="HBoxContainer"]
+margin_right = 165.0
+margin_bottom = 20.0
+size_flags_horizontal = 3
 text = "Unit type"
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="UnitDetails" parent="." instance=ExtResource( 3 )]
-margin_top = 49.0
+[node name="RemoveUnitButton" type="Button" parent="HBoxContainer"]
+margin_left = 180.0
 margin_right = 200.0
-margin_bottom = 139.0
+margin_bottom = 20.0
+text = "X"
 
-[node name="SkillsContainer" type="HBoxContainer" parent="."]
-margin_top = 143.0
+[node name="UnitDetails" parent="." instance=ExtResource( 3 )]
+margin_top = 24.0
 margin_right = 200.0
-margin_bottom = 143.0
+margin_bottom = 114.0
+
+[node name="SkillsContainer" type="GridContainer" parent="."]
+margin_top = 118.0
+margin_right = 200.0
+margin_bottom = 138.0
+columns = 3
+
+[node name="NewSkillButton" type="OptionButton" parent="SkillsContainer"]
+margin_right = 37.0
+margin_bottom = 20.0
+text = "+"

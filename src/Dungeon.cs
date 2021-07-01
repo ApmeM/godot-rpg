@@ -125,7 +125,7 @@ public class Dungeon : Node2D
 						currentUnit.IsSelected = false;
 					}
 
-					GetNode<UnitDetails>("CanvasLayer/UnitDetails").SelectUnit(clickOnUnit?.ClientUnit);
+					GetNode<UnitDetailsCollapse>("CanvasLayer/UnitDetailsCollapse").SelectUnit(clickOnUnit?.ClientUnit);
 					unitActions.Visible = clickOnUnit != null && !clickOnUnit.IsDead;
 					unitActions.RectPosition = this.GetViewport().CanvasTransform.AffineInverse().Xform(GetViewport().GetMousePosition());
 					if (unitActions.Visible)

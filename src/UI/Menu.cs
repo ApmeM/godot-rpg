@@ -1,6 +1,6 @@
 using Godot;
 
-public class Menu : CanvasLayer
+public class Menu : Container
 {
 	[Signal]
 	public delegate void CreateLobby();
@@ -10,9 +10,9 @@ public class Menu : CanvasLayer
 	public override void _Ready()
 	{
 		base._Ready();
-		this.GetNode<Button>("ChangeTeamsButton").Connect("pressed", this, nameof(OnChangeTeamsButtonPressed));
-		this.GetNode<Button>("CreateButton").Connect("pressed", this, nameof(OnStartButtonPressed));
-		this.GetNode<Button>("JoinButton").Connect("pressed", this, nameof(OnStartButtonPressed));
+		this.GetNode<Button>("VBoxContainer/GridContainer/ChangeTeamsButton").Connect("pressed", this, nameof(OnChangeTeamsButtonPressed));
+		this.GetNode<Button>("VBoxContainer/GridContainer/CreateButton").Connect("pressed", this, nameof(OnStartButtonPressed));
+		this.GetNode<Button>("VBoxContainer/GridContainer/JoinButton").Connect("pressed", this, nameof(OnStartButtonPressed));
 	}
 
 	public void GameOver()

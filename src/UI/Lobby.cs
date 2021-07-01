@@ -1,7 +1,6 @@
 using Godot;
-using IsometricGame.Logic;
 
-public class Lobby : CanvasLayer
+public class Lobby : Container
 {
 	[Signal]
 	public delegate void StartGameEvent();
@@ -9,7 +8,7 @@ public class Lobby : CanvasLayer
 	public override void _Ready()
 	{
 		base._Ready();
-		this.GetNode<Button>("StartButton").Connect("pressed", this, nameof(OnStartButtonPressed));
+		this.GetNode<Button>("VBoxContainer/HBoxContainer/StartButton").Connect("pressed", this, nameof(OnStartButtonPressed));
 	}
 
 	public void OnStartButtonPressed()

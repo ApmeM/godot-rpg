@@ -22,6 +22,13 @@ script = ExtResource( 3 )
 [node name="DraggableCamera" parent="." instance=ExtResource( 2 )]
 zoom = Vector2( 2, 2 )
 
+[node name="UnitActions" parent="." instance=ExtResource( 6 )]
+visible = false
+margin_left = 1.41425
+margin_top = 83.4386
+margin_right = 1.41425
+margin_bottom = 83.4386
+
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
 [node name="UnitDetailsCollapse" parent="CanvasLayer" instance=ExtResource( 4 )]
@@ -39,10 +46,3 @@ text = "GO"
 __meta__ = {
 "_edit_use_anchors_": false
 }
-
-[node name="UnitActions" parent="." instance=ExtResource( 6 )]
-visible = false
-margin_left = 1.41425
-margin_top = 83.4386
-margin_right = 1.41425
-margin_bottom = 83.4386

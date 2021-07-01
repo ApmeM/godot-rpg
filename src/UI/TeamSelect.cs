@@ -1,10 +1,12 @@
 using Godot;
+using Godot.Collections;
 using IsometricGame.Logic;
 using System.Collections.Generic;
 
-public class TeamSelect : CanvasLayer
+public class TeamSelect : Container
 {
 	private List<TransferConnectData> Teams;
+	private int CurrentTeam;
 
 	[Signal]
 	public delegate void StartGameEvent();
@@ -15,9 +17,10 @@ public class TeamSelect : CanvasLayer
 	public override void _Ready()
 	{
 		base._Ready();
-		this.GetNode<Button>("StartButton").Connect("pressed", this, nameof(OnStartButtonPressed));
+		this.GetNode<Button>("VBoxContainer/HBoxContainer2/StartButton").Connect("pressed", this, nameof(OnStartButtonPressed));
+		this.GetNode<Button>("VBoxContainer/ScrollContainer/HBoxContainer/CenterContainer/AddNewUnitButton").Connect("pressed", this, nameof(OnAddNewUnitButtonPressed));
 		this.Teams = this.Teams ?? TransferConnectData.Load();
-		var optionButton = GetNode<OptionButton>("OptionButton");
+		var optionButton = GetNode<OptionButton>("VBoxContainer/HBoxContainer/OptionButton");
 		optionButton.Connect("item_selected", this, nameof(ItemSelected));
 		foreach (var team in this.Teams)
 		{
@@ -27,19 +30,43 @@ public class TeamSelect : CanvasLayer
 		ItemSelected(0);
 	}
 
+	public void OnAddNewUnitButtonPressed()
+	{
+		var unit = new TransferConnectData.UnitData();
+		this.Teams[this.CurrentTeam].Units.Add(unit);
+		var unitScene = (TeamSelectUnit)UnitConfigurationScene.Instance();
+		unitScene.InitUnit(unit);
+		var unitsContainer = GetNode<HBoxContainer>("VBoxContainer/ScrollContainer/HBoxContainer/UnitsContainer");
+		unitsContainer.AddChild(unitScene);
+	}
+
 	private void ItemSelected(int index)
 	{
+		this.CurrentTeam = index;
 		var team = Teams[index];
-		var teamDescription = GetNode<Label>("TeamDescription");
-		var unitsContainer = GetNode<HBoxContainer>("UnitsContainer");
+		var teamDescription = GetNode<Label>("VBoxContainer/TeamDescription");
+		var unitsContainer = GetNode<HBoxContainer>("VBoxContainer/ScrollContainer/HBoxContainer/UnitsContainer");
 		teamDescription.Text = team.TeamName;
+
+		foreach (Node item in unitsContainer.GetChildren())
+		{
+			item.QueueFree();
+		}
+
 		for (var i = 0; i < team.Units.Count; i++)
 		{
 			var unit = team.Units[i];
 			var unitScene = (TeamSelectUnit)UnitConfigurationScene.Instance();
 			unitScene.InitUnit(unit);
+			unitScene.Connect(nameof(TeamSelectUnit.UnitRemoved), this, nameof(UnitRemoved), new Array { i });
 			unitsContainer.AddChild(unitScene);
 		}
+	}
+
+	private void UnitRemoved(int unitIndex)
+	{
+		Teams[CurrentTeam].Units.RemoveAt(unitIndex);
+		ItemSelected(CurrentTeam);
 	}
 
 	public void OnStartButtonPressed()
