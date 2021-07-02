@@ -117,5 +117,8 @@ public class TeamSelectUnit : VBoxContainer
 		}
 
 		this.GetNode<UnitDetails>("UnitDetails").SelectUnit(unit);
+
+		this.Visible = false;
+		this.CallDeferred("set_visible", true);
 	}
 }

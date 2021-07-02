@@ -1,25 +1,25 @@
 [gd_scene load_steps=7 format=2]
 
-[ext_resource path="res://assets/fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=1]
+[ext_resource path="res://assets/Fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://UI/Lobby.cs" type="Script" id=2]
 
-[sub_resource type="DynamicFont" id=4]
+[sub_resource type="DynamicFont" id=1]
 size = 24
 font_data = ExtResource( 1 )
 
-[sub_resource type="Theme" id=5]
-default_font = SubResource( 4 )
+[sub_resource type="Theme" id=2]
+default_font = SubResource( 1 )
 
-[sub_resource type="InputEventAction" id=2]
+[sub_resource type="InputEventAction" id=3]
 action = "ui_select"
 
-[sub_resource type="ShortCut" id=3]
-shortcut = SubResource( 2 )
+[sub_resource type="ShortCut" id=4]
+shortcut = SubResource( 3 )
 
 [node name="Lobby" type="MarginContainer"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme = SubResource( 5 )
+theme = SubResource( 2 )
 custom_constants/margin_right = 5
 custom_constants/margin_top = 5
 custom_constants/margin_left = 5
@@ -45,7 +45,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="OptionButton" type="OptionButton" parent="VBoxContainer"]
+[node name="TeamSelector" type="OptionButton" parent="VBoxContainer"]
 margin_top = 34.0
 margin_right = 1014.0
 margin_bottom = 70.0
@@ -90,7 +90,7 @@ __meta__ = {
 margin_left = 937.0
 margin_right = 1014.0
 margin_bottom = 36.0
-shortcut = SubResource( 3 )
+shortcut = SubResource( 4 )
 text = "Start"
 __meta__ = {
 "_edit_use_anchors_": false

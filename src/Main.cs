@@ -23,6 +23,7 @@ public class Main : Node
 
 		this.menu.Connect(nameof(Menu.ChangeTeam), this, nameof(ChangeTeam));
 		this.menu.Connect(nameof(Menu.CreateLobby), this, nameof(CreateLobby));
+		this.menu.Connect(nameof(Menu.JoinLobby), this, nameof(JoinLobby));
 		this.teamSelect.Connect(nameof(TeamSelect.StartGameEvent), this, nameof(TeamSelected));
 		this.lobby.Connect(nameof(Lobby.StartGameEvent), this, nameof(StartGame));
 	}
@@ -36,6 +37,13 @@ public class Main : Node
 
 	public void CreateLobby()
 	{
+		this.lobby.Start(true);
+		RemoveChild(this.menu);
+		AddChild(this.lobby);
+	}
+	public void JoinLobby()
+	{
+		this.lobby.Start(false);
 		RemoveChild(this.menu);
 		AddChild(this.lobby);
 	}

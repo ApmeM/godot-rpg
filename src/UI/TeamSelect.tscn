@@ -1,31 +1,26 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=8 format=2]
 
-[ext_resource path="res://assets/Fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://UI/TeamSelect.cs" type="Script" id=2]
 [ext_resource path="res://UI/TeamSelectUnit.tscn" type="PackedScene" id=3]
-[ext_resource path="res://assets/fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=4]
+[ext_resource path="res://assets/Fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=4]
 
-[sub_resource type="DynamicFont" id=4]
+[sub_resource type="DynamicFont" id=1]
 size = 24
 font_data = ExtResource( 4 )
 
-[sub_resource type="Theme" id=5]
-default_font = SubResource( 4 )
+[sub_resource type="Theme" id=2]
+default_font = SubResource( 1 )
 
-[sub_resource type="InputEventAction" id=2]
+[sub_resource type="InputEventAction" id=3]
 action = "ui_select"
 
-[sub_resource type="ShortCut" id=3]
-shortcut = SubResource( 2 )
-
-[sub_resource type="DynamicFont" id=1]
-size = 32
-font_data = ExtResource( 1 )
+[sub_resource type="ShortCut" id=4]
+shortcut = SubResource( 3 )
 
 [node name="TeamSelect" type="MarginContainer"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme = SubResource( 5 )
+theme = SubResource( 2 )
 custom_constants/margin_right = 5
 custom_constants/margin_top = 5
 custom_constants/margin_left = 5
@@ -68,19 +63,19 @@ __meta__ = {
 [node name="Label" type="Label" parent="VBoxContainer/HBoxContainer"]
 margin_left = 205.0
 margin_top = 3.0
-margin_right = 292.0
+margin_right = 243.0
 margin_bottom = 33.0
-text = "Or add"
+text = "OR"
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="NewButton" type="Button" parent="VBoxContainer/HBoxContainer"]
-margin_left = 296.0
-margin_right = 364.0
+[node name="AddNewTeamButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+margin_left = 247.0
+margin_right = 374.0
 margin_bottom = 36.0
-shortcut = SubResource( 3 )
-text = "New"
+shortcut = SubResource( 4 )
+text = "Add new"
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -88,16 +83,15 @@ __meta__ = {
 [node name="TeamDescription" type="Label" parent="VBoxContainer"]
 margin_top = 74.0
 margin_right = 1014.0
-margin_bottom = 113.0
-custom_fonts/font = SubResource( 1 )
+margin_bottom = 104.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer"]
-margin_top = 117.0
+margin_top = 108.0
 margin_right = 1014.0
-margin_bottom = 367.0
+margin_bottom = 358.0
 scroll_vertical_enabled = false
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/ScrollContainer"]
@@ -139,9 +133,9 @@ margin_bottom = 143.0
 text = "+"
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer"]
-margin_top = 371.0
+margin_top = 362.0
 margin_right = 1014.0
-margin_bottom = 407.0
+margin_bottom = 398.0
 
 [node name="SpaceLabel" type="Label" parent="VBoxContainer/HBoxContainer2"]
 margin_top = 3.0
@@ -156,7 +150,7 @@ __meta__ = {
 margin_left = 933.0
 margin_right = 1014.0
 margin_bottom = 36.0
-shortcut = SubResource( 3 )
+shortcut = SubResource( 4 )
 text = "Done"
 __meta__ = {
 "_edit_use_anchors_": false

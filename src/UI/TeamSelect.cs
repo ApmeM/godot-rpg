@@ -19,6 +19,7 @@ public class TeamSelect : Container
 		base._Ready();
 		this.GetNode<Button>("VBoxContainer/HBoxContainer2/StartButton").Connect("pressed", this, nameof(OnStartButtonPressed));
 		this.GetNode<Button>("VBoxContainer/ScrollContainer/HBoxContainer/CenterContainer/AddNewUnitButton").Connect("pressed", this, nameof(OnAddNewUnitButtonPressed));
+		this.GetNode<Button>("VBoxContainer/HBoxContainer/AddNewTeamButton").Connect("pressed", this, nameof(OnAddNewTeamButtonPressed));
 		this.Teams = this.Teams ?? TransferConnectData.Load();
 		var optionButton = GetNode<OptionButton>("VBoxContainer/HBoxContainer/OptionButton");
 		optionButton.Connect("item_selected", this, nameof(ItemSelected));
@@ -30,6 +31,21 @@ public class TeamSelect : Container
 		ItemSelected(0);
 	}
 
+	public void OnAddNewTeamButtonPressed()
+	{
+		var team = new TransferConnectData
+		{
+			TeamName = "New team name.",
+			Units = new List<TransferConnectData.UnitData>()
+		};
+		this.Teams.Add(team);
+		
+		var optionButton = GetNode<OptionButton>("VBoxContainer/HBoxContainer/OptionButton");
+		optionButton.AddItem(team.TeamName);
+		optionButton.Selected = Teams.Count - 1;
+		ItemSelected(Teams.Count - 1);
+	}
+
 	public void OnAddNewUnitButtonPressed()
 	{
 		var unit = new TransferConnectData.UnitData();
@@ -38,6 +54,9 @@ public class TeamSelect : Container
 		unitScene.InitUnit(unit);
 		var unitsContainer = GetNode<HBoxContainer>("VBoxContainer/ScrollContainer/HBoxContainer/UnitsContainer");
 		unitsContainer.AddChild(unitScene);
+
+		this.Visible = false;
+		this.CallDeferred("set_visible", true);
 	}
 
 	private void ItemSelected(int index)
@@ -61,6 +80,9 @@ public class TeamSelect : Container
 			unitScene.Connect(nameof(TeamSelectUnit.UnitRemoved), this, nameof(UnitRemoved), new Array { i });
 			unitsContainer.AddChild(unitScene);
 		}
+
+		this.Visible = false;
+		this.CallDeferred("set_visible", true);
 	}
 
 	private void UnitRemoved(int unitIndex)
