@@ -54,23 +54,11 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Label" type="Label" parent="VBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer"]
 margin_top = 74.0
-margin_right = 1014.0
-margin_bottom = 104.0
-text = "Bot easy"
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="SpaceLabel" type="Label" parent="VBoxContainer"]
-margin_top = 108.0
 margin_right = 1014.0
 margin_bottom = 550.0
 size_flags_vertical = 3
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
 margin_top = 554.0
