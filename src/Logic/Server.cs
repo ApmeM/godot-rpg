@@ -46,16 +46,20 @@ namespace IsometricGame.Logic
 				}
 		}
 
-		public void Connect(TransferConnectData connect, Action<TransferInitialData> initialize, Action<TransferTurnData> turnDone)
+		public void Connect(int playerId, TransferConnectData connect, Action<TransferInitialData> initialize, Action<TransferTurnData> turnDone)
 		{
-			var playerId = Players.Count + 1;
+            if (this.Players.ContainsKey(playerId))
+            {
+				throw new Exception($"Player with id {playerId} already connected");
+            }
+
 			var player = new ServerPlayer
 			{
 				PlayerName = connect.TeamName,
 			};
-
-			var centerX = Map.Rooms[playerId].X + Map.Rooms[playerId].Width / 2;
-			var centerY = this.Map.Rooms[playerId].Y + this.Map.Rooms[playerId].Height / 2;
+			var playerNumber = Players.Count();
+			var centerX = Map.Rooms[playerNumber].X + Map.Rooms[playerNumber].Width / 2;
+			var centerY = this.Map.Rooms[playerNumber].Y + this.Map.Rooms[playerNumber].Height / 2;
 			var center = new Vector2(centerX, centerY);
 			var unitId = 0;
 			foreach(var u in connect.Units)
@@ -100,7 +104,7 @@ namespace IsometricGame.Logic
 			this.initializeMethods[playerId] = initialize;
 			this.turnDoneMethods[playerId] = turnDone;
 
-			if (playerId == configuration.PlayersCount)
+			if (playerNumber + 1 == configuration.PlayersCount)
 			{
 				foreach(var initMethod in initializeMethods)
 				{
@@ -203,7 +207,6 @@ namespace IsometricGame.Logic
 		{
 			return new TransferInitialData
 			{
-				YourPlayerId = forPlayer,
 				YourUnits = Players[forPlayer].Units.Select(a => new TransferInitialData.YourUnitsData
 				{
 					UnitId = a.Key,

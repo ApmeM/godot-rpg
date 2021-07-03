@@ -3,7 +3,6 @@ using Godot;
 using IsometricGame.Logic;
 using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.Models;
-using System;
 using System.Collections.Generic;
 
 public class Bot : Node
@@ -15,7 +14,7 @@ public class Bot : Node
 	public void NewGame(Server server)
 	{
 		this.server = server;
-		this.server.Connect(new TransferConnectData
+		this.server.Connect(-1, new TransferConnectData
 		{
 			TeamName = "Bot",
 			Units = new List<TransferConnectData.UnitData>
@@ -60,7 +59,7 @@ public class Bot : Node
 			});
 		}
 
-		this.server.PlayerMove(initialData.YourPlayerId, new TransferTurnDoneData
+		this.server.PlayerMove(-1, new TransferTurnDoneData
 		{
 			UnitActions = otherMoves
 		});

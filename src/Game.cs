@@ -5,13 +5,20 @@ public class Game : Node2D
 {
     public void NewGame()
     {
-        var server = new Server();
-        server.Start(new ServerConfiguration
+        if (GetTree().IsNetworkServer())
         {
-            FullMapVisible = true
-        });
+            var server = new Server();
+            server.Start(new ServerConfiguration
+            {
+                FullMapVisible = true
+            });
 
-        GetNode<Dungeon>("Dungeon").NewGame(server);
-        GetNode<Bot>("Bot").NewGame(server);
+            //GetNode<Bot>("Bot").NewGame(server);
+            GetNode<Dungeon>("Dungeon").NewGame(server);
+        }
+        else
+        {
+            GetNode<Dungeon>("Dungeon").NewGame(null);
+        }
     }
 }

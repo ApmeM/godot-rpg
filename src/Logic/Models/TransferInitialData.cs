@@ -6,7 +6,6 @@ namespace IsometricGame.Logic.Models
 {
     public class TransferInitialData
     {
-        public int YourPlayerId;
         public List<OtherPlayerData> OtherPlayers;
         public List<YourUnitsData> YourUnits;
         public MapTile[,] VisibleMap;

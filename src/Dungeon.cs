@@ -3,15 +3,16 @@ using IsometricGame.Logic;
 using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.Models;
 using IsometricGame.Logic.ScriptHelpers;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 public class Dungeon : Node2D
 {
-	private int PlayerId;
 	private CurrentAction currentAction = CurrentAction.None;
 	private IAbility currentAbility = null;
-	private Server server;
+	private Server serverOptional;
 
 	public override void _Ready()
 	{
@@ -21,14 +22,30 @@ public class Dungeon : Node2D
 
 	public void NewGame(Server server)
 	{
-		this.server = server;
-		this.server.Connect(TransferConnectData.Load()[0], Initialize, TurnDone);
+		this.serverOptional = server;
+		var data = TransferConnectData.Load()[0];
+		GD.Print($"Local Units count {data.Units.Count}");
+		RpcId(1, nameof(ConnectToServer), JsonConvert.SerializeObject(data));
+	}
+	
+	[RemoteSync]
+	private void ConnectToServer(string data)
+	{
+		TransferConnectData connectData = JsonConvert.DeserializeObject<TransferConnectData>(data);
+		var clientId = GetTree().GetRpcSenderId();
+		GD.Print($"Connected to server with id {clientId}");
+		GD.Print($"Units count {connectData.Units.Count}");
+		this.serverOptional.Connect(clientId, connectData, 
+			(initData) => { RpcId(clientId, nameof(Initialize), JsonConvert.SerializeObject(initData)); }, 
+			(turnData) => { RpcId(clientId, nameof(TurnDone), JsonConvert.SerializeObject(turnData)); });
 	}
 
-	private void Initialize(TransferInitialData initialData)
+	[RemoteSync]
+	private void Initialize(string data)
 	{
+		TransferInitialData initialData = JsonConvert.DeserializeObject<TransferInitialData>(data);
+		GD.Print($"Initialize received");
 		var maze = GetNode<Maze>("Maze");
-		this.PlayerId = initialData.YourPlayerId;
 
 		maze.Initialize(initialData.VisibleMap.GetLength(0), initialData.VisibleMap.GetLength(1));
 		maze.NewVisibleMap(initialData.VisibleMap);
@@ -41,7 +58,7 @@ public class Dungeon : Node2D
 			var unitSceneInstance = (Unit)unitScene.Instance();
 			unitSceneInstance.ClientUnit = new ClientUnit
 			{
-				PlayerId = this.PlayerId,
+				PlayerId = 0,
 				UnitId = unit.UnitId,
 				UnitType = unit.UnitType,
 				MoveDistance = unit.MoveDistance,
@@ -180,7 +197,7 @@ public class Dungeon : Node2D
 		maze.RemoveHighliting();
 		GetNode<Button>("CanvasLayer/NextTurnButton").Visible = false;
 
-		server.PlayerMove(this.PlayerId, new TransferTurnDoneData
+		RpcId(1, nameof(PlayerMoved), JsonConvert.SerializeObject(new TransferTurnDoneData
 		{
 			UnitActions = myUnits.ToDictionary(a => a.ClientUnit.UnitId, a => new TransferTurnDoneData.UnitActionData
 			{
@@ -188,11 +205,25 @@ public class Dungeon : Node2D
 				AbilityTarget = a.AbilityDirection,
 				Ability = a.Ability?.Name ?? Ability.None
 			})
-		});
+		}));
+
 	}
 
-	private async void TurnDone(TransferTurnData turnData)
+	[RemoteSync]
+	private void PlayerMoved(string data)
 	{
+		TransferTurnDoneData turnData = JsonConvert.DeserializeObject<TransferTurnDoneData>(data);
+		var clientId = GetTree().GetRpcSenderId();
+
+		GD.Print($"Player with id {clientId} moved.");
+		serverOptional.PlayerMove(clientId, turnData);
+	}
+
+	[RemoteSync]
+	private async void TurnDone(string data)
+	{
+		TransferTurnData turnData = JsonConvert.DeserializeObject<TransferTurnData>(data);
+		GD.Print($"Turn done received.");
 		var maze = GetNode<Maze>("Maze");
 		maze.NewVisibleMap(turnData.VisibleMap);
 		var myUnits = this.GetTree().GetNodesInGroup(Groups.MyUnits).Cast<Unit>().ToList();
