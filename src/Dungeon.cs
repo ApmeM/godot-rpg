@@ -20,6 +20,23 @@ public class Dungeon : Node2D
 		GetNode<UnitActions>("UnitActions").Connect(nameof(UnitActions.ActionSelected), this, nameof(UnitActionSelected));
 	}
 
+	public override void _Process(float delta)
+	{
+		base._Process(delta);
+		if (GetTree().NetworkPeer is WebSocketServer server && server.IsListening())
+		{
+			server.Poll();
+		}
+		else if (GetTree().NetworkPeer is WebSocketClient client &&
+		   (
+		   client.GetConnectionStatus() == NetworkedMultiplayerPeer.ConnectionStatus.Connected ||
+		   client.GetConnectionStatus() == NetworkedMultiplayerPeer.ConnectionStatus.Connecting
+		   ))
+		{
+			client.Poll();
+		}
+	}
+
 	public void NewGame(int selectedTeam, Server server)
 	{
 		this.serverOptional = server;

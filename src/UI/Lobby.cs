@@ -32,20 +32,36 @@ public class Lobby : Container
 
 			if (isServer.Value)
 			{
-				var peer = new NetworkedMultiplayerENet();
-				peer.CreateServer(12345);
+				var peer = new WebSocketServer();
+				peer.Listen(12345, null, true);
 				GetTree().NetworkPeer = peer;
 			}
 			else
 			{
-				var peer = new NetworkedMultiplayerENet();
-				peer.CreateClient("localhost", 12345);
+				var peer = new WebSocketClient();
+				peer.ConnectToUrl("ws://localhost:12345", null, true);
 				GetTree().NetworkPeer = peer;
 			}
 		}
 	}
 
-	private void TeamSelectorItemSelected(int id)
+    public override void _Process(float delta)
+    {
+        base._Process(delta);
+		if (GetTree().NetworkPeer is WebSocketServer server && server.IsListening())
+		{
+			server.Poll();
+		}else if (GetTree().NetworkPeer is WebSocketClient client && 
+			(
+			client.GetConnectionStatus() == NetworkedMultiplayerPeer.ConnectionStatus.Connected ||
+			client.GetConnectionStatus() == NetworkedMultiplayerPeer.ConnectionStatus.Connecting
+			))
+        {
+			client.Poll();
+        }
+	}
+
+    private void TeamSelectorItemSelected(int id)
 	{
 		var team = this.teams[id];
 		Rpc(nameof(RegisterPlayer), team.TeamName);
