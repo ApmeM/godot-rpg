@@ -20,10 +20,10 @@ public class Dungeon : Node2D
 		GetNode<UnitActions>("UnitActions").Connect(nameof(UnitActions.ActionSelected), this, nameof(UnitActionSelected));
 	}
 
-	public void NewGame(Server server)
+	public void NewGame(int selectedTeam, Server server)
 	{
 		this.serverOptional = server;
-		var data = TransferConnectData.Load()[0];
+		var data = TransferConnectData.Load()[selectedTeam];
 		GD.Print($"Local Units count {data.Units.Count}");
 		RpcId(1, nameof(ConnectToServer), JsonConvert.SerializeObject(data));
 	}

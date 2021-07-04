@@ -60,11 +60,11 @@ public class Main : Node
 		AddChild(this.menu);
 	}
 
-	public void StartGame()
+	public void StartGame(int selectedTeam)
 	{
 		RemoveChild(this.lobby);
 		AddChild(this.game);
 
-		this.game.NewGame();
+		this.game.NewGame(selectedTeam);
 	}
 }

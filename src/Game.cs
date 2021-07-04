@@ -3,7 +3,7 @@ using IsometricGame.Logic;
 
 public class Game : Node2D
 {
-    public void NewGame()
+    public void NewGame(int selectedTeam)
     {
         if (GetTree().IsNetworkServer())
         {
@@ -14,11 +14,11 @@ public class Game : Node2D
             });
 
             //GetNode<Bot>("Bot").NewGame(server);
-            GetNode<Dungeon>("Dungeon").NewGame(server);
+            GetNode<Dungeon>("Dungeon").NewGame(selectedTeam, server);
         }
         else
         {
-            GetNode<Dungeon>("Dungeon").NewGame(null);
+            GetNode<Dungeon>("Dungeon").NewGame(selectedTeam, null);
         }
     }
 }

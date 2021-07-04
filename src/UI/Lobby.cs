@@ -9,7 +9,7 @@ public class Lobby : Container
 	private readonly Dictionary<int, Label> otherNames = new Dictionary<int, Label>();
 
 	[Signal]
-	public delegate void StartGameEvent();
+	public delegate void StartGameEvent(int selectedTeam);
 
 	public override void _Ready()
 	{
@@ -39,7 +39,7 @@ public class Lobby : Container
 			else
 			{
 				var peer = new NetworkedMultiplayerENet();
-				peer.CreateClient("127.0.0.1", 12345);
+				peer.CreateClient("localhost", 12345);
 				GetTree().NetworkPeer = peer;
 			}
 		}
@@ -83,7 +83,7 @@ public class Lobby : Container
 	[RemoteSync]
 	private void StartGame()
 	{
-		EmitSignal(nameof(StartGameEvent));
+		EmitSignal(nameof(StartGameEvent), this.GetNode<OptionButton>("VBoxContainer/TeamSelector").Selected);
 	}
 
 	[Remote]
