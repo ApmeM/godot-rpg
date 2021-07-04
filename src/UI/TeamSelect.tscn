@@ -91,7 +91,8 @@ __meta__ = {
 [node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer"]
 margin_top = 108.0
 margin_right = 1014.0
-margin_bottom = 358.0
+margin_bottom = 550.0
+size_flags_vertical = 3
 scroll_vertical_enabled = false
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/ScrollContainer"]
@@ -133,18 +134,10 @@ margin_bottom = 143.0
 text = "+"
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer"]
-margin_top = 362.0
+margin_top = 554.0
 margin_right = 1014.0
-margin_bottom = 398.0
-
-[node name="SpaceLabel" type="Label" parent="VBoxContainer/HBoxContainer2"]
-margin_top = 3.0
-margin_right = 929.0
-margin_bottom = 33.0
-size_flags_horizontal = 3
-__meta__ = {
-"_edit_use_anchors_": false
-}
+margin_bottom = 590.0
+alignment = 2
 
 [node name="StartButton" type="Button" parent="VBoxContainer/HBoxContainer2"]
 margin_left = 933.0

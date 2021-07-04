@@ -3,6 +3,9 @@ using IsometricGame.Logic;
 
 public class Game : Node2D
 {
+    [Export]
+    public PackedScene Bot;
+
     public void NewGame(int selectedTeam)
     {
         if (GetTree().IsNetworkServer())
@@ -13,7 +16,9 @@ public class Game : Node2D
                 FullMapVisible = true
             });
 
-            //GetNode<Bot>("Bot").NewGame(server);
+            var bot = (Bot)Bot.Instance();
+            this.AddChild(bot);
+            bot.NewGame(server);
             GetNode<Dungeon>("Dungeon").NewGame(selectedTeam, server);
         }
         else

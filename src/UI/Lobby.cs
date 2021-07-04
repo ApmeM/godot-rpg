@@ -45,9 +45,9 @@ public class Lobby : Container
 		}
 	}
 
-    public override void _Process(float delta)
-    {
-        base._Process(delta);
+	public override void _Process(float delta)
+	{
+		base._Process(delta);
 		if (GetTree().NetworkPeer is WebSocketServer server && server.IsListening())
 		{
 			server.Poll();
@@ -56,12 +56,12 @@ public class Lobby : Container
 			client.GetConnectionStatus() == NetworkedMultiplayerPeer.ConnectionStatus.Connected ||
 			client.GetConnectionStatus() == NetworkedMultiplayerPeer.ConnectionStatus.Connecting
 			))
-        {
+		{
 			client.Poll();
-        }
+		}
 	}
 
-    private void TeamSelectorItemSelected(int id)
+	private void TeamSelectorItemSelected(int id)
 	{
 		var team = this.teams[id];
 		Rpc(nameof(RegisterPlayer), team.TeamName);

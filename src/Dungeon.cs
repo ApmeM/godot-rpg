@@ -4,7 +4,6 @@ using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.Models;
 using IsometricGame.Logic.ScriptHelpers;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 

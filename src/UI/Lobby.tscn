@@ -64,15 +64,7 @@ size_flags_vertical = 3
 margin_top = 554.0
 margin_right = 1014.0
 margin_bottom = 590.0
-
-[node name="SpaceLabel" type="Label" parent="VBoxContainer/HBoxContainer"]
-margin_top = 3.0
-margin_right = 933.0
-margin_bottom = 33.0
-size_flags_horizontal = 3
-__meta__ = {
-"_edit_use_anchors_": false
-}
+alignment = 2
 
 [node name="StartButton" type="Button" parent="VBoxContainer/HBoxContainer"]
 margin_left = 937.0
