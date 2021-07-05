@@ -63,10 +63,34 @@ namespace IsometricGame.Logic.ScriptHelpers
 
         private static Dictionary<Skill, ISkill> SupportedSkills = new Dictionary<Skill, ISkill>
         {
-            { Skill.EagleEye, new EagleEyeSkill() },
-            { Skill.Logistics, new LogisticsSkill() },
-            { Skill.Ballistics, new BallisticsSkill() },
-            { Skill.FirstAid, new FirstAidSkill() },
+            { Skill.Archery,      new ArcherySkill() },
+            { Skill.Ballistics,   new BallisticsSkill() },
+            //{ Skill.Diplomacy,    new DiplomacySkill() },
+            { Skill.EagleEye,     new EagleEyeSkill() },
+            //{ Skill.Estates,      new EstatesSkill() },
+            //{ Skill.Leadership,   new LeadershipSkill() },
+            { Skill.Logistics,    new LogisticsSkill() },
+            //{ Skill.Luck,         new LuckSkill() },
+            //{ Skill.Mysticism,    new MysticismSkill() },
+            //{ Skill.Navigation,   new NavigationSkill() },
+            //{ Skill.Necromancy,   new NecromancySkill() },
+            //{ Skill.Pathfinding,  new PathfindingSkill() },
+            //{ Skill.Scouting,     new ScoutingSkill() },
+            //{ Skill.Wisdom,       new WisdomSkill() },
+            //{ Skill.FireMagic,    new FireMagicSkill() },
+            //{ Skill.AirMagic,     new AirMagicSkill() },
+            //{ Skill.WaterMagic,   new WaterMagicSkill() },
+            //{ Skill.EarthMagic,   new EarthMagicSkill() },
+            //{ Skill.Scholar,      new ScholarSkill() },
+            //{ Skill.Tactics,      new TacticsSkill() },
+            //{ Skill.Artillery,    new ArtillerySkill() },
+            //{ Skill.Learning,     new LearningSkill() },
+            { Skill.Offence,      new OffenceSkill() },
+            { Skill.Armourer,     new ArmourerSkill() },
+            //{ Skill.Intelligence, new IntelligenceSkill() },
+            //{ Skill.Sorcery,      new SorcerySkill() },
+            //{ Skill.Resistance,   new ResistanceSkill() },
+            { Skill.FirstAid,     new FirstAidSkill() },
         };
 
         public static void ApplySkill(ServerPlayer player, ServerUnit unit, Skill skill)
