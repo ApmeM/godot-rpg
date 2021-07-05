@@ -1,6 +1,6 @@
 ﻿namespace IsometricGame.Logic
 {
-    public class ServerConfiguration
+    public class ServerConfiguration : Godot.Object
     {
         public bool FullMapVisible;
         public int PlayersCount = 2;

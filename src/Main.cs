@@ -60,11 +60,11 @@ public class Main : Node
 		AddChild(this.menu);
 	}
 
-	public void StartGame(int selectedTeam)
+	public void StartGame(int selectedTeam, int botsCount, ServerConfiguration serverConfiguration)
 	{
 		RemoveChild(this.lobby);
 		AddChild(this.game);
 
-		this.game.NewGame(selectedTeam);
+		this.game.NewGame(selectedTeam, botsCount, serverConfiguration);
 	}
 }

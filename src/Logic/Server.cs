@@ -29,8 +29,8 @@ namespace IsometricGame.Logic
 			var generator = new RoomMazeGenerator();
 			this.Map = generator.Generate(new RoomMazeGenerator.Settings
 			{
-				Width = 21,
-				Height = 21,
+				Width = configuration.PlayersCount * 10 + 1,
+				Height = configuration.PlayersCount * 10 + 1,
 				MinRoomSize = 5,
 				MaxRoomSize = 9,
 			});

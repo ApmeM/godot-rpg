@@ -40,7 +40,6 @@ public class Dungeon : Node2D
 	{
 		this.serverOptional = server;
 		var data = TransferConnectData.Load()[selectedTeam];
-		GD.Print($"Local Units count {data.Units.Count}");
 		RpcId(1, nameof(ConnectToServer), JsonConvert.SerializeObject(data));
 	}
 	
@@ -49,8 +48,6 @@ public class Dungeon : Node2D
 	{
 		TransferConnectData connectData = JsonConvert.DeserializeObject<TransferConnectData>(data);
 		var clientId = GetTree().GetRpcSenderId();
-		GD.Print($"Connected to server with id {clientId}");
-		GD.Print($"Units count {connectData.Units.Count}");
 		this.serverOptional.Connect(clientId, connectData, 
 			(initData) => { RpcId(clientId, nameof(Initialize), JsonConvert.SerializeObject(initData)); }, 
 			(turnData) => { RpcId(clientId, nameof(TurnDone), JsonConvert.SerializeObject(turnData)); });
@@ -60,7 +57,6 @@ public class Dungeon : Node2D
 	private void Initialize(string data)
 	{
 		TransferInitialData initialData = JsonConvert.DeserializeObject<TransferInitialData>(data);
-		GD.Print($"Initialize received");
 		var maze = GetNode<Maze>("Maze");
 
 		maze.Initialize(initialData.VisibleMap.GetLength(0), initialData.VisibleMap.GetLength(1));
@@ -231,7 +227,6 @@ public class Dungeon : Node2D
 		TransferTurnDoneData turnData = JsonConvert.DeserializeObject<TransferTurnDoneData>(data);
 		var clientId = GetTree().GetRpcSenderId();
 
-		GD.Print($"Player with id {clientId} moved.");
 		serverOptional.PlayerMove(clientId, turnData);
 	}
 
@@ -239,7 +234,6 @@ public class Dungeon : Node2D
 	private async void TurnDone(string data)
 	{
 		TransferTurnData turnData = JsonConvert.DeserializeObject<TransferTurnData>(data);
-		GD.Print($"Turn done received.");
 		var maze = GetNode<Maze>("Maze");
 		maze.NewVisibleMap(turnData.VisibleMap);
 		var myUnits = this.GetTree().GetNodesInGroup(Groups.MyUnits).Cast<Unit>().ToList();

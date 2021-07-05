@@ -8,15 +8,17 @@ using System.Collections.Generic;
 public class Bot : Node
 {
 	private TransferInitialData initialData;
-	private Server server;
+    private int myId;
+    private Server server;
 	private bool waitForMove = false;
 
-	public void NewGame(Server server)
+	public void NewGame(Server server, int myId)
 	{
+		this.myId = myId;
 		this.server = server;
-		this.server.Connect(-1, new TransferConnectData
+		this.server.Connect(myId, new TransferConnectData
 		{
-			TeamName = "Bot",
+			TeamName = $"Bot-{myId}",
 			Units = new List<TransferConnectData.UnitData>
 			{
 				new TransferConnectData.UnitData{ UnitType = UnitType.Amazon, Skills = new List<Skill>{Skill.EagleEye}},
@@ -59,7 +61,7 @@ public class Bot : Node
 			});
 		}
 
-		this.server.PlayerMove(-1, new TransferTurnDoneData
+		this.server.PlayerMove(myId, new TransferTurnDoneData
 		{
 			UnitActions = otherMoves
 		});

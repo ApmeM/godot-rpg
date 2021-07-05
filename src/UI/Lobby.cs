@@ -9,13 +9,17 @@ public class Lobby : Container
 	private readonly Dictionary<int, Label> otherNames = new Dictionary<int, Label>();
 
 	[Signal]
-	public delegate void StartGameEvent(int selectedTeam);
+	public delegate void StartGameEvent(int selectedTeam, int botsCount, ServerConfiguration serverConfiguration);
+
+	private int botsCount = 0;
+	private int playersCount = 1;
 
 	public override void _Ready()
 	{
 		base._Ready();
 		this.GetNode<Button>("VBoxContainer/HBoxContainer/StartButton").Connect("pressed", this, nameof(OnStartButtonPressed));
-		this.GetNode<OptionButton>("VBoxContainer/TeamSelector").Connect("item_selected", this, nameof(TeamSelectorItemSelected));
+		this.GetNode<Button>("VBoxContainer/HBoxContainer/AddBotButton").Connect("pressed", this, nameof(OnAddBotButtonPressed));
+		this.GetNode<OptionButton>("VBoxContainer/HBoxContainer2/VBoxContainer/TeamSelector").Connect("item_selected", this, nameof(TeamSelectorItemSelected));
 		GetTree().Connect("network_peer_connected", this, nameof(PlayerConnected));
 		GetTree().Connect("network_peer_disconnected", this, nameof(PlayerDisconnected));
 		//GetTree().Connect("connected_to_server", this, "ConnectedOk");
@@ -29,6 +33,7 @@ public class Lobby : Container
 		if (isServer.HasValue)
 		{
 			this.GetNode<Button>("VBoxContainer/HBoxContainer/StartButton").Visible = isServer.Value;
+			this.GetNode<Button>("VBoxContainer/HBoxContainer/AddBotButton").Visible = isServer.Value;
 
 			if (isServer.Value)
 			{
@@ -51,11 +56,12 @@ public class Lobby : Container
 		if (GetTree().NetworkPeer is WebSocketServer server && server.IsListening())
 		{
 			server.Poll();
-		}else if (GetTree().NetworkPeer is WebSocketClient client && 
-			(
-			client.GetConnectionStatus() == NetworkedMultiplayerPeer.ConnectionStatus.Connected ||
-			client.GetConnectionStatus() == NetworkedMultiplayerPeer.ConnectionStatus.Connecting
-			))
+		}
+		else if (GetTree().NetworkPeer is WebSocketClient client &&
+		   (
+		   client.GetConnectionStatus() == NetworkedMultiplayerPeer.ConnectionStatus.Connected ||
+		   client.GetConnectionStatus() == NetworkedMultiplayerPeer.ConnectionStatus.Connecting
+		   ))
 		{
 			client.Poll();
 		}
@@ -72,11 +78,39 @@ public class Lobby : Container
 		Rpc(nameof(StartGame));
 	}
 
+	[RemoteSync]
+	private void StartGame()
+	{
+		var container = this.GetNode<Container>("VBoxContainer/HBoxContainer2/VBoxContainer2");
+		var serverConfiguration = new ServerConfiguration
+		{
+			FullMapVisible = container.GetNode<CheckBox>("ViewFullMap").Pressed,
+			PlayersCount = botsCount + playersCount,
+			MaxUnits = (int)container.GetNode<SpinBox>("MaximumUnits").Value,
+			MaxSkills = (int)container.GetNode<SpinBox>("MaximumSkills").Value
+		};
+
+		EmitSignal(nameof(StartGameEvent), this.GetNode<OptionButton>("VBoxContainer/HBoxContainer2/VBoxContainer/TeamSelector").Selected, botsCount, serverConfiguration);
+	}
+
+	public void OnAddBotButtonPressed()
+	{
+		Rpc(nameof(AddBot));
+		botsCount++;
+	}
+
+	[RemoteSync]
+	public void AddBot()
+	{
+		var container = this.GetNode<Container>("VBoxContainer/HBoxContainer2/VBoxContainer/VBoxContainer");
+		container.AddChild(new Label { Text = "Bot" });
+	}
+
 	public void Start(bool isServer)
 	{
 		this.isServer = isServer;
 		this.teams = TransferConnectData.Load();
-		var dropDown = this.GetNode<OptionButton>("VBoxContainer/TeamSelector");
+		var dropDown = this.GetNode<OptionButton>("VBoxContainer/HBoxContainer2/VBoxContainer/TeamSelector");
 		dropDown.Clear();
 		foreach(var team in this.teams)
 		{
@@ -86,20 +120,16 @@ public class Lobby : Container
 
 	private void PlayerConnected(int id)
 	{
-		var team = this.teams[this.GetNode<OptionButton>("VBoxContainer/TeamSelector").Selected];
+		var team = this.teams[this.GetNode<OptionButton>("VBoxContainer/HBoxContainer2/VBoxContainer/TeamSelector").Selected];
 		RpcId(id, nameof(RegisterPlayer), team.TeamName);
+		playersCount++;
 	}
 
 	private void PlayerDisconnected(int id)
 	{
 		otherNames[id].QueueFree();
 		otherNames.Remove(id);
-	}
-
-	[RemoteSync]
-	private void StartGame()
-	{
-		EmitSignal(nameof(StartGameEvent), this.GetNode<OptionButton>("VBoxContainer/TeamSelector").Selected);
+		playersCount--;
 	}
 
 	[Remote]
@@ -109,7 +139,7 @@ public class Lobby : Container
 		if (!this.otherNames.ContainsKey(otherClientId))
 		{
 			otherNames[otherClientId] = new Label();
-			this.GetNode<VBoxContainer>("VBoxContainer/VBoxContainer").AddChild(otherNames[otherClientId]);
+			this.GetNode<VBoxContainer>("VBoxContainer/HBoxContainer2/VBoxContainer/VBoxContainer").AddChild(otherNames[otherClientId]);
 		}
 		
 		var label = this.otherNames[otherClientId];
