@@ -52,6 +52,7 @@ public class TeamSelect : Container
 		this.Teams[this.CurrentTeam].Units.Add(unit);
 		var unitScene = (TeamSelectUnit)UnitConfigurationScene.Instance();
 		unitScene.InitUnit(unit);
+		unitScene.Connect(nameof(TeamSelectUnit.UnitRemoved), this, nameof(UnitRemoved), new Array { this.Teams[this.CurrentTeam].Units.Count - 1 });
 		var unitsContainer = GetNode<HBoxContainer>("VBoxContainer/ScrollContainer/HBoxContainer/UnitsContainer");
 		unitsContainer.AddChild(unitScene);
 

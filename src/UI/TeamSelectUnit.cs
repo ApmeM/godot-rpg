@@ -49,16 +49,23 @@ public class TeamSelectUnit : VBoxContainer
 		
 		this.Unit.Skills.Add((Skill)unitSkill);
 
-		skillsContainer.AddChild(new TextureRect
+		var skillNode = new TextureButton
 		{
-			Texture = new AtlasTexture
+			TextureNormal = new AtlasTexture
 			{
 				Atlas = texture,
 				Region = new Rect2(unitSkill % 4 * texture.GetSize().x / 4, unitSkill / 4 * texture.GetSize().y / 7, texture.GetSize().x / 12, texture.GetSize().y / 7)
 			}
-		});
+		};
+		skillNode.Connect("pressed", this, nameof(RemoveSkillButtonPressed), new Godot.Collections.Array { skillNode });
+		skillsContainer.AddChild(skillNode);
 
 		UpdateUnitDetails();
+	}
+
+	private void RemoveSkillButtonPressed(Node node)
+	{
+		node.QueueFree();
 	}
 
 	private void RemoveUnitButtonPressed()
