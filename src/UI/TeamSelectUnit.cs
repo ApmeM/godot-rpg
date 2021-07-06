@@ -18,12 +18,12 @@ public class TeamSelectUnit : VBoxContainer
 		base._Ready();
 		this.GetNode<OptionButton>("HBoxContainer/UnitTypeCombo").Connect("item_selected", this, nameof(UnitTypeChanged));
 		this.GetNode<Button>("HBoxContainer/RemoveUnitButton").Connect("pressed", this, nameof(RemoveUnitButtonPressed));
-		var newSkillCombo = this.GetNode<OptionButton>("SkillsContainer/NewSkillButton");
+		var newSkillCombo = this.GetNode<OptionButton>("NewSkillButton");
 		newSkillCombo.Connect("item_selected", this, nameof(AddSkillButtonPressed));
 
 		var skills = Enum.GetValues(typeof(Skill)).Cast<Skill>().ToList();
 		var texture = ResourceLoader.Load<Texture>("assets/Skills.png");
-		
+
 		for (var i = 0; i < skills.Count; i++)
 		{
 			var skill = skills[i];
@@ -32,7 +32,7 @@ public class TeamSelectUnit : VBoxContainer
 			atlasTexture.Atlas = texture;
 			atlasTexture.Region = new Rect2(((int)skill) % 4 * texture.GetSize().x / 4, ((int)skill) / 4 * texture.GetSize().y / 7, texture.GetSize().x / 12, texture.GetSize().y / 7);
 
-			newSkillCombo.AddIconItem(atlasTexture, string.Empty);
+			newSkillCombo.AddIconItem(atlasTexture, skill.ToString());
 		}
 
 		newSkillCombo.Select(0);
@@ -40,7 +40,7 @@ public class TeamSelectUnit : VBoxContainer
 
 	public void AddSkillButtonPressed(int unitSkill)
 	{
-		var newSkillCombo = this.GetNode<OptionButton>("SkillsContainer/NewSkillButton");
+		var newSkillCombo = this.GetNode<OptionButton>("NewSkillButton");
 
 		var skillsContainer = this.GetNode<Container>("SkillsContainer");
 		var texture = ResourceLoader.Load<Texture>("assets/Skills.png");
@@ -94,14 +94,16 @@ public class TeamSelectUnit : VBoxContainer
 		{
 			var unitSkill = (int)unit.Skills[j];
 
-			skillsContainer.AddChild(new TextureRect
+			var skillNode = new TextureButton
 			{
-				Texture = new AtlasTexture
+				TextureNormal = new AtlasTexture
 				{
 					Atlas = texture,
 					Region = new Rect2(unitSkill % 4 * texture.GetSize().x / 4, unitSkill / 4 * texture.GetSize().y / 7, texture.GetSize().x / 12, texture.GetSize().y / 7)
 				}
-			});
+			};
+			skillNode.Connect("pressed", this, nameof(RemoveSkillButtonPressed), new Godot.Collections.Array { skillNode });
+			skillsContainer.AddChild(skillNode);
 		}
 
 		UpdateUnitDetails();

@@ -1,9 +1,7 @@
-﻿using FateRandom;
-using IsometricGame.Logic.Enums;
+﻿using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.Models;
 using IsometricGame.Logic.ScriptHelpers.Skills;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace IsometricGame.Logic.ScriptHelpers
 {
@@ -16,26 +14,17 @@ namespace IsometricGame.Logic.ScriptHelpers
                 {
                     MaxHp = 20,
                     Hp = 20,
-                    AttackDamage = 3,
-                    Abilities = new HashSet<Ability>{ Ability.AmazonAOEAttack }
+                    Abilities = new HashSet<Ability>{ Ability.MeleeAttack }
                 }
             },
             {
                 UnitType.Amazon, new ServerUnit
                 {
                     SightRange = 7,
-                    AttackDistance = 3,
-                    Abilities = new HashSet<Ability>{ Ability.AmazonAOEAttack }
+                    Abilities = new HashSet<Ability>{ Ability.RangedAttack }
                 }
             },
         };
-
-        private static List<UnitType> UnitTypeTemplateList = new List<UnitType>();
-
-        static UnitUtils()
-        {
-            UnitTypeTemplateList.AddRange(UnitTypeTemplates.Keys);
-        }
 
         public static ServerUnit BuildUnit(UnitType unitType)
         {
@@ -48,17 +37,13 @@ namespace IsometricGame.Logic.ScriptHelpers
                 MoveDistance = template.MoveDistance,
                 MaxHp = template.MaxHp,
                 Hp = template.Hp,
-                AttackDistance = template.AttackDistance,
-                AttackRadius = template.AttackRadius,
-                AttackDamage = template.AttackDamage,
+                RangedAttackDistance = template.RangedAttackDistance,
+                AOEAttackRadius = template.AOEAttackRadius,
+                AttackPower = template.AttackPower,
+                MagicPower = template.MagicPower,
                 Abilities = new HashSet<Ability>(template.Abilities)
             };
             return unit;
-        }
-
-        public static ServerUnit GetRandomUnit()
-        {
-            return BuildUnit(Fate.GlobalFate.Choose<UnitType>(UnitTypeTemplateList));
         }
 
         private static Dictionary<Skill, ISkill> SupportedSkills = new Dictionary<Skill, ISkill>
@@ -105,7 +90,8 @@ namespace IsometricGame.Logic.ScriptHelpers
 
         private static Dictionary<Ability, IAbility> SupportedAbilities = new Dictionary<Ability, IAbility>
         {
-            { Ability.AmazonAOEAttack, new AmazonAOEAttackAbility() },
+            { Ability.RangedAttack, new RangedAttackAbility() },
+            { Ability.MeleeAttack, new MeleeAttackAbility() },
             { Ability.Heal, new HealAbility() },
         };
 

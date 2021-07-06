@@ -57,15 +57,16 @@ namespace IsometricGame.Logic
 			{
 				PlayerName = connect.TeamName,
 			};
+
 			var playerNumber = Players.Count();
 			var centerX = Map.Rooms[playerNumber].X + Map.Rooms[playerNumber].Width / 2;
 			var centerY = this.Map.Rooms[playerNumber].Y + this.Map.Rooms[playerNumber].Height / 2;
 			var center = new Vector2(centerX, centerY);
 			var unitId = 0;
-			foreach(var u in connect.Units)
+			foreach (var u in connect.Units)
 			{
 				unitId++;
-				if(unitId > configuration.MaxUnits)
+				if (unitId > configuration.MaxUnits)
 				{
 					break;
 				}
@@ -213,9 +214,10 @@ namespace IsometricGame.Logic
 					Position = a.Value.Position,
 					MoveDistance = a.Value.MoveDistance,
 					SightRange = a.Value.SightRange,
-					AttackDistance = a.Value.AttackDistance,
-					AttackRadius = a.Value.AttackRadius,
-					AttackPower = a.Value.AttackDamage,
+					RangedAttackDistance = a.Value.RangedAttackDistance,
+					AOEAttackRadius = a.Value.AOEAttackRadius,
+					AttackPower = a.Value.AttackPower,
+					MagicPower = a.Value.MagicPower,
 					MaxHp = a.Value.MaxHp,
 					UnitType = a.Value.UnitType,
 					Abilities = a.Value.Abilities.ToList()

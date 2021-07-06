@@ -10,8 +10,8 @@ namespace IsometricGame.Logic.Models
         public int PlayerId;
         public int? MoveDistance;
         public int? SightRange;
-        public int? AttackDistance;
-        public int? AttackRadius;
+        public float? RangedAttackDistance;
+        public float? AOEAttackRadius;
         public UnitType UnitType;
         public int MaxHp;
         public int Hp;

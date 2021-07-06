@@ -75,8 +75,8 @@ public class Dungeon : Node2D
 				UnitType = unit.UnitType,
 				MoveDistance = unit.MoveDistance,
 				SightRange = unit.SightRange,
-				AttackDistance = unit.AttackDistance,
-				AttackRadius = unit.AttackRadius,
+				RangedAttackDistance = unit.RangedAttackDistance,
+				AOEAttackRadius = unit.AOEAttackRadius,
 				MaxHp = unit.MaxHp,
 				Hp = unit.MaxHp,
 				Abilities = unit.Abilities.ToDictionary(a => a, a => UnitUtils.FindAbility(a))

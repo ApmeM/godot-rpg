@@ -10,7 +10,6 @@ public class UnitDetails : VBoxContainer
 		GetNode<Label>("MaxHP").Text = "MaxHP " + unit?.MaxHp.ToString() ?? "unknown";
 		GetNode<Label>("MoveRange").Text = "Speed " + unit?.MoveDistance.ToString() ?? "unknown";
 		GetNode<Label>("SightRange").Text = "Vision " + unit?.SightRange.ToString() ?? "unknown";
-		GetNode<Label>("AttackDistance").Text = "Attack " + unit?.AttackDistance.ToString() ?? "unknown";
 	}
 
 	public void SelectUnit(ServerUnit unit)
@@ -18,7 +17,6 @@ public class UnitDetails : VBoxContainer
 		GetNode<Label>("MaxHP").Text = "MaxHP " + unit?.MaxHp.ToString() ?? "unknown";
 		GetNode<Label>("MoveRange").Text = "Speed " + unit?.MoveDistance.ToString() ?? "unknown";
 		GetNode<Label>("SightRange").Text = "Vision " + unit?.SightRange.ToString() ?? "unknown";
-		GetNode<Label>("AttackDistance").Text = "Attack " + unit?.AttackDistance.ToString() ?? "unknown";
 		var abilityContainer = GetNode<Container>("AbilityContainer");
 		foreach (Node node in abilityContainer.GetChildren())
 		{

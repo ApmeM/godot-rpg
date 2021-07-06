@@ -6,7 +6,7 @@ namespace IsometricGame.Logic.ScriptHelpers.Skills
     {
         public void Apply(ServerPlayer player, ServerUnit unit)
         {
-            unit.AttackDamage += 5;
+            unit.AttackPower *= 1.5f;
         }
     }
 }

@@ -14,9 +14,12 @@ namespace IsometricGame.Logic.Models
         public HashSet<Ability> Abilities;
         public int MoveDistance = 5;
         public int SightRange = 6;
-        public int AttackDistance = 1;
-        public int AttackRadius = 1;
-        public int AttackDamage = 2;
+
+        public float RangedAttackDistance = 1;
+        public float AOEAttackRadius = 1;
+        public float AttackPower = 1;
+        public float MagicPower = 1;
+        
         public readonly HashSet<Skill> Skills = new HashSet<Skill>();
     }
 }

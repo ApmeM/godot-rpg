@@ -36,23 +36,14 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="AttackDistance" type="Label" parent="."]
+[node name="AbilitiesLabel" type="Label" parent="."]
 margin_top = 54.0
 margin_right = 148.0
 margin_bottom = 68.0
-text = "Attack: 70"
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="AbilitiesLabel" type="Label" parent="."]
-margin_top = 72.0
-margin_right = 148.0
-margin_bottom = 86.0
 text = "Abilities:"
 
 [node name="AbilityContainer" type="VBoxContainer" parent="."]
-margin_top = 90.0
+margin_top = 72.0
 margin_right = 148.0
-margin_bottom = 90.0
+margin_bottom = 72.0
 alignment = 1

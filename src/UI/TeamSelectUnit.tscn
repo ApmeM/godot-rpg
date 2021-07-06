@@ -34,15 +34,16 @@ text = "X"
 [node name="UnitDetails" parent="." instance=ExtResource( 3 )]
 margin_top = 24.0
 margin_right = 200.0
-margin_bottom = 114.0
+margin_bottom = 96.0
+
+[node name="NewSkillButton" type="OptionButton" parent="."]
+margin_top = 100.0
+margin_right = 200.0
+margin_bottom = 120.0
+text = "+"
 
 [node name="SkillsContainer" type="GridContainer" parent="."]
-margin_top = 118.0
+margin_top = 124.0
 margin_right = 200.0
-margin_bottom = 138.0
+margin_bottom = 124.0
 columns = 3
-
-[node name="NewSkillButton" type="OptionButton" parent="SkillsContainer"]
-margin_right = 37.0
-margin_bottom = 20.0
-text = "+"

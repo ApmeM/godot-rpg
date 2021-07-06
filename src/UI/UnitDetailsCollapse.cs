@@ -11,7 +11,6 @@ public class UnitDetailsCollapse : Panel
 	public override void _Ready()
 	{
 		this.GetNode<Button>("Close").Connect("pressed", this, nameof(CloseButtonPressed));
-		RectPosition = new Vector2(GetViewportRect().Size.x, RectPosition.y);
 		this.GetNode<Button>("Close").Text = "<";
 	}
 

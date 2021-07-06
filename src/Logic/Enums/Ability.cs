@@ -3,7 +3,8 @@
     public enum Ability
     {
         None,
-        AmazonAOEAttack, 
+        RangedAttack, 
+        MeleeAttack, 
         Heal
     };
 }

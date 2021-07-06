@@ -30,9 +30,10 @@ namespace IsometricGame.Logic.Models
             public int UnitId;
             public int MoveDistance;
             public int SightRange;
-            public int AttackDistance;
-            public int AttackRadius;
-            public int AttackPower;
+            public float RangedAttackDistance;
+            public float AOEAttackRadius;
+            public float AttackPower;
+            public float MagicPower;
             public UnitType UnitType;
             public int MaxHp;
             public List<Ability> Abilities;

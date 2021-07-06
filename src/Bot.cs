@@ -57,7 +57,7 @@ public class Bot : Node
 			{
 				Move = u.Position + Fate.GlobalFate.Choose(Vector2.Up, Vector2.Down, Vector2.Left, Vector2.Right),
 				AbilityTarget = Fate.GlobalFate.Choose(Vector2.Up, Vector2.Down, Vector2.Left, Vector2.Right),
-				Ability = Ability.AmazonAOEAttack
+				Ability = (u.UnitType == UnitType.Amazon) ? Ability.RangedAttack : Ability.MeleeAttack
 			});
 		}
 

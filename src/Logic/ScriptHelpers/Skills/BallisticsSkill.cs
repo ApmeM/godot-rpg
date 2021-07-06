@@ -6,7 +6,7 @@ namespace IsometricGame.Logic.ScriptHelpers.Skills
     {
         public void Apply(ServerPlayer player, ServerUnit unit)
         {
-            unit.AttackRadius += 2;
+            unit.AOEAttackRadius *= 1.5f;
         }
     }
 }

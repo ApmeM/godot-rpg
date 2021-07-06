@@ -6,7 +6,7 @@ namespace IsometricGame.Logic.ScriptHelpers.Skills
     {
         public void Apply(ServerPlayer player, ServerUnit unit)
         {
-            unit.AttackDistance += 3;
+            unit.RangedAttackDistance *= 1.5f;
         }
     }
 }
