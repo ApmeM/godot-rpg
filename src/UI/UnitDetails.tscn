@@ -3,15 +3,15 @@
 [ext_resource path="res://UI/UnitDetails.cs" type="Script" id=1]
 
 [node name="UnitDetails" type="VBoxContainer"]
-margin_right = 148.0
-margin_bottom = 44.0
+margin_right = 155.0
+margin_bottom = 131.0
 script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="MaxHP" type="Label" parent="."]
-margin_right = 148.0
+margin_right = 308.0
 margin_bottom = 14.0
 text = "MaxHP: 100"
 __meta__ = {
@@ -20,7 +20,7 @@ __meta__ = {
 
 [node name="MoveRange" type="Label" parent="."]
 margin_top = 18.0
-margin_right = 148.0
+margin_right = 308.0
 margin_bottom = 32.0
 text = "Speed: 50"
 __meta__ = {
@@ -29,21 +29,21 @@ __meta__ = {
 
 [node name="SightRange" type="Label" parent="."]
 margin_top = 36.0
-margin_right = 148.0
+margin_right = 308.0
 margin_bottom = 50.0
 text = "Vision: 70"
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="AbilitiesLabel" type="Label" parent="."]
+[node name="SkillsContainer" type="GridContainer" parent="."]
 margin_top = 54.0
-margin_right = 148.0
-margin_bottom = 68.0
-text = "Abilities:"
+margin_right = 308.0
+margin_bottom = 54.0
+columns = 3
 
 [node name="AbilityContainer" type="VBoxContainer" parent="."]
-margin_top = 72.0
-margin_right = 148.0
-margin_bottom = 72.0
+margin_top = 58.0
+margin_right = 308.0
+margin_bottom = 58.0
 alignment = 1

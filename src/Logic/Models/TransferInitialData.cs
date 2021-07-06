@@ -37,6 +37,7 @@ namespace IsometricGame.Logic.Models
             public UnitType UnitType;
             public int MaxHp;
             public List<Ability> Abilities;
+            public List<Skill> Skills;
         }
     }
 }

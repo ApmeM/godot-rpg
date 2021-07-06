@@ -220,7 +220,8 @@ namespace IsometricGame.Logic
 					MagicPower = a.Value.MagicPower,
 					MaxHp = a.Value.MaxHp,
 					UnitType = a.Value.UnitType,
-					Abilities = a.Value.Abilities.ToList()
+					Abilities = a.Value.Abilities.ToList(),
+					Skills = a.Value.Skills.ToList()
 				}).ToList(),
 				VisibleMap = GetVisibleMap(forPlayer),
 				OtherPlayers = Players.Where(a => a.Key != forPlayer).Select(a => new TransferInitialData.OtherPlayerData

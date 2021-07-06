@@ -16,5 +16,6 @@ namespace IsometricGame.Logic.Models
         public int MaxHp;
         public int Hp;
         public Dictionary<Ability, IAbility> Abilities;
+        public HashSet<Skill> Skills;
     }
 }

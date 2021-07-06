@@ -79,7 +79,8 @@ public class Dungeon : Node2D
 				AOEAttackRadius = unit.AOEAttackRadius,
 				MaxHp = unit.MaxHp,
 				Hp = unit.MaxHp,
-				Abilities = unit.Abilities.ToDictionary(a => a, a => UnitUtils.FindAbility(a))
+				Abilities = unit.Abilities.ToDictionary(a => a, a => UnitUtils.FindAbility(a)),
+				Skills = unit.Skills.ToHashSet()
 			};
 			unitSceneInstance.Position = maze.MapToWorld(unit.Position);
 			unitSceneInstance.Position += Vector2.Down * maze.CellSize.y / 2;
