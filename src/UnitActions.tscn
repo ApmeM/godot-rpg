@@ -1,0 +1,26 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://assets/Fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=1]
+[ext_resource path="res://UnitActions.cs" type="Script" id=2]
+
+[sub_resource type="DynamicFont" id=1]
+size = 24
+font_data = ExtResource( 1 )
+
+[sub_resource type="Theme" id=2]
+default_font = SubResource( 1 )
+
+[node name="UnitActions" type="Control"]
+theme = SubResource( 2 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="AbilityContainer" type="HBoxContainer" parent="."]
+margin_top = 40.0
+margin_bottom = 40.0
+grow_horizontal = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}

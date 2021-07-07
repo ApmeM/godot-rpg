@@ -1,0 +1,67 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://UI/TeamSelectUnit.cs" type="Script" id=1]
+[ext_resource path="res://UI/UnitDetails.tscn" type="PackedScene" id=3]
+
+[node name="TeamSelectUnit" type="VBoxContainer"]
+margin_right = 200.0
+margin_bottom = 600.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+margin_right = 200.0
+margin_bottom = 20.0
+custom_constants/separation = 15
+
+[node name="UnitTypeCombo" type="OptionButton" parent="HBoxContainer"]
+margin_right = 165.0
+margin_bottom = 20.0
+size_flags_horizontal = 3
+text = "Unit type"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="RemoveUnitButton" type="Button" parent="HBoxContainer"]
+margin_left = 180.0
+margin_right = 200.0
+margin_bottom = 20.0
+text = "X"
+
+[node name="UnitDetails" parent="." instance=ExtResource( 3 )]
+margin_top = 24.0
+margin_right = 200.0
+margin_bottom = 82.0
+
+[node name="ManageSkillsButton" type="Button" parent="."]
+margin_top = 86.0
+margin_right = 200.0
+margin_bottom = 106.0
+text = "ManageSkills"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="SkillsContainer" type="GridContainer" parent="."]
+margin_top = 110.0
+margin_right = 200.0
+margin_bottom = 110.0
+columns = 3
+
+[node name="WindowDialog" type="WindowDialog" parent="."]
+margin_top = 138.0
+margin_right = 210.0
+margin_bottom = 518.0
+window_title = "Skills"
+
+[node name="GridContainer" type="GridContainer" parent="WindowDialog"]
+margin_top = 5.0
+margin_right = 40.0
+margin_bottom = 45.0
+columns = 4
+__meta__ = {
+"_edit_use_anchors_": false
+}
