@@ -11,7 +11,7 @@ __meta__ = {
 }
 
 [node name="MaxHP" type="Label" parent="."]
-margin_right = 308.0
+margin_right = 155.0
 margin_bottom = 14.0
 text = "MaxHP: 100"
 __meta__ = {
@@ -20,7 +20,7 @@ __meta__ = {
 
 [node name="MoveRange" type="Label" parent="."]
 margin_top = 18.0
-margin_right = 308.0
+margin_right = 155.0
 margin_bottom = 32.0
 text = "Speed: 50"
 __meta__ = {
@@ -29,7 +29,7 @@ __meta__ = {
 
 [node name="SightRange" type="Label" parent="."]
 margin_top = 36.0
-margin_right = 308.0
+margin_right = 155.0
 margin_bottom = 50.0
 text = "Vision: 70"
 __meta__ = {
@@ -38,12 +38,12 @@ __meta__ = {
 
 [node name="SkillsContainer" type="GridContainer" parent="."]
 margin_top = 54.0
-margin_right = 308.0
+margin_right = 155.0
 margin_bottom = 54.0
 columns = 3
 
-[node name="AbilityContainer" type="VBoxContainer" parent="."]
+[node name="AbilityContainer" type="GridContainer" parent="."]
 margin_top = 58.0
-margin_right = 308.0
+margin_right = 155.0
 margin_bottom = 58.0
-alignment = 1
+columns = 5

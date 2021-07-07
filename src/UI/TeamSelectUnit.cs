@@ -16,51 +16,65 @@ public class TeamSelectUnit : VBoxContainer
 	public override void _Ready()
 	{
 		base._Ready();
+		this.GetNode<Button>("ManageSkillsButton").Connect("pressed", this, nameof(ButtonPressed));
 		this.GetNode<OptionButton>("HBoxContainer/UnitTypeCombo").Connect("item_selected", this, nameof(UnitTypeChanged));
 		this.GetNode<Button>("HBoxContainer/RemoveUnitButton").Connect("pressed", this, nameof(RemoveUnitButtonPressed));
-		var newSkillCombo = this.GetNode<OptionButton>("NewSkillButton");
-		newSkillCombo.Connect("item_selected", this, nameof(AddSkillButtonPressed));
 
 		var skills = Enum.GetValues(typeof(Skill)).Cast<Skill>().ToList();
 		var texture = ResourceLoader.Load<Texture>("assets/Skills.png");
 
 		for (var i = 0; i < skills.Count; i++)
 		{
-			var skill = skills[i];
+			var unitSkill = (int)skills[i];
 
-			var atlasTexture = new AtlasTexture();
-			atlasTexture.Atlas = texture;
-			atlasTexture.Region = new Rect2(((int)skill) % 4 * texture.GetSize().x / 4, ((int)skill) / 4 * texture.GetSize().y / 7, texture.GetSize().x / 12, texture.GetSize().y / 7);
+			var skillNode = new TextureButton
+			{
+				TextureNormal = new AtlasTexture
+				{
+					Atlas = texture,
+					Region = new Rect2(unitSkill % 4 * texture.GetSize().x / 4, unitSkill / 4 * texture.GetSize().y / 7, texture.GetSize().x / 12, texture.GetSize().y / 7)
+				},
+				Expand = true,
+				StretchMode = TextureButton.StretchModeEnum.KeepAspect,
+				RectMinSize = Vector2.One * 50
+			};
 
-			newSkillCombo.AddIconItem(atlasTexture, skill.ToString());
+			skillNode.Connect("pressed", this, nameof(AddSkillButtonPressed), new Godot.Collections.Array { unitSkill });
+			this.GetNode<Container>("WindowDialog/GridContainer").AddChild(skillNode);
 		}
+	}
 
-		newSkillCombo.Select(0);
+	private void ButtonPressed()
+	{
+		this.GetNode<WindowDialog>("WindowDialog").PopupCentered();
 	}
 
 	public void AddSkillButtonPressed(int unitSkill)
 	{
-		var newSkillCombo = this.GetNode<OptionButton>("NewSkillButton");
-
-		var skillsContainer = this.GetNode<Container>("SkillsContainer");
-		var texture = ResourceLoader.Load<Texture>("assets/Skills.png");
-
-		newSkillCombo.Select(0);
-		
 		this.Unit.Skills.Add((Skill)unitSkill);
 
+		AddSkillButton(unitSkill);
+
+		UpdateUnitDetails();
+	}
+
+	private void AddSkillButton(int unitSkill)
+	{
+		var skillsContainer = this.GetNode<Container>("SkillsContainer");
+		var texture = ResourceLoader.Load<Texture>("assets/Skills.png");
 		var skillNode = new TextureButton
 		{
 			TextureNormal = new AtlasTexture
 			{
 				Atlas = texture,
 				Region = new Rect2(unitSkill % 4 * texture.GetSize().x / 4, unitSkill / 4 * texture.GetSize().y / 7, texture.GetSize().x / 12, texture.GetSize().y / 7)
-			}
+			},
+			Expand = true,
+			StretchMode = TextureButton.StretchModeEnum.KeepAspect,
+			RectMinSize = Vector2.One * 50
 		};
 		skillNode.Connect("pressed", this, nameof(RemoveSkillButtonPressed), new Godot.Collections.Array { skillNode });
 		skillsContainer.AddChild(skillNode);
-
-		UpdateUnitDetails();
 	}
 
 	private void RemoveSkillButtonPressed(Node node)
@@ -88,22 +102,9 @@ public class TeamSelectUnit : VBoxContainer
 			}
 		}
 
-		var skillsContainer = this.GetNode<Container>("SkillsContainer");
-		var texture = ResourceLoader.Load<Texture>("assets/Skills.png");
 		for (var j = 0; j < unit.Skills.Count; j++)
 		{
-			var unitSkill = (int)unit.Skills[j];
-
-			var skillNode = new TextureButton
-			{
-				TextureNormal = new AtlasTexture
-				{
-					Atlas = texture,
-					Region = new Rect2(unitSkill % 4 * texture.GetSize().x / 4, unitSkill / 4 * texture.GetSize().y / 7, texture.GetSize().x / 12, texture.GetSize().y / 7)
-				}
-			};
-			skillNode.Connect("pressed", this, nameof(RemoveSkillButtonPressed), new Godot.Collections.Array { skillNode });
-			skillsContainer.AddChild(skillNode);
+			AddSkillButton((int)unit.Skills[j]);
 		}
 
 		UpdateUnitDetails();

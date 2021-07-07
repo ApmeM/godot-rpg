@@ -61,7 +61,7 @@ namespace IsometricGame.Logic.ScriptHelpers
             //{ Skill.Necromancy,   new NecromancySkill() },
             //{ Skill.Pathfinding,  new PathfindingSkill() },
             //{ Skill.Scouting,     new ScoutingSkill() },
-            //{ Skill.Wisdom,       new WisdomSkill() },
+            { Skill.Wisdom,       new WisdomSkill() },
             //{ Skill.FireMagic,    new FireMagicSkill() },
             //{ Skill.AirMagic,     new AirMagicSkill() },
             //{ Skill.WaterMagic,   new WaterMagicSkill() },

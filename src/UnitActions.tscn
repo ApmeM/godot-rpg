@@ -17,12 +17,10 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="MoveButton" type="Button" parent="."]
-margin_left = -144.0
-margin_top = -33.0
-margin_right = -60.0
-margin_bottom = 33.0
-text = "Move"
+[node name="AbilityContainer" type="HBoxContainer" parent="."]
+margin_top = 40.0
+margin_bottom = 40.0
+grow_horizontal = 2
 __meta__ = {
 "_edit_use_anchors_": false
 }

@@ -53,10 +53,15 @@ public class UnitDetails : VBoxContainer
 
 		foreach (var ability in unit?.Abilities ?? new HashSet<Ability>())
 		{
-			var label = new Label();
-			label.Text = ability.ToString();
+			var abilityNode = new TextureRect
+			{
+				Texture = ResourceLoader.Load<Texture>($"assets/Abilities/{ability}.png"),
+				Expand = true,
+				StretchMode = TextureRect.StretchModeEnum.KeepAspect,
+				RectMinSize = Vector2.One * 50
+			};
 
-			abilityContainer.AddChild(label);
+			abilityContainer.AddChild(abilityNode);
 		}
 
 		this.Visible = false;
