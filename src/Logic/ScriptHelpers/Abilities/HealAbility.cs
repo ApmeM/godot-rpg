@@ -1,26 +1,23 @@
 ﻿using Godot;
-using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.Models;
 
-namespace IsometricGame.Logic.ScriptHelpers.Skills
+namespace IsometricGame.Logic.ScriptHelpers.Abilities
 {
-    public class RangedAttackAbility : IAbility
+    public class HealAbility : IAbility
     {
-        public Ability Name => Ability.RangedAttack;
-
         public void Apply(ServerUnit actionUnit, ServerUnit targetUnit)
         {
-            targetUnit.Hp -= (int)(actionUnit.AttackPower * 5);
+            targetUnit.Hp += (int)(actionUnit.MagicPower * 10);
         }
 
         public void HighliteMaze(Maze maze, Vector2 pos, ClientUnit currentUnit)
         {
-            maze.HighliteAvailableAttacks(pos, (int)(currentUnit.RangedAttackDistance * 5), (int)(currentUnit.AOEAttackRadius * 2));
+            maze.HighliteAvailableAttacks(pos, (int)(currentUnit.RangedAttackDistance * 5), (int)(currentUnit.AOEAttackRadius * 5));
         }
 
         public bool IsApplicable(ServerPlayer actionPlayer, ServerUnit actionUnit, ServerPlayer targetPlayer, ServerUnit targetUnit)
         {
-            return actionPlayer != targetPlayer && targetUnit.Hp > 0;
+            return actionPlayer == targetPlayer && targetUnit.Hp < targetUnit.MaxHp;
         }
 
         public bool IsInRange(ServerUnit actionUnit, ServerUnit targetUnit, Vector2 abilityDirection)

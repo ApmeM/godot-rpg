@@ -10,7 +10,7 @@ using System.Linq;
 public class Dungeon : Node2D
 {
 	private CurrentAction currentAction = CurrentAction.None;
-	private IAbility currentAbility = null;
+	private Ability? currentAbility = null;
 	private Server serverOptional;
 
 	public override void _Ready()
@@ -68,6 +68,7 @@ public class Dungeon : Node2D
 		foreach (var unit in initialData.YourUnits)
 		{
 			var unitSceneInstance = (Unit)unitScene.Instance();
+			
 			unitSceneInstance.ClientUnit = new ClientUnit
 			{
 				PlayerId = 0,
@@ -129,9 +130,9 @@ public class Dungeon : Node2D
 				}
 			case CurrentAction.UseAbility:
 				{
-					this.currentAbility = currentUnit.ClientUnit.Abilities[ability];
+					this.currentAbility = ability;
 					var pos = currentUnit.NewTarget == null ? maze.WorldToMap(currentUnit.Position) : currentUnit.NewTarget.Value;
-					this.currentAbility.HighliteMaze(maze, pos, currentUnit.ClientUnit);
+					UnitUtils.FindAbility(ability).HighliteMaze(maze, pos, currentUnit.ClientUnit);
 					break;
 				}
 		}
@@ -155,17 +156,26 @@ public class Dungeon : Node2D
 						currentUnit.IsSelected = false;
 					}
 
-					GetNode<UnitDetailsCollapse>("CanvasLayer/UnitDetailsCollapse").SelectUnit(clickOnUnit?.ClientUnit);
 					unitActions.Visible = clickOnUnit != null && !clickOnUnit.IsDead;
 					unitActions.RectPosition = this.GetViewport().CanvasTransform.AffineInverse().Xform(GetViewport().GetMousePosition());
 					if (unitActions.Visible)
 					{
-						unitActions.Abilities = clickOnUnit.ClientUnit.Abilities.Select(a => a.Value.Name).ToList();
+						unitActions.Abilities = clickOnUnit.ClientUnit.Abilities.Select(a => a.Key).ToList();
 					}
+					GetNode<UnitDetailsCollapse>("CanvasLayer/UnitDetailsCollapse").SelectUnit(clickOnUnit?.ClientUnit);
 
 					if (clickOnUnit != null)
 					{
 						clickOnUnit.IsSelected = true;
+					}
+					else
+					{
+						var enemyUnits = this.GetTree().GetNodesInGroup(Groups.OtherUnits).Cast<Unit>().ToList();
+						var enemyUnit = enemyUnits.FirstOrDefault(a => maze.WorldToMap(a.Position) == cell);
+						if (enemyUnit != null)
+						{
+							GetNode<UnitDetailsCollapse>("CanvasLayer/UnitDetailsCollapse").SelectUnit(enemyUnit.ClientUnit);
+						}
 					}
 					break;
 				}
@@ -186,7 +196,7 @@ public class Dungeon : Node2D
 					if (moveAvailable)
 					{
 						this.currentAction = CurrentAction.None;
-						currentUnit.AbilityShadowTo(cell, currentAbility);
+						currentUnit.AbilityShadowTo(cell, currentAbility.Value);
 						unitActions.RectPosition = this.GetViewport().CanvasTransform.AffineInverse().Xform(GetViewport().GetMousePosition());
 						unitActions.Visible = true;
 						maze.RemoveHighliting();
@@ -216,7 +226,7 @@ public class Dungeon : Node2D
 			{
 				Move = a.NewTarget,
 				AbilityTarget = a.AbilityDirection,
-				Ability = a.Ability?.Name ?? Ability.None
+				Ability = a.Ability ?? Ability.None
 			})
 		}));
 
@@ -241,7 +251,18 @@ public class Dungeon : Node2D
 		var otherUnits = this.GetTree().GetNodesInGroup(Groups.OtherUnits).Cast<Unit>().ToList();
 		var unitsToHide = otherUnits.Where(a => !turnData.OtherPlayers[a.ClientUnit.PlayerId].Units.ContainsKey(a.ClientUnit.UnitId));
 		var visibleUnits = otherUnits.Where(a => turnData.OtherPlayers[a.ClientUnit.PlayerId].Units.ContainsKey(a.ClientUnit.UnitId));
-		
+
+		foreach (var unit in myUnits)
+		{
+			unit.ClientUnit.Effects = turnData.YourUnits[unit.ClientUnit.UnitId].Effects;
+			unit.ClientUnit.MoveDistance = turnData.YourUnits[unit.ClientUnit.UnitId].MoveDistance;
+			unit.ClientUnit.SightRange = turnData.YourUnits[unit.ClientUnit.UnitId].SightRange;
+			unit.ClientUnit.RangedAttackDistance = turnData.YourUnits[unit.ClientUnit.UnitId].RangedAttackDistance;
+			unit.ClientUnit.AOEAttackRadius = turnData.YourUnits[unit.ClientUnit.UnitId].AOEAttackRadius;
+			unit.ClientUnit.AttackPower = turnData.YourUnits[unit.ClientUnit.UnitId].AttackPower;
+			unit.ClientUnit.MagicPower = turnData.YourUnits[unit.ClientUnit.UnitId].MagicPower;
+		}
+
 		foreach (var unitToHide in unitsToHide)
 		{
 			unitToHide.Visible = false;
@@ -249,12 +270,20 @@ public class Dungeon : Node2D
 
 		foreach (var unitToShow in visibleUnits)
 		{
+			var player = turnData.OtherPlayers[unitToShow.ClientUnit.PlayerId];
+
+			unitToShow.ClientUnit.Effects = player.Units[unitToShow.ClientUnit.UnitId].Effects;
 			if (!unitToShow.Visible)
 			{
-				var player = turnData.OtherPlayers[unitToShow.ClientUnit.PlayerId];
 				unitToShow.Visible = true;
-				unitToShow.Position = maze.MapToWorld(player.Units[unitToShow.ClientUnit.UnitId].Position);
+                unitToShow.Position = maze.MapToWorld(player.Units[unitToShow.ClientUnit.UnitId].Position);
 			}
+		}
+
+		foreach (var unit in visibleUnits)
+		{
+			var player = turnData.OtherPlayers[unit.ClientUnit.PlayerId];
+			await unit.MoveUnitTo(player.Units[unit.ClientUnit.UnitId].Position);
 		}
 
 		var signals = new List<SignalAwaiter>();

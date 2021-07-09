@@ -16,6 +16,13 @@ namespace IsometricGame.Logic.Models
             public Vector2? AttackDirection;
             public int Hp;
             public Vector2? AttackFrom;
+            public List<EffectDuration> Effects;
+            public int MoveDistance;
+            public int SightRange;
+            public float RangedAttackDistance;
+            public float AOEAttackRadius;
+            public float AttackPower;
+            public float MagicPower;
         }
 
         public class OtherPlayersData
@@ -28,6 +35,7 @@ namespace IsometricGame.Logic.Models
             public Vector2? AttackDirection;
             public int Hp;
             public Vector2? AttackFrom;
+            public List<EffectDuration> Effects;
         }
     }
 }

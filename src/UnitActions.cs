@@ -24,7 +24,6 @@ public class UnitActions : Control
 			for (var i = 0; i < value.Count; i++)
 			{
 				var ability = value[i];
-
 				var abilityNode = new TextureButton
 				{
 					TextureNormal = ResourceLoader.Load<Texture>($"assets/Abilities/{ability}.png"),

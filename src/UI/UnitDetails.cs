@@ -1,6 +1,7 @@
 using Godot;
 using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.Models;
+using System;
 using System.Collections.Generic;
 
 public class UnitDetails : VBoxContainer
@@ -34,6 +35,19 @@ public class UnitDetails : VBoxContainer
 			};
 
 			skillsContainer.AddChild(skillNode);
+		}
+
+		foreach (var effect in unit?.Effects ?? new List<EffectDuration>())
+		{
+			var effectNode = new TextureRect
+			{
+				Texture = ResourceLoader.Load<Texture>($"assets/Effects/{effect.Effect}.png"),
+				Expand = true,
+				StretchMode = TextureRect.StretchModeEnum.KeepAspect,
+				RectMinSize = Vector2.One * 50
+			};
+
+			skillsContainer.AddChild(effectNode);
 		}
 
 		this.Visible = false;

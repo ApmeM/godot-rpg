@@ -1,5 +1,6 @@
 ﻿using Godot;
 using IsometricGame.Logic.Enums;
+using System;
 using System.Collections.Generic;
 
 namespace IsometricGame.Logic.Models
@@ -19,7 +20,7 @@ namespace IsometricGame.Logic.Models
         public float AOEAttackRadius = 1;
         public float AttackPower = 1;
         public float MagicPower = 1;
-        
+        public readonly List<EffectDuration> Effects = new List<EffectDuration>();
         public readonly HashSet<Skill> Skills = new HashSet<Skill>();
     }
 }

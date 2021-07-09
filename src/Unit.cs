@@ -1,4 +1,5 @@
 using Godot;
+using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.Models;
 using IsometricGame.Logic.ScriptHelpers;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ public class Unit : Node2D
 
 	public Vector2? NewTarget => shadow.NewPosition;
 	public Vector2? AbilityDirection => shadow.AbilityDirection;
-	public IAbility Ability => shadow.Ability;
+	public Ability? Ability => shadow.Ability;
 	public bool IsDead { get; private set; }
 	private UnitShadow shadow;
 
@@ -153,7 +154,7 @@ public class Unit : Node2D
 		shadow.MoveShadowTo(newTarget);
 	}
 
-	public void AbilityShadowTo(Vector2 newTarget, IAbility ability)
+	public void AbilityShadowTo(Vector2 newTarget, Ability ability)
 	{
 		if (!shadow.Visible)
 		{

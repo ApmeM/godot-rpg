@@ -115,96 +115,125 @@ namespace IsometricGame.Logic
 		}
 
 		public void PlayerMove(int forPlayer, TransferTurnDoneData moves)
-		{
-			// Put player move into dictionary
-			PlayersMove[forPlayer] = moves;
+        {
+            // Put player move into dictionary
+            PlayersMove[forPlayer] = moves;
 
+            if (PlayersMove.Count != Players.Count)
+            {
+                return;
+            }
+            
 			// When all players send their turns - apply all.
-			if (PlayersMove.Count == Players.Count)
-			{
-				this.UnitsTurnDelta.Clear();
-				foreach (var p in Players)
-				{
-					foreach (var u in p.Value.Units)
-					{
-						var fullId = GetFullUnitId(p.Key, u.Key);
-						UnitsTurnDelta[fullId] = new ServerTurnDelta
-						{
-							MovedFrom = u.Value.Position,
-							MovedTo = u.Value.Position
-						};
-					}
+            this.UnitsTurnDelta.Clear();
+            foreach (var p in Players)
+            {
+                foreach (var u in p.Value.Units)
+                {
+                    var fullId = GetFullUnitId(p.Key, u.Key);
+                    UnitsTurnDelta[fullId] = new ServerTurnDelta
+                    {
+                        MovedFrom = u.Value.Position,
+                        MovedTo = u.Value.Position
+                    };
+                }
+            }
+
+            foreach (var pm in PlayersMove)
+            {
+                foreach (var um in pm.Value.UnitActions)
+                {
+                    var fullId = GetFullUnitId(pm.Key, um.Key);
+                    var delta = UnitsTurnDelta[fullId];
+                    var unit = Players[pm.Key].Units[um.Key];
+                    if (um.Value.Move.HasValue && unit.Hp > 0)
+                    {
+                        BreadthFirstPathfinder.Search(this.Astar, unit.Position, unit.MoveDistance, out var result);
+
+                        if (result.ContainsKey(um.Value.Move.Value))
+                        {
+                            delta.MovedTo = um.Value.Move.Value;
+                            unit.Position = um.Value.Move.Value;
+                        }
+                    }
+                }
+            }
+
+            foreach (var pm in PlayersMove)
+            {
+                foreach (var um in pm.Value.UnitActions)
+                {
+                    var fullId = GetFullUnitId(pm.Key, um.Key);
+                    var delta = UnitsTurnDelta[fullId];
+                    var player = Players[pm.Key];
+                    var unit = player.Units[um.Key];
+                    if (um.Value.AbilityTarget.HasValue && unit.Hp > 0)
+                    {
+                        delta.AbilityDirection = um.Value.AbilityTarget.Value;
+                        delta.Ability = um.Value.Ability;
+                        if (!unit.Abilities.Contains(delta.Ability))
+                        {
+                            continue;
+                        }
+
+                        var ability = UnitUtils.FindAbility(delta.Ability);
+                        foreach (var p in Players)
+                        {
+                            foreach (var u in p.Value.Units)
+                            {
+                                if (!ability.IsApplicable(player, unit, p.Value, u.Value))
+                                {
+                                    continue;
+                                }
+
+                                if (ability.IsInRange(unit, u.Value, delta.AbilityDirection.Value))
+                                {
+                                    var fullIdTarget = GetFullUnitId(p.Key, u.Key);
+                                    var deltaTarget = UnitsTurnDelta[fullIdTarget];
+                                    deltaTarget.AbilityFrom = unit.Position - u.Value.Position;
+                                    ability.Apply(unit, u.Value);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            foreach (var player in Players)
+            {
+                foreach (var unit in player.Value.Units)
+                {
+                    foreach (var appliedEffect in unit.Value.Effects)
+                    {
+                        var effect = UnitUtils.FindEffect(appliedEffect.Effect);
+                        if (appliedEffect.JustStarted)
+                        {
+							appliedEffect.JustStarted = false;
+							effect.ApplyFirstTurn(unit.Value);
+                        }
+
+						effect.ApplyEachTurn(unit.Value);
+						appliedEffect.Duration--;
+						if (appliedEffect.Duration == 0)
+                        {
+							effect.ApplyLastTurn(unit.Value);
+                        }
+                    }
+				
+					unit.Value.Effects.RemoveAll(a => a.Duration == 0);
 				}
+            }
 
-				foreach (var pm in PlayersMove)
-				{
-					foreach (var um in pm.Value.UnitActions)
-					{
-						var fullId = GetFullUnitId(pm.Key, um.Key);
-						var delta = UnitsTurnDelta[fullId];
-						var unit = Players[pm.Key].Units[um.Key];
-						if (um.Value.Move.HasValue && unit.Hp > 0)
-						{
-							BreadthFirstPathfinder.Search(this.Astar, unit.Position, unit.MoveDistance, out var result);
 
-							if (result.ContainsKey(um.Value.Move.Value))
-							{
-								delta.MovedTo = um.Value.Move.Value;
-								unit.Position = um.Value.Move.Value;
-							}
-						}
-					}
-				}
+            PlayersMove.Clear();
 
-				foreach (var pm in PlayersMove)
-				{
-					foreach (var um in pm.Value.UnitActions)
-					{
-						var fullId = GetFullUnitId(pm.Key, um.Key);
-						var delta = UnitsTurnDelta[fullId];
-						var player = Players[pm.Key];
-						var unit = player.Units[um.Key];
-						if (um.Value.AbilityTarget.HasValue && unit.Hp > 0)
-						{
-							delta.AbilityDirection = um.Value.AbilityTarget.Value;
-							delta.Ability = um.Value.Ability;
-							if (!unit.Abilities.Contains(delta.Ability))
-							{
-								continue;
-							}
-							var ability = UnitUtils.FindAbility(delta.Ability);
-							foreach (var p in Players)
-							{
-								foreach (var u in p.Value.Units)
-								{
-									if (!ability.IsApplicable(player, unit, p.Value, u.Value))
-									{
-										continue;
-									}
+            foreach (var turnDoneMethod in turnDoneMethods)
+            {
+                turnDoneMethod.Value(GetTurnData(turnDoneMethod.Key));
+            }
+        }
 
-									if (ability.IsInRange(unit, u.Value, delta.AbilityDirection.Value))
-									{
-										var fullIdTarget = GetFullUnitId(p.Key, u.Key);
-										var deltaTarget = UnitsTurnDelta[fullIdTarget];
-										deltaTarget.AbilityFrom = unit.Position - u.Value.Position;
-										ability.Apply(unit, u.Value);
-									}
-								}
-							}
-						}
-					}
-				}
-
-				PlayersMove.Clear();
-
-				foreach (var turnDoneMethod in turnDoneMethods)
-				{
-					turnDoneMethod.Value(GetTurnData(turnDoneMethod.Key));
-				}
-			}
-		}
-
-		private TransferInitialData GetInitialData(int forPlayer)
+        private TransferInitialData GetInitialData(int forPlayer)
 		{
 			return new TransferInitialData
 			{
@@ -232,7 +261,7 @@ namespace IsometricGame.Logic
 					{
 						Id = b.Key,
 						UnitType = b.Value.UnitType,
-						MaxHp = b.Value.MaxHp
+						MaxHp = b.Value.MaxHp,
 					}).ToList(),
 				}).ToList()
 			};
@@ -253,6 +282,13 @@ namespace IsometricGame.Logic
 						AttackDirection = delta.AbilityDirection,
 						Hp = a.Value.Hp,
 						AttackFrom = delta.AbilityFrom,
+						Effects = a.Value.Effects,
+						MoveDistance = a.Value.MoveDistance,
+						SightRange = a.Value.SightRange,
+						RangedAttackDistance = a.Value.RangedAttackDistance,
+						AOEAttackRadius = a.Value.AOEAttackRadius,
+						AttackPower = a.Value.AttackPower,
+						MagicPower = a.Value.MagicPower,
 					};
 				}),
 				VisibleMap = this.GetVisibleMap(forPlayer),
@@ -269,6 +305,7 @@ namespace IsometricGame.Logic
 							AttackDirection = delta.AbilityDirection,
 							Hp = b.Value.Hp,
 							AttackFrom = delta.AbilityFrom,
+							Effects = b.Value.Effects,
 						};
 					})
 				})

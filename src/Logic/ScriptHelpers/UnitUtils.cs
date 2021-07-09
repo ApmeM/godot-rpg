@@ -1,5 +1,7 @@
 ﻿using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.Models;
+using IsometricGame.Logic.ScriptHelpers.Abilities;
+using IsometricGame.Logic.ScriptHelpers.Effects;
 using IsometricGame.Logic.ScriptHelpers.Skills;
 using System.Collections.Generic;
 
@@ -62,8 +64,8 @@ namespace IsometricGame.Logic.ScriptHelpers
             //{ Skill.Pathfinding,  new PathfindingSkill() },
             //{ Skill.Scouting,     new ScoutingSkill() },
             { Skill.Wisdom,       new WisdomSkill() },
-            //{ Skill.FireMagic,    new FireMagicSkill() },
-            //{ Skill.AirMagic,     new AirMagicSkill() },
+            { Skill.FireMagic,    new FireMagicSkill() },
+            { Skill.AirMagic,     new AirMagicSkill() },
             //{ Skill.WaterMagic,   new WaterMagicSkill() },
             //{ Skill.EarthMagic,   new EarthMagicSkill() },
             //{ Skill.Scholar,      new ScholarSkill() },
@@ -93,11 +95,24 @@ namespace IsometricGame.Logic.ScriptHelpers
             { Ability.RangedAttack, new RangedAttackAbility() },
             { Ability.MeleeAttack, new MeleeAttackAbility() },
             { Ability.Heal, new HealAbility() },
+            { Ability.Fireball, new FireballAbility() },
+            { Ability.Haste, new HasteAbility() },
         };
 
         public static IAbility FindAbility(Ability ability)
         {
             return SupportedAbilities[ability];
+        }
+
+        private static Dictionary<Effect, IEffect> SupportedEffects = new Dictionary<Effect, IEffect>
+        {
+            { Effect.Burn, new BurnEffect() },
+            { Effect.Haste, new HasteEffect() },
+        };
+
+        public static IEffect FindEffect(Effect effect)
+        {
+            return SupportedEffects[effect];
         }
     }
 }

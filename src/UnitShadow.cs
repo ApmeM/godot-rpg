@@ -1,4 +1,5 @@
 using Godot;
+using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.ScriptHelpers;
 using System.Collections.Generic;
 
@@ -7,7 +8,7 @@ public class UnitShadow : Node2D
 	private const int MOTION_SPEED = 800;
 	private readonly Queue<Vector2> path = new Queue<Vector2>();
 	public Vector2? AbilityDirection;
-	public IAbility Ability;
+	public Ability? Ability;
 	public Vector2? NewPosition;
 
 	public bool IsSelected
@@ -54,7 +55,7 @@ public class UnitShadow : Node2D
 		Visible = false;
 	}
 
-	public void AbilityShadowTo(Vector2 newTarget, IAbility ability)
+	public void AbilityShadowTo(Vector2 newTarget, Ability ability)
 	{
 		var maze = GetParent<Maze>();
 		this.AbilityDirection = newTarget - maze.WorldToMap(Position);

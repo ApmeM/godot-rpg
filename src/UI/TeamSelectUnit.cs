@@ -79,7 +79,10 @@ public class TeamSelectUnit : VBoxContainer
 
 	private void RemoveSkillButtonPressed(Node node)
 	{
+		var index = node.GetParent<Container>().GetChildren().IndexOf(node);
+		this.Unit.Skills.RemoveAt(index);
 		node.QueueFree();
+		UpdateUnitDetails();
 	}
 
 	private void RemoveUnitButtonPressed()

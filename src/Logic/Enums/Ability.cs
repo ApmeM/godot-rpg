@@ -5,6 +5,8 @@
         None,
         RangedAttack, 
         MeleeAttack, 
-        Heal
+        Heal,
+        Fireball,
+        Haste
     };
 }

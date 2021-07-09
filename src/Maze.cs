@@ -156,8 +156,15 @@ public class Maze : TileMap
 
 		BreadthFirstPathfinder.Search(this.astar, fromPoint, highliteRadius, out var visited);
 
+		var floor = GetNode<TileMap>("Floor");
+
 		foreach (var cell in visited.Keys)
 		{
+			if(floor.GetCellv(cell) == -1)
+            {
+				continue;
+            }
+
 			highlitedCells[highliteType].Add(cell);
 		}
 	}
