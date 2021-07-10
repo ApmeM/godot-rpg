@@ -79,6 +79,7 @@ size_flags_horizontal = 3
 [node name="ViewFullMap" type="CheckBox" parent="VBoxContainer/HBoxContainer2/VBoxContainer2"]
 margin_right = 505.0
 margin_bottom = 38.0
+pressed = true
 text = "View full map"
 
 [node name="MaximumUnits" type="SpinBox" parent="VBoxContainer/HBoxContainer2/VBoxContainer2"]
@@ -87,7 +88,7 @@ margin_right = 505.0
 margin_bottom = 82.0
 min_value = 3.0
 max_value = 5.0
-value = 3.0
+value = 5.0
 prefix = "Max"
 suffix = "Units"
 
@@ -96,7 +97,7 @@ margin_top = 86.0
 margin_right = 505.0
 margin_bottom = 126.0
 max_value = 8.0
-value = 2.0
+value = 8.0
 prefix = "Max"
 suffix = "Skills"
 

@@ -6,7 +6,7 @@ namespace IsometricGame.Logic.ScriptHelpers.Skills
     {
         public void Apply(ServerPlayer player, ServerUnit unit)
         {
-            unit.Hp *= 2;
+            unit.MaxHp *= 2;
         }
     }
 }

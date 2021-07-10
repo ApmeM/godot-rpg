@@ -6,6 +6,5 @@ namespace IsometricGame.Logic.Models
     {
         public Effect Effect;
         public int Duration;
-        public bool JustStarted = true;
     }
 }

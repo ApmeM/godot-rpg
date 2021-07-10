@@ -9,7 +9,7 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
         public void Apply(ServerUnit actionUnit, ServerUnit targetUnit)
         {
             targetUnit.Hp -= (int)(actionUnit.MagicPower * 2);
-            targetUnit.Effects.Add(new EffectDuration { Effect = Effect.Burn, Duration = 10, JustStarted = true });
+            targetUnit.Effects.Add(new EffectDuration { Effect = Effect.Burn, Duration = 5 });
         }
 
         public void HighliteMaze(Maze maze, Vector2 pos, ClientUnit currentUnit)

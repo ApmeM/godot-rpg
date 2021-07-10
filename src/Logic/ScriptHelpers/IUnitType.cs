@@ -2,8 +2,9 @@
 
 namespace IsometricGame.Logic.ScriptHelpers
 {
-    public interface IEffect
+    public interface IUnitType
     {
         void Apply(ServerUnit unit);
+        void Initialize(ServerUnit unit);
     }
 }

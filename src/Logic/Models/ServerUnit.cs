@@ -9,17 +9,17 @@ namespace IsometricGame.Logic.Models
     {
         public Vector2 Position;
         public UnitType UnitType;
-        public int MaxHp = 10;
-        public int Hp = 10;
+        public int MaxHp;
+        public int Hp;
 
-        public HashSet<Ability> Abilities;
-        public int MoveDistance = 5;
-        public int SightRange = 6;
+        public int MoveDistance;
+        public int SightRange;
 
-        public float RangedAttackDistance = 1;
-        public float AOEAttackRadius = 1;
-        public float AttackPower = 1;
-        public float MagicPower = 1;
+        public float RangedAttackDistance;
+        public float AOEAttackRadius;
+        public float AttackPower;
+        public float MagicPower;
+        public HashSet<Ability> Abilities = new HashSet<Ability>();
         public readonly List<EffectDuration> Effects = new List<EffectDuration>();
         public readonly HashSet<Skill> Skills = new HashSet<Skill>();
     }

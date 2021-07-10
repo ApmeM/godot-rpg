@@ -62,26 +62,9 @@ namespace IsometricGame.Logic
 			var centerX = Map.Rooms[playerNumber].X + Map.Rooms[playerNumber].Width / 2;
 			var centerY = this.Map.Rooms[playerNumber].Y + this.Map.Rooms[playerNumber].Height / 2;
 			var center = new Vector2(centerX, centerY);
-			var unitId = 0;
-			foreach (var u in connect.Units)
+			foreach (var u in connect.Units.Take(configuration.MaxUnits))
 			{
-				unitId++;
-				if (unitId > configuration.MaxUnits)
-				{
-					break;
-				}
-
-				var unit = UnitUtils.BuildUnit(u.UnitType);
-				player.Units.Add(unitId, unit);
-				for (var i = 0; i < u.Skills.Count; i++)
-				{
-					if (i == configuration.MaxSkills)
-					{
-						break;
-					}
-					var skill = u.Skills[i];
-					UnitUtils.ApplySkill(player, unit, skill);
-				}
+				player.Units.Add(player.Units.Count + 1, UnitUtils.BuildUnit(player, u.UnitType, u.Skills.Take(configuration.MaxSkills).ToList()));
 			}
 
 			var positions = new List<Vector2>
@@ -136,6 +119,8 @@ namespace IsometricGame.Logic
                         MovedFrom = u.Value.Position,
                         MovedTo = u.Value.Position
                     };
+
+					UnitUtils.RefreshUnit(p.Value, u.Value);
                 }
             }
 
@@ -198,32 +183,6 @@ namespace IsometricGame.Logic
                     }
                 }
             }
-
-            foreach (var player in Players)
-            {
-                foreach (var unit in player.Value.Units)
-                {
-                    foreach (var appliedEffect in unit.Value.Effects)
-                    {
-                        var effect = UnitUtils.FindEffect(appliedEffect.Effect);
-                        if (appliedEffect.JustStarted)
-                        {
-							appliedEffect.JustStarted = false;
-							effect.ApplyFirstTurn(unit.Value);
-                        }
-
-						effect.ApplyEachTurn(unit.Value);
-						appliedEffect.Duration--;
-						if (appliedEffect.Duration == 0)
-                        {
-							effect.ApplyLastTurn(unit.Value);
-                        }
-                    }
-				
-					unit.Value.Effects.RemoveAll(a => a.Duration == 0);
-				}
-            }
-
 
             PlayersMove.Clear();
 

@@ -121,13 +121,7 @@ public class TeamSelectUnit : VBoxContainer
 
 	private void UpdateUnitDetails()
 	{
-		var unit = UnitUtils.BuildUnit(this.Unit.UnitType);
-		var player = new ServerPlayer();
-		for (var i = 0; i < this.Unit.Skills.Count; i++)
-		{
-			var skill = this.Unit.Skills[i];
-			UnitUtils.ApplySkill(player, unit, skill);
-		}
+		var unit = UnitUtils.BuildUnit(new ServerPlayer(), this.Unit.UnitType, this.Unit.Skills);
 
 		this.GetNode<UnitDetails>("UnitDetails").SelectUnit(unit);
 

@@ -4,91 +4,31 @@ using IsometricGame.Logic.ScriptHelpers.Abilities;
 using IsometricGame.Logic.ScriptHelpers.Effects;
 using IsometricGame.Logic.ScriptHelpers.Skills;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace IsometricGame.Logic.ScriptHelpers
 {
     public static partial class UnitUtils
     {
-        private static Dictionary<UnitType, ServerUnit> UnitTypeTemplates = new Dictionary<UnitType, ServerUnit>
+        private static Dictionary<UnitType, IUnitType> SupportedUnitTypes = new Dictionary<UnitType, IUnitType>
         {
-            {
-                UnitType.Goatman, new ServerUnit
-                {
-                    MaxHp = 20,
-                    Hp = 20,
-                    Abilities = new HashSet<Ability>{ Ability.MeleeAttack }
-                }
-            },
-            {
-                UnitType.Amazon, new ServerUnit
-                {
-                    SightRange = 7,
-                    Abilities = new HashSet<Ability>{ Ability.RangedAttack }
-                }
-            },
+            { UnitType.Amazon, new AmazonUnitType() },
+            { UnitType.Goatman, new GoatmanUnitType() },
         };
-
-        public static ServerUnit BuildUnit(UnitType unitType)
-        {
-            var template = UnitTypeTemplates[unitType];
-            var unit = new ServerUnit
-            {
-                UnitType = unitType,
-                Position = template.Position,
-                SightRange = template.SightRange,
-                MoveDistance = template.MoveDistance,
-                MaxHp = template.MaxHp,
-                Hp = template.Hp,
-                RangedAttackDistance = template.RangedAttackDistance,
-                AOEAttackRadius = template.AOEAttackRadius,
-                AttackPower = template.AttackPower,
-                MagicPower = template.MagicPower,
-                Abilities = new HashSet<Ability>(template.Abilities)
-            };
-            return unit;
-        }
 
         private static Dictionary<Skill, ISkill> SupportedSkills = new Dictionary<Skill, ISkill>
         {
             { Skill.Archery,      new ArcherySkill() },
             { Skill.Ballistics,   new BallisticsSkill() },
-            //{ Skill.Diplomacy,    new DiplomacySkill() },
             { Skill.EagleEye,     new EagleEyeSkill() },
-            //{ Skill.Estates,      new EstatesSkill() },
-            //{ Skill.Leadership,   new LeadershipSkill() },
             { Skill.Logistics,    new LogisticsSkill() },
-            //{ Skill.Luck,         new LuckSkill() },
-            //{ Skill.Mysticism,    new MysticismSkill() },
-            //{ Skill.Navigation,   new NavigationSkill() },
-            //{ Skill.Necromancy,   new NecromancySkill() },
-            //{ Skill.Pathfinding,  new PathfindingSkill() },
-            //{ Skill.Scouting,     new ScoutingSkill() },
             { Skill.Wisdom,       new WisdomSkill() },
             { Skill.FireMagic,    new FireMagicSkill() },
             { Skill.AirMagic,     new AirMagicSkill() },
-            //{ Skill.WaterMagic,   new WaterMagicSkill() },
-            //{ Skill.EarthMagic,   new EarthMagicSkill() },
-            //{ Skill.Scholar,      new ScholarSkill() },
-            //{ Skill.Tactics,      new TacticsSkill() },
-            //{ Skill.Artillery,    new ArtillerySkill() },
-            //{ Skill.Learning,     new LearningSkill() },
             { Skill.Offence,      new OffenceSkill() },
             { Skill.Armourer,     new ArmourerSkill() },
-            //{ Skill.Intelligence, new IntelligenceSkill() },
-            //{ Skill.Sorcery,      new SorcerySkill() },
-            //{ Skill.Resistance,   new ResistanceSkill() },
             { Skill.FirstAid,     new FirstAidSkill() },
         };
-
-        public static void ApplySkill(ServerPlayer player, ServerUnit unit, Skill skill)
-        {
-            unit.Skills.Add(skill);
-            if (!SupportedSkills. ContainsKey(skill))
-            {
-                return;
-            }
-            SupportedSkills[skill].Apply(player, unit);
-        }
 
         private static Dictionary<Ability, IAbility> SupportedAbilities = new Dictionary<Ability, IAbility>
         {
@@ -99,20 +39,60 @@ namespace IsometricGame.Logic.ScriptHelpers
             { Ability.Haste, new HasteAbility() },
         };
 
-        public static IAbility FindAbility(Ability ability)
-        {
-            return SupportedAbilities[ability];
-        }
-
         private static Dictionary<Effect, IEffect> SupportedEffects = new Dictionary<Effect, IEffect>
         {
             { Effect.Burn, new BurnEffect() },
             { Effect.Haste, new HasteEffect() },
         };
 
-        public static IEffect FindEffect(Effect effect)
+        public static IAbility FindAbility(Ability ability)
         {
-            return SupportedEffects[effect];
+            return SupportedAbilities[ability];
+        }
+
+        public static void RefreshUnit(ServerPlayer player, ServerUnit existingUnit)
+        {
+            existingUnit.MaxHp = 10;
+            existingUnit.MoveDistance = 5;
+            existingUnit.SightRange = 6;
+            existingUnit.RangedAttackDistance = 1;
+            existingUnit.AOEAttackRadius = 1;
+            existingUnit.AttackPower = 1;
+            existingUnit.MagicPower = 1;
+            existingUnit.Abilities.Clear();
+
+            SupportedUnitTypes[existingUnit.UnitType].Apply(existingUnit);
+            foreach (var skill in existingUnit.Skills)
+            {
+                SupportedSkills[skill].Apply(player, existingUnit);
+            }
+
+            foreach (var effect in existingUnit.Effects)
+            {
+                SupportedEffects[effect.Effect].Apply(existingUnit);
+                effect.Duration--;
+            }
+
+            existingUnit.Effects.RemoveAll(a => a.Duration <= 0);
+        }
+
+        public static ServerUnit BuildUnit(ServerPlayer player, UnitType unitType, List<Skill> skills)
+        {
+            var existingUnit = new ServerUnit
+            {
+                UnitType = unitType,
+                Hp = 10,
+            };
+
+            SupportedUnitTypes[existingUnit.UnitType].Initialize(existingUnit);
+
+            foreach (var skill in skills)
+            {
+                existingUnit.Skills.Add(skill);
+            }
+
+            RefreshUnit(player, existingUnit);
+            return existingUnit;
         }
     }
 }
