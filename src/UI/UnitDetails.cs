@@ -36,9 +36,16 @@ public class UnitDetails : VBoxContainer
 
 			skillsContainer.AddChild(skillNode);
 		}
+		
+		var effectsContainer = GetNode<Container>("EffectsContainer");
+		foreach (Node node in effectsContainer.GetChildren())
+		{
+			node.QueueFree();
+		}
 
 		foreach (var effect in unit?.Effects ?? new List<EffectDuration>())
 		{
+			var container = new CenterContainer();
 			var effectNode = new TextureRect
 			{
 				Texture = ResourceLoader.Load<Texture>($"assets/Effects/{effect.Effect}.png"),
@@ -46,8 +53,14 @@ public class UnitDetails : VBoxContainer
 				StretchMode = TextureRect.StretchModeEnum.KeepAspect,
 				RectMinSize = Vector2.One * 50
 			};
+			var durationNode = new Label
+			{
+				Text = effect.Duration.ToString()
+			};
+			container.AddChild(effectNode);
+			container.AddChild(durationNode);
 
-			skillsContainer.AddChild(effectNode);
+			effectsContainer.AddChild(container);
 		}
 
 		this.Visible = false;

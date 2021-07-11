@@ -1,6 +1,7 @@
 ﻿using Godot;
 using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.Models;
+using System.Linq;
 
 namespace IsometricGame.Logic.ScriptHelpers.Abilities
 {
@@ -9,7 +10,15 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
         public void Apply(ServerUnit actionUnit, ServerUnit targetUnit)
         {
             targetUnit.Hp -= (int)(actionUnit.MagicPower * 2);
-            targetUnit.Effects.Add(new EffectDuration { Effect = Effect.Burn, Duration = 5 });
+
+            var effect = targetUnit.Effects.FirstOrDefault(a => a.Effect == Effect.Burn);
+            if (effect == null)
+            {
+                effect = new EffectDuration { Effect = Effect.Burn };
+                targetUnit.Effects.Add(effect);
+            }
+
+            effect.Duration = 5;
         }
 
         public void HighliteMaze(Maze maze, Vector2 pos, ClientUnit currentUnit)
