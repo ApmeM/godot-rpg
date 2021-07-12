@@ -41,26 +41,25 @@ public class Maze : TileMap
 	public void NewVisibleMap(MapTile[,] maze)
 	{
 		var floor = GetNode<TileMap>("Floor");
-		
+
 		for (var x = 0; x < maze.GetLength(0); x++)
 			for (var y = 0; y < maze.GetLength(1); y++)
 			{
+				var position = new Vector2(x, y);
 				switch (maze[x, y])
 				{
 					case MapTile.Path:
 						{
-							var pos = new Vector2(x, y);
-							if (floor.GetCellv(pos) == -1)
+							astar.Paths.Add(position);
+							if (floor.GetCellv(position) == -1)
 							{
-								floor.SetCellv(pos, Fate.GlobalFate.Chance(90) ? 1 : 0);
+								floor.SetCellv(position, Fate.GlobalFate.Chance(90) ? 1 : 0);
 							}
 							break;
 						}
 					case MapTile.Wall:
 						{
-							var position = new Vector2(x, y);
 							this.SetCellv(position, 2);
-							astar.Walls.Add(position);
 							break;
 						}
 					default:
@@ -156,15 +155,8 @@ public class Maze : TileMap
 
 		BreadthFirstPathfinder.Search(this.astar, fromPoint, highliteRadius, out var visited);
 
-		var floor = GetNode<TileMap>("Floor");
-
 		foreach (var cell in visited.Keys)
 		{
-			if(floor.GetCellv(cell) == -1)
-            {
-				continue;
-            }
-
 			highlitedCells[highliteType].Add(cell);
 		}
 	}

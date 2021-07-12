@@ -39,9 +39,9 @@ namespace IsometricGame.Logic
 			for (var x = 0; x < Map.Regions.GetLength(0); x++)
 				for (var y = 0; y < Map.Regions.GetLength(1); y++)
 				{
-					if (!Map.Regions[x, y].HasValue)
+					if (Map.Regions[x, y].HasValue)
 					{
-						this.Astar.Walls.Add(new Vector2(x, y));
+						this.Astar.Paths.Add(new Vector2(x, y));
 					}
 				}
 		}

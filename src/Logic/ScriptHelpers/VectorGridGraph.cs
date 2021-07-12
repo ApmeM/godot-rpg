@@ -36,7 +36,7 @@ namespace IsometricGame.Logic.ScriptHelpers
             new Vector2( 1, 1 ),
         };
 
-        public HashSet<Vector2> Walls = new HashSet<Vector2>();
+        public HashSet<Vector2> Paths = new HashSet<Vector2>();
 
         public readonly int Width, Height;
         private readonly Vector2[] dirs;
@@ -47,12 +47,10 @@ namespace IsometricGame.Logic.ScriptHelpers
             return 0 <= node.x && node.x < this.Width && 0 <= node.y && node.y < this.Height;
         }
 
-
         public bool IsNodePassable(Vector2 node)
         {
-            return !this.Walls.Contains(node);
+            return this.Paths.Contains(node);
         }
-
 
         public IEnumerable<Vector2> GetNeighbors(Vector2 node)
         {
