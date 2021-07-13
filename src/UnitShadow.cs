@@ -9,7 +9,8 @@ public class UnitShadow : Node2D
 	private readonly Queue<Vector2> path = new Queue<Vector2>();
 	public Vector2? AbilityDirection;
 	public Ability? Ability;
-	public Vector2? NewPosition;
+    public Unit AbilityUnitTarget;
+    public Vector2? NewPosition;
 
 	public bool IsSelected
 	{
@@ -42,24 +43,27 @@ public class UnitShadow : Node2D
 	public void MoveShadowTo(Vector2 newTarget)
 	{
 		IsometricMove.MoveBy(this.path, Position, newTarget, GetParent<Maze>());
-		AbilityDirection = null;
 		Ability = null;
+		AbilityDirection = null;
+		AbilityUnitTarget = null;
 		NewPosition = newTarget;
 	}
 
 	public void HideShadow()
 	{
 		NewPosition = null;
-		AbilityDirection = null;
 		Ability = null;
+		AbilityDirection = null;
+		AbilityUnitTarget = null;
 		Visible = false;
 	}
 
-	public void AbilityShadowTo(Vector2 newTarget, Ability ability)
-	{
+	public void AbilityShadowTo(Ability ability, Vector2 abilityCellTarget, Unit abilityUnitTarget)
+    {
 		var maze = GetParent<Maze>();
-		this.AbilityDirection = newTarget - maze.WorldToMap(Position);
 		this.Ability = ability;
+		this.AbilityDirection = abilityCellTarget - maze.WorldToMap(Position);
+		this.AbilityUnitTarget = abilityUnitTarget;
 
 		var animation = GetNode<AnimatedSprite>("Shadow");
 		animation.Playing = true;

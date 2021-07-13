@@ -9,7 +9,7 @@ using System.Linq;
 
 public class Maze : TileMap
 {
-	private enum HighliteType
+	public enum HighliteType
 	{
 		Move = 7,
 		AttackRadius = 6,
@@ -79,22 +79,16 @@ public class Maze : TileMap
 		var mouse = floor.GetGlobalMousePosition();
 		var cell = floor.WorldToMap(mouse);
 
-		if (floor.GetCellv(cell) > 0)
-		{
-			highlitedCells[HighliteType.HighlitedMove].Clear();
-			highlitedCells[HighliteType.HighlitedMove].Add(cell);
-		}
+		BeginHighliting(HighliteType.HighlitedMove);
+		HighlitePoint(cell);
+		EndHighliting();
 
+		BeginHighliting(HighliteType.AttackRadius);
 		if (attackRadius != null && highlitedCells[HighliteType.AttackDistance].Contains(cell))
 		{
-			HighliteRadius(cell, attackRadius.Value, HighliteType.AttackRadius);
+			HighliteRadius(cell, attackRadius.Value);
 		}
-		else
-		{
-			highlitedCells[HighliteType.AttackRadius].Clear();
-		}
-
-		RehighliteCells();
+		EndHighliting();
 	}
 
 	public void Initialize(int mapWidth, int mapHeight)
@@ -149,22 +143,24 @@ public class Maze : TileMap
 		RehighliteCells();
 	}
 
-	private void HighliteRadius(Vector2 fromPoint, int highliteRadius, HighliteType highliteType)
-	{
-		highlitedCells[highliteType].Clear();
-
-		BreadthFirstPathfinder.Search(this.astar, fromPoint, highliteRadius, out var visited);
-
-		foreach (var cell in visited.Keys)
-		{
-			highlitedCells[highliteType].Add(cell);
-		}
-	}
-
 	public void HighliteAvailableAttacks(Vector2 shadowCell, int? attackDistance, int? attackRadius)
 	{
 		this.attackRadius = attackRadius;
-		HighliteRadius(shadowCell, attackDistance.Value, HighliteType.AttackDistance);
+		BeginHighliting(HighliteType.AttackDistance);
+		HighliteRadius(shadowCell, attackDistance.Value);
+		EndHighliting();
+		RehighliteCells();
+	}
+
+	public void HighliteAvailableAttacks(List<Vector2> targetCells, int? attackRadius)
+	{
+		this.attackRadius = attackRadius;
+		BeginHighliting(HighliteType.AttackDistance);
+		foreach (var cell in targetCells)
+		{
+			HighlitePoint(cell);
+		}
+		EndHighliting();
 		RehighliteCells();
 	}
 
@@ -176,7 +172,56 @@ public class Maze : TileMap
 		}
 		
 		this.attackRadius = null;
-		HighliteRadius(unitCell, moveDistance.Value, HighliteType.Move);
-		RehighliteCells();
+		BeginHighliting(HighliteType.Move);
+		HighliteRadius(unitCell, moveDistance.Value);
+		EndHighliting();
 	}
+
+    #region HighlitingInternal
+
+    private HighliteType? currentHighliteType;
+
+	private void BeginHighliting(HighliteType highliteType)
+    {
+		if (currentHighliteType != null)
+		{
+			throw new Exception("Previous highliting not finished.");
+		}
+
+		this.currentHighliteType = highliteType;
+		highlitedCells[highliteType].Clear();
+	}
+
+	private void HighliteRadius(Vector2 fromPoint, int highliteRadius)
+	{
+		EnsureHighliting();
+		BreadthFirstPathfinder.Search(this.astar, fromPoint, highliteRadius, out var visited);
+		foreach (var cell in visited.Keys)
+		{
+			highlitedCells[this.currentHighliteType.Value].Add(cell);
+		}
+	}
+
+	private void HighlitePoint(Vector2 fromPoint)
+	{
+		EnsureHighliting();
+		highlitedCells[this.currentHighliteType.Value].Add(fromPoint);
+	}
+
+	private void EndHighliting()
+    {
+        EnsureHighliting();
+        RehighliteCells();
+        this.currentHighliteType = null;
+    }
+
+    private void EnsureHighliting()
+    {
+        if (this.currentHighliteType == null)
+        {
+            throw new Exception("Highliting not started.");
+        }
+    }
+
+	#endregion
 }

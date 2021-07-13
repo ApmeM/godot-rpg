@@ -11,8 +11,9 @@ namespace IsometricGame.Logic
         public class UnitActionData
         {
             public Vector2? Move;
-            public Vector2? AbilityTarget;
+            public Vector2? AbilityDirection;
             public Ability Ability;
+            public long AbilityFullUnitId;
         }
     }
 }

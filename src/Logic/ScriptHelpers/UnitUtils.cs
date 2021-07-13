@@ -3,6 +3,7 @@ using IsometricGame.Logic.Models;
 using IsometricGame.Logic.ScriptHelpers.Abilities;
 using IsometricGame.Logic.ScriptHelpers.Effects;
 using IsometricGame.Logic.ScriptHelpers.Skills;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -93,6 +94,20 @@ namespace IsometricGame.Logic.ScriptHelpers
 
             RefreshUnit(player, existingUnit);
             return existingUnit;
+        }
+
+        public static long GetFullUnitId(int playerId, int unitId)
+        {
+            return ((long)playerId << 32) | ((long)unitId & 0xFFFFFFFFL);
+        }
+
+        public static int GetPlayerId(long abilityFullUnitId)
+        {
+            return (int)(abilityFullUnitId >> 32);
+        }
+        public static int GetUnitId(long abilityFullUnitId)
+        {
+            return (int)abilityFullUnitId;
         }
     }
 }

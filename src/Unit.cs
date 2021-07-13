@@ -15,11 +15,13 @@ public class Unit : Node2D
 		set { GetNode<AnimatedSprite>("SelectionMarker").Visible = value; shadow.IsSelected = value; }
 	}
 
-	public Vector2? NewTarget => shadow.NewPosition;
-	public Vector2? AbilityDirection => shadow.AbilityDirection;
+	public Vector2? NewPosition => shadow.NewPosition;
 	public Ability? Ability => shadow.Ability;
+	public Vector2? AbilityDirection => shadow.AbilityDirection;
+	public Unit AbilityUnitTarget => shadow.AbilityUnitTarget;
 	public bool IsDead { get; private set; }
-	private UnitShadow shadow;
+
+    private UnitShadow shadow;
 
 	[Signal]
 	public delegate void MoveDone();
@@ -154,7 +156,7 @@ public class Unit : Node2D
 		shadow.MoveShadowTo(newTarget);
 	}
 
-	public void AbilityShadowTo(Vector2 newTarget, Ability ability)
+	public void AbilityShadowTo(Ability ability, Vector2 cell, Unit target = null)
 	{
 		if (!shadow.Visible)
 		{
@@ -162,6 +164,6 @@ public class Unit : Node2D
 			shadow.Visible = true;
 		}
 
-		shadow.AbilityShadowTo(newTarget, ability);
+		shadow.AbilityShadowTo(ability, cell, target);
 	}
 }

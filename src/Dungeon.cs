@@ -71,7 +71,7 @@ public class Dungeon : Node2D
 			
 			unitSceneInstance.ClientUnit = new ClientUnit
 			{
-				PlayerId = 0,
+				PlayerId = initialData.YourPlayerId,
 				UnitId = unit.UnitId,
 				UnitType = unit.UnitType,
 				MoveDistance = unit.MoveDistance,
@@ -131,7 +131,7 @@ public class Dungeon : Node2D
 			case CurrentAction.UseAbility:
 				{
 					this.currentAbility = ability;
-					var pos = currentUnit.NewTarget == null ? maze.WorldToMap(currentUnit.Position) : currentUnit.NewTarget.Value;
+					var pos = currentUnit.NewPosition == null ? maze.WorldToMap(currentUnit.Position) : currentUnit.NewPosition.Value;
 					UnitUtils.FindAbility(ability).HighliteMaze(maze, pos, currentUnit.ClientUnit);
 					break;
 				}
@@ -141,16 +141,17 @@ public class Dungeon : Node2D
 	public void CellSelected(Vector2 cell, Vector2 cellPosition, bool moveAvailable)
 	{
 		var maze = GetNode<Maze>("Maze");
-		var units = this.GetTree().GetNodesInGroup(Groups.MyUnits).Cast<Unit>().ToList();
+		var myUnits = this.GetTree().GetNodesInGroup(Groups.MyUnits).Cast<Unit>().ToList();
+		var otherUnits = this.GetTree().GetNodesInGroup(Groups.OtherUnits).Cast<Unit>().ToList();
 
-		var currentUnit = units.FirstOrDefault(a => a.IsSelected);
+		var currentUnit = myUnits.FirstOrDefault(a => a.IsSelected);
 		var unitActions = GetNode<UnitActions>("UnitActions");
 
 		switch (this.currentAction)
 		{
 			case CurrentAction.None:
 				{
-					var clickOnUnit = units.FirstOrDefault(a => maze.WorldToMap(a.Position) == cell || a.NewTarget == cell);
+					var clickOnUnit = myUnits.FirstOrDefault(a => maze.WorldToMap(a.Position) == cell || a.NewPosition == cell);
 					if (currentUnit != null)
 					{
 						currentUnit.IsSelected = false;
@@ -170,8 +171,7 @@ public class Dungeon : Node2D
 					}
 					else
 					{
-						var enemyUnits = this.GetTree().GetNodesInGroup(Groups.OtherUnits).Cast<Unit>().ToList();
-						var enemyUnit = enemyUnits.FirstOrDefault(a => maze.WorldToMap(a.Position) == cell);
+						var enemyUnit = otherUnits.FirstOrDefault(a => maze.WorldToMap(a.Position) == cell);
 						if (enemyUnit != null)
 						{
 							GetNode<UnitDetailsCollapse>("CanvasLayer/UnitDetailsCollapse").SelectUnit(enemyUnit.ClientUnit);
@@ -195,8 +195,18 @@ public class Dungeon : Node2D
 				{
 					if (moveAvailable)
 					{
+						var ability = UnitUtils.FindAbility(currentAbility.Value);
+
 						this.currentAction = CurrentAction.None;
-						currentUnit.AbilityShadowTo(cell, currentAbility.Value);
+						Unit target = null;
+						if (ability.TargetUnit)
+                        {
+							target = myUnits
+								.Union(otherUnits)
+								.Where(unit => (unit.NewPosition == null ? maze.WorldToMap(unit.Position) : unit.NewPosition.Value) == cell)
+								.FirstOrDefault();
+						}
+						currentUnit.AbilityShadowTo(currentAbility.Value, cell, target);
 						unitActions.RectPosition = this.GetViewport().CanvasTransform.AffineInverse().Xform(GetViewport().GetMousePosition());
 						unitActions.Visible = true;
 						maze.RemoveHighliting();
@@ -220,16 +230,17 @@ public class Dungeon : Node2D
 		maze.RemoveHighliting();
 		GetNode<Button>("CanvasLayer/NextTurnButton").Visible = false;
 
+
 		RpcId(1, nameof(PlayerMoved), JsonConvert.SerializeObject(new TransferTurnDoneData
 		{
 			UnitActions = myUnits.ToDictionary(a => a.ClientUnit.UnitId, a => new TransferTurnDoneData.UnitActionData
-			{
-				Move = a.NewTarget,
-				AbilityTarget = a.AbilityDirection,
-				Ability = a.Ability ?? Ability.None
-			})
+            {
+                Move = a.NewPosition,
+                Ability = a.Ability ?? Ability.None,
+                AbilityDirection = a.AbilityDirection,
+                AbilityFullUnitId = a.AbilityUnitTarget == null ? -1 : UnitUtils.GetFullUnitId(a.AbilityUnitTarget.ClientUnit.PlayerId, a.AbilityUnitTarget.ClientUnit.UnitId)
+            })
 		}));
-
 	}
 
 	[RemoteSync]
