@@ -73,15 +73,18 @@ public class Maze : TileMap
 	public override void _Process(float delta)
 	{
 		base._Process(delta);
-		
+
 		var floor = GetNode<TileMap>("Floor");
 
 		var mouse = floor.GetGlobalMousePosition();
 		var cell = floor.WorldToMap(mouse);
 
-		BeginHighliting(HighliteType.HighlitedMove);
-		HighlitePoint(cell);
-		EndHighliting();
+		if (floor.GetCellv(cell) > 0)
+		{
+			BeginHighliting(HighliteType.HighlitedMove);
+			HighlitePoint(cell);
+			EndHighliting();
+		}
 
 		BeginHighliting(HighliteType.AttackRadius);
 		if (attackRadius != null && highlitedCells[HighliteType.AttackDistance].Contains(cell))
