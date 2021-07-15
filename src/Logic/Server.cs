@@ -17,7 +17,6 @@ namespace IsometricGame.Logic
 		private VectorGridGraph Astar;
 		private readonly Dictionary<int, ServerPlayer> Players = new Dictionary<int, ServerPlayer>();
 		private readonly Dictionary<int, TransferTurnDoneData> PlayersMove = new Dictionary<int, TransferTurnDoneData>();
-		private readonly Dictionary<long, ServerTurnDelta> UnitsTurnDelta = new Dictionary<long, ServerTurnDelta>();
 
 		private ServerConfiguration configuration;
 		private readonly Dictionary<int, Action<TransferInitialData>> initializeMethods = new Dictionary<int, Action<TransferInitialData>>();
@@ -90,7 +89,15 @@ namespace IsometricGame.Logic
 
 			if (playerNumber + 1 == configuration.PlayersCount)
 			{
-				foreach(var initMethod in initializeMethods)
+				foreach (var p in Players)
+				{
+					foreach (var u in p.Value.Units)
+					{
+						UnitUtils.RefreshUnit(p.Value, u.Value);
+					}
+				}
+
+				foreach (var initMethod in initializeMethods)
 				{
 					initMethod.Value(GetInitialData(initMethod.Key));
 				}
@@ -106,39 +113,31 @@ namespace IsometricGame.Logic
             {
                 return;
             }
-            
+
 			// When all players send their turns - apply all.
-            this.UnitsTurnDelta.Clear();
-            foreach (var p in Players)
+			var UnitsTurnDelta = new Dictionary<long, ServerTurnDelta>();
+
+			foreach (var p in Players)
             {
                 foreach (var u in p.Value.Units)
                 {
                     var fullId = UnitUtils.GetFullUnitId(p.Key, u.Key);
-                    UnitsTurnDelta[fullId] = new ServerTurnDelta
-                    {
-                        MovedFrom = u.Value.Position,
-                        MovedTo = u.Value.Position
-                    };
-
-					UnitUtils.RefreshUnit(p.Value, u.Value);
+					UnitsTurnDelta[fullId] = new ServerTurnDelta();
                 }
             }
 
-            foreach (var pm in PlayersMove)
+			foreach (var playerMove in PlayersMove)
             {
-                foreach (var um in pm.Value.UnitActions)
+                foreach (var unitMove in playerMove.Value.UnitActions)
                 {
-                    var fullId = UnitUtils.GetFullUnitId(pm.Key, um.Key);
-                    var delta = UnitsTurnDelta[fullId];
-                    var unit = Players[pm.Key].Units[um.Key];
-                    if (um.Value.Move.HasValue && unit.Hp > 0)
+                    var actionUnit = Players[playerMove.Key].Units[unitMove.Key];
+                    if (unitMove.Value.Move.HasValue && actionUnit.Hp > 0)
                     {
-                        BreadthFirstPathfinder.Search(this.Astar, unit.Position, unit.MoveDistance, out var result);
+                        BreadthFirstPathfinder.Search(this.Astar, actionUnit.Position, actionUnit.MoveDistance, out var result);
 
-                        if (result.ContainsKey(um.Value.Move.Value))
+                        if (result.ContainsKey(unitMove.Value.Move.Value))
                         {
-                            delta.MovedTo = um.Value.Move.Value;
-                            unit.Position = um.Value.Move.Value;
+                            actionUnit.Position = unitMove.Value.Move.Value;
                         }
                     }
                 }
@@ -159,8 +158,7 @@ namespace IsometricGame.Logic
 							continue;
 						}
 
-						actionDelta.Ability = unitMove.Value.Ability;
-						var ability = UnitUtils.FindAbility(actionDelta.Ability);
+						var ability = UnitUtils.FindAbility(unitMove.Value.Ability);
 
 						if (ability.TargetUnit)
 						{
@@ -170,7 +168,6 @@ namespace IsometricGame.Logic
 							var targetUnit = targetPlayer.Units[targetUnitId];
 
 							actionDelta.AbilityDirection = targetUnit.Position - actionUnit.Position;
-
 						}
 						else
 						{
@@ -186,7 +183,7 @@ namespace IsometricGame.Logic
 									var targetFullId = UnitUtils.GetFullUnitId(targetPlayer.Key, targetUnit.Key);
 									var targetDelta = UnitsTurnDelta[targetFullId];
 									targetDelta.AbilityFrom = actionUnit.Position - targetUnit.Value.Position;
-									ability.Apply(actionUnit, targetUnit.Value);
+									targetDelta.Actions.AddRange(ability.Apply(actionUnit, targetUnit.Value));
 								}
 							}
 						}
@@ -196,13 +193,30 @@ namespace IsometricGame.Logic
 
             PlayersMove.Clear();
 
+			foreach (var p in Players)
+			{
+				foreach (var u in p.Value.Units)
+				{
+					var targetFullId = UnitUtils.GetFullUnitId(p.Key, u.Key);
+					var targetDelta = UnitsTurnDelta[targetFullId];
+					foreach (var action in targetDelta.Actions)
+					{
+						action.Apply(u.Value);
+					}
+					
+					UnitUtils.RefreshUnit(p.Value, u.Value);
+
+					u.Value.Hp = Math.Max(0, u.Value.Hp);
+				}
+			}
+
             foreach (var turnDoneMethod in turnDoneMethods)
             {
-                turnDoneMethod.Value(GetTurnData(turnDoneMethod.Key));
+                turnDoneMethod.Value(GetTurnData(turnDoneMethod.Key, UnitsTurnDelta));
             }
         }
 
-        private TransferInitialData GetInitialData(int forPlayer)
+		private TransferInitialData GetInitialData(int forPlayer)
 		{
 			return new TransferInitialData
 			{
@@ -237,7 +251,7 @@ namespace IsometricGame.Logic
 			};
 		}
 
-		private TransferTurnData GetTurnData(int forPlayer)
+		private TransferTurnData GetTurnData(int forPlayer, Dictionary<long, ServerTurnDelta> UnitsTurnDelta)
 		{
 			var player = Players[forPlayer];
 			return new TransferTurnData
@@ -248,7 +262,7 @@ namespace IsometricGame.Logic
 					var delta = UnitsTurnDelta[fullId];
 					return new TransferTurnData.YourUnitsData
 					{
-						Position = delta.MovedTo,
+						Position = a.Value.Position,
 						AttackDirection = delta.AbilityDirection,
 						Hp = a.Value.Hp,
 						AttackFrom = delta.AbilityFrom,
@@ -271,7 +285,7 @@ namespace IsometricGame.Logic
 
 						return new TransferTurnData.OtherUnitsData
 						{
-							Position = delta.MovedTo,
+							Position = b.Value.Position,
 							AttackDirection = delta.AbilityDirection,
 							Hp = b.Value.Hp,
 							AttackFrom = delta.AbilityFrom,

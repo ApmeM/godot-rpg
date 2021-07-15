@@ -1,5 +1,6 @@
 ﻿using Godot;
 using IsometricGame.Logic.Models;
+using System.Collections.Generic;
 
 namespace IsometricGame.Logic.ScriptHelpers
 {
@@ -8,6 +9,6 @@ namespace IsometricGame.Logic.ScriptHelpers
         bool TargetUnit { get; }
         void HighliteMaze(Maze maze, Vector2 pos, ClientUnit currentUnit);
         bool IsApplicable(VectorGridGraph astar, ServerPlayer actionPlayer, ServerUnit actionUnit, ServerPlayer targetPlayer, ServerUnit targetUnit, Vector2 abilityDirection);
-        void Apply(ServerUnit actionUnit, ServerUnit targetUnit);
+        List<IAbilityAction> Apply(ServerUnit actionUnit, ServerUnit targetUnit);
     }
 }

@@ -2,7 +2,8 @@
 using Godot;
 using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.Models;
-using System.Linq;
+using IsometricGame.Logic.ScriptHelpers.Abilities.Action;
+using System.Collections.Generic;
 
 namespace IsometricGame.Logic.ScriptHelpers.Abilities
 {
@@ -10,18 +11,13 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
     {
         public bool TargetUnit => false;
 
-        public void Apply(ServerUnit actionUnit, ServerUnit targetUnit)
+        public List<IAbilityAction> Apply(ServerUnit actionUnit, ServerUnit targetUnit)
         {
-            targetUnit.Hp -= (int)(actionUnit.MagicPower * 2);
-
-            var effect = targetUnit.Effects.FirstOrDefault(a => a.Effect == Effect.Burn);
-            if (effect == null)
+            return new List<IAbilityAction>
             {
-                effect = new EffectDuration { Effect = Effect.Burn };
-                targetUnit.Effects.Add(effect);
-            }
-
-            effect.Duration = 5;
+                new ChangeHpAbilityAction(-(int)(actionUnit.MagicPower * 2)),
+                new ApplyEffectAbilityAction(Effect.Burn, 5)
+            };
         }
 
         public void HighliteMaze(Maze maze, Vector2 pos, ClientUnit currentUnit)
@@ -31,7 +27,7 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
 
         public bool IsApplicable(VectorGridGraph astar, ServerPlayer actionPlayer, ServerUnit actionUnit, ServerPlayer targetPlayer, ServerUnit targetUnit, Vector2 abilityDirection)
         {
-            if (actionPlayer == targetPlayer || targetUnit.Hp <= 0)
+            if (actionPlayer == targetPlayer)
             {
                 return false;
             }
@@ -42,7 +38,7 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
                 return false;
             }
             
-            BreadthFirstPathfinder.Search(astar, actionUnit.Position + abilityDirection, (int)(actionUnit.AOEAttackRadius * 5), out visited);
+            BreadthFirstPathfinder.Search(astar, actionUnit.Position + abilityDirection, (int)(actionUnit.AOEAttackRadius * 2), out visited);
             return visited.ContainsKey(targetUnit.Position);
         }
     }

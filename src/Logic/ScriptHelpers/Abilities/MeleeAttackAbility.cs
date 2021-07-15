@@ -1,6 +1,8 @@
 ﻿using BrainAI.Pathfinding.BreadthFirst;
 using Godot;
 using IsometricGame.Logic.Models;
+using IsometricGame.Logic.ScriptHelpers.Abilities.Action;
+using System.Collections.Generic;
 
 namespace IsometricGame.Logic.ScriptHelpers.Abilities
 {
@@ -8,20 +10,21 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
     {
         public bool TargetUnit => false;
 
-        public void Apply(ServerUnit actionUnit, ServerUnit targetUnit)
+        public List<IAbilityAction> Apply(ServerUnit actionUnit, ServerUnit targetUnit)
         {
-            targetUnit.Hp -= (int)(actionUnit.AttackPower * 10);
+            return new List<IAbilityAction>
+            {
+                new ChangeHpAbilityAction(-(int)(actionUnit.AttackPower * 10)),
+            };
         }
-
         public void HighliteMaze(Maze maze, Vector2 pos, ClientUnit currentUnit)
         {
             maze.HighliteAvailableAttacks(pos, 1, (int)currentUnit.AOEAttackRadius);
         }
 
-
         public bool IsApplicable(VectorGridGraph astar, ServerPlayer actionPlayer, ServerUnit actionUnit, ServerPlayer targetPlayer, ServerUnit targetUnit, Vector2 abilityDirection)
         {
-            if (actionPlayer == targetPlayer || targetUnit.Hp <= 0)
+            if (actionPlayer == targetPlayer)
             {
                 return false;
             }
