@@ -116,29 +116,58 @@ namespace IsometricGame.Logic
 
 			// When all players send their turns - apply all.
 			var UnitsTurnDelta = new Dictionary<long, ServerTurnDelta>();
-
-			foreach (var p in Players)
+			var occupiedCells = new HashSet<Vector2>();
+			foreach (var actionPlayer in Players)
             {
-                foreach (var u in p.Value.Units)
+                foreach (var actionUnit in actionPlayer.Value.Units)
                 {
-                    var fullId = UnitUtils.GetFullUnitId(p.Key, u.Key);
+                    var fullId = UnitUtils.GetFullUnitId(actionPlayer.Key, actionUnit.Key);
 					UnitsTurnDelta[fullId] = new ServerTurnDelta();
-                }
-            }
+
+					if (!PlayersMove.ContainsKey(actionPlayer.Key))
+                    {
+						occupiedCells.Add(actionUnit.Value.Position);
+						continue;
+                    }
+					var playerMove = PlayersMove[actionPlayer.Key];
+                    if (!playerMove.UnitActions.ContainsKey(actionUnit.Key))
+                    {
+						occupiedCells.Add(actionUnit.Value.Position);
+						continue;
+					}
+					var unitMove = playerMove.UnitActions[actionUnit.Key];
+					if (!unitMove.Move.HasValue)
+                    {
+						occupiedCells.Add(actionUnit.Value.Position);
+						continue;
+					}
+				}
+			}
 
 			foreach (var playerMove in PlayersMove)
             {
                 foreach (var unitMove in playerMove.Value.UnitActions)
                 {
                     var actionUnit = Players[playerMove.Key].Units[unitMove.Key];
-                    if (unitMove.Value.Move.HasValue && actionUnit.Hp > 0)
+                    if (!unitMove.Value.Move.HasValue || actionUnit.Hp <= 0)
                     {
-                        BreadthFirstPathfinder.Search(this.Astar, actionUnit.Position, actionUnit.MoveDistance, out var result);
+                        continue;
+                    }
 
-                        if (result.ContainsKey(unitMove.Value.Move.Value))
+                    var path = BreadthFirstPathfinder.Search(this.Astar, actionUnit.Position, unitMove.Value.Move.Value)
+                        .Take(actionUnit.MoveDistance)
+                        .ToList();
+
+                    for (var i = path.Count; i > 0; i--)
+                    {
+                        if (occupiedCells.Contains(path[i - 1]))
                         {
-                            actionUnit.Position = unitMove.Value.Move.Value;
+                            continue;
                         }
+
+                        actionUnit.Position = path[i - 1];
+                        occupiedCells.Add(actionUnit.Position);
+                        break;
                     }
                 }
             }
