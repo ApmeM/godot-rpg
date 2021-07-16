@@ -354,6 +354,11 @@ namespace IsometricGame.Logic
 		{
 			foreach(var unit in player.Units.Values)
 			{
+				if (unit.Hp <= 0)
+				{
+					continue;
+				}
+
 				if ((Math.Abs(x - unit.Position.x) + Math.Abs(y - unit.Position.y)) <= unit.SightRange){
 					return true;
 				}
