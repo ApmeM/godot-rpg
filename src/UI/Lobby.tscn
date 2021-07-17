@@ -82,25 +82,6 @@ margin_bottom = 38.0
 pressed = true
 text = "View full map"
 
-[node name="MaximumUnits" type="SpinBox" parent="VBoxContainer/HBoxContainer2/VBoxContainer2"]
-margin_top = 42.0
-margin_right = 505.0
-margin_bottom = 82.0
-min_value = 3.0
-max_value = 5.0
-value = 5.0
-prefix = "Max"
-suffix = "Units"
-
-[node name="MaximumSkills" type="SpinBox" parent="VBoxContainer/HBoxContainer2/VBoxContainer2"]
-margin_top = 86.0
-margin_right = 505.0
-margin_bottom = 126.0
-max_value = 8.0
-value = 8.0
-prefix = "Max"
-suffix = "Skills"
-
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
 margin_top = 554.0
 margin_right = 1014.0

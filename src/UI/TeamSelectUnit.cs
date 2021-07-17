@@ -51,6 +51,11 @@ public class TeamSelectUnit : VBoxContainer
 
 	public void AddSkillButtonPressed(int unitSkill)
 	{
+		if(this.Unit.Skills.Count == ServerConfiguration.DefaultMaxSkills)
+		{
+			return;
+		}
+
 		this.Unit.Skills.Add((Skill)unitSkill);
 
 		AddSkillButton(unitSkill);

@@ -86,8 +86,6 @@ public class Lobby : Container
 		{
 			FullMapVisible = container.GetNode<CheckBox>("ViewFullMap").Pressed,
 			PlayersCount = botsCount + playersCount,
-			MaxUnits = (int)container.GetNode<SpinBox>("MaximumUnits").Value,
-			MaxSkills = (int)container.GetNode<SpinBox>("MaximumSkills").Value
 		};
 
 		EmitSignal(nameof(StartGameEvent), this.GetNode<OptionButton>("VBoxContainer/HBoxContainer2/VBoxContainer/TeamSelector").Selected, botsCount, serverConfiguration);

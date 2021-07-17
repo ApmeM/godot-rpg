@@ -34,21 +34,21 @@ text = "X"
 [node name="UnitDetails" parent="." instance=ExtResource( 3 )]
 margin_top = 24.0
 margin_right = 200.0
-margin_bottom = 82.0
+margin_bottom = 86.0
 
 [node name="ManageSkillsButton" type="Button" parent="."]
-margin_top = 86.0
+margin_top = 90.0
 margin_right = 200.0
-margin_bottom = 106.0
+margin_bottom = 110.0
 text = "ManageSkills"
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="SkillsContainer" type="GridContainer" parent="."]
-margin_top = 110.0
+margin_top = 114.0
 margin_right = 200.0
-margin_bottom = 110.0
+margin_bottom = 114.0
 columns = 3
 
 [node name="WindowDialog" type="WindowDialog" parent="."]

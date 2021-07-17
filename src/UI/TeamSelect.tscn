@@ -97,11 +97,11 @@ scroll_vertical_enabled = false
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/ScrollContainer"]
 margin_right = 692.0
-margin_bottom = 250.0
+margin_bottom = 194.0
 
 [node name="UnitsContainer" type="HBoxContainer" parent="VBoxContainer/ScrollContainer/HBoxContainer"]
 margin_right = 659.0
-margin_bottom = 250.0
+margin_bottom = 194.0
 size_flags_vertical = 3
 custom_constants/separation = 40
 __meta__ = {
@@ -110,27 +110,27 @@ __meta__ = {
 
 [node name="TeamSelectUnit" parent="VBoxContainer/ScrollContainer/HBoxContainer/UnitsContainer" instance=ExtResource( 3 )]
 margin_right = 193.0
-margin_bottom = 250.0
+margin_bottom = 194.0
 
 [node name="TeamSelectUnit3" parent="VBoxContainer/ScrollContainer/HBoxContainer/UnitsContainer" instance=ExtResource( 3 )]
 margin_left = 233.0
 margin_right = 426.0
-margin_bottom = 250.0
+margin_bottom = 194.0
 
 [node name="TeamSelectUnit2" parent="VBoxContainer/ScrollContainer/HBoxContainer/UnitsContainer" instance=ExtResource( 3 )]
 margin_left = 466.0
 margin_right = 659.0
-margin_bottom = 250.0
+margin_bottom = 194.0
 
 [node name="CenterContainer" type="CenterContainer" parent="VBoxContainer/ScrollContainer/HBoxContainer"]
 margin_left = 663.0
 margin_right = 692.0
-margin_bottom = 250.0
+margin_bottom = 194.0
 
 [node name="AddNewUnitButton" type="Button" parent="VBoxContainer/ScrollContainer/HBoxContainer/CenterContainer"]
-margin_top = 107.0
+margin_top = 79.0
 margin_right = 29.0
-margin_bottom = 143.0
+margin_bottom = 115.0
 text = "+"
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer"]

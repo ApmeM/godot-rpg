@@ -50,14 +50,7 @@ public class TeamSelect : Container
 	{
 		var unit = new TransferConnectData.UnitData();
 		this.Teams[this.CurrentTeam].Units.Add(unit);
-		var unitScene = (TeamSelectUnit)UnitConfigurationScene.Instance();
-		unitScene.InitUnit(unit);
-		unitScene.Connect(nameof(TeamSelectUnit.UnitRemoved), this, nameof(UnitRemoved), new Array { this.Teams[this.CurrentTeam].Units.Count - 1 });
-		var unitsContainer = GetNode<HBoxContainer>("VBoxContainer/ScrollContainer/HBoxContainer/UnitsContainer");
-		unitsContainer.AddChild(unitScene);
-
-		this.Visible = false;
-		this.CallDeferred("set_visible", true);
+		ItemSelected(this.CurrentTeam);
 	}
 
 	private void ItemSelected(int index)
@@ -81,6 +74,7 @@ public class TeamSelect : Container
 			unitScene.Connect(nameof(TeamSelectUnit.UnitRemoved), this, nameof(UnitRemoved), new Array { i });
 			unitsContainer.AddChild(unitScene);
 		}
+		this.GetNode<Button>("VBoxContainer/ScrollContainer/HBoxContainer/CenterContainer/AddNewUnitButton").Visible = team.Units.Count != ServerConfiguration.DefaultMaxUnits;
 
 		this.Visible = false;
 		this.CallDeferred("set_visible", true);
