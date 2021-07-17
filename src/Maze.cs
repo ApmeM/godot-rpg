@@ -125,8 +125,10 @@ public class Maze : TileMap
 		{
 			floor.SetCellv(cell, Fate.GlobalFate.Chance(90) ? 1 : 0);
 		}
-
-		foreach(var highlitedCell in highlitedCells)
+		
+		lastHighlitedCells.Clear();
+		
+		foreach (var highlitedCell in highlitedCells)
 		{
 			foreach (var cell in highlitedCell.Value)
 			{
