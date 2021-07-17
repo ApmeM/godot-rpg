@@ -155,7 +155,7 @@ namespace IsometricGame.Logic
                     }
 
                     var path = BreadthFirstPathfinder.Search(this.Astar, actionUnit.Position, unitMove.Value.Move.Value)
-                        .Take(actionUnit.MoveDistance)
+                        .Take(actionUnit.MoveDistance + 1)
                         .ToList();
 
                     for (var i = path.Count; i > 0; i--)
