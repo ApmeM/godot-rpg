@@ -124,6 +124,11 @@ namespace IsometricGame.Logic
                     var fullId = UnitUtils.GetFullUnitId(actionPlayer.Key, actionUnit.Key);
 					UnitsTurnDelta[fullId] = new ServerTurnDelta();
 
+					if (actionUnit.Value.Hp <= 0)
+                    {
+						occupiedCells.Add(actionUnit.Value.Position);
+						continue;
+					}
 					if (!PlayersMove.ContainsKey(actionPlayer.Key))
                     {
 						occupiedCells.Add(actionUnit.Value.Position);
@@ -292,9 +297,9 @@ namespace IsometricGame.Logic
 					return new TransferTurnData.YourUnitsData
 					{
 						Position = a.Value.Position,
-						AttackDirection = delta.AbilityDirection,
+						AttackDirection = a.Value.Hp <= 0 ? null : delta.AbilityDirection,
 						Hp = a.Value.Hp,
-						AttackFrom = delta.AbilityFrom,
+						AttackFrom = a.Value.Hp <= 0 ? null : delta.AbilityFrom,
 						Effects = a.Value.Effects,
 						MoveDistance = a.Value.MoveDistance,
 						SightRange = a.Value.SightRange,
@@ -315,9 +320,9 @@ namespace IsometricGame.Logic
 						return new TransferTurnData.OtherUnitsData
 						{
 							Position = b.Value.Position,
-							AttackDirection = delta.AbilityDirection,
+							AttackDirection = b.Value.Hp <= 0 ? null : delta.AbilityDirection,
 							Hp = b.Value.Hp,
-							AttackFrom = delta.AbilityFrom,
+							AttackFrom = b.Value.Hp <= 0 ? null : delta.AbilityFrom,
 							Effects = b.Value.Effects,
 						};
 					})

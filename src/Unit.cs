@@ -111,7 +111,8 @@ public class Unit : Node2D
 		else if (newHp > 0 && IsDead)
 		{
 			this.IsDead = false;
-			return ToSignal(GetTree().CreateTimer(0), "timeout");
+			this.AnimateUnit("hit", attackFrom.Value);
+			return ToSignal(this, nameof(UnitAnimationDone));
 		}
 		else if (attackFrom.HasValue)
 		{
