@@ -9,8 +9,8 @@ public class UnitShadow : Node2D
 	private readonly Queue<Vector2> path = new Queue<Vector2>();
 	public Vector2? AbilityDirection;
 	public Ability? Ability;
-    public Unit AbilityUnitTarget;
-    public Vector2? NewPosition;
+	public Unit AbilityUnitTarget;
+	public Vector2? NewPosition;
 
 	public bool IsSelected
 	{
@@ -59,7 +59,7 @@ public class UnitShadow : Node2D
 	}
 
 	public void AbilityShadowTo(Ability ability, Vector2 abilityCellTarget, Unit abilityUnitTarget)
-    {
+	{
 		var maze = GetParent<Maze>();
 		this.Ability = ability;
 		this.AbilityDirection = abilityCellTarget - maze.WorldToMap(Position);

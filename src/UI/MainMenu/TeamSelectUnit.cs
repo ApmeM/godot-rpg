@@ -4,21 +4,37 @@ using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.Models;
 using IsometricGame.Logic.ScriptHelpers;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 public class TeamSelectUnit : VBoxContainer
 {
 	private TransferConnectData.UnitData Unit;
 
-	[Signal]
-	public delegate void UnitRemoved();
+	private Label maxHpLabel;
+	private Label moveRangeLabel;
+	private Label sightRangeLabel;
+	private Container abilityContainer;
+	private Container skillsContainer;
+	private OptionButton unitTypeCombo;
+	private WindowDialog windowDialog;
+	private Container availableSkillsContainer;
 
 	public override void _Ready()
 	{
 		base._Ready();
-		this.GetNode<Button>("ManageSkillsButton").Connect("pressed", this, nameof(ButtonPressed));
-		this.GetNode<OptionButton>("HBoxContainer/UnitTypeCombo").Connect("item_selected", this, nameof(UnitTypeChanged));
-		this.GetNode<Button>("HBoxContainer/RemoveUnitButton").Connect("pressed", this, nameof(RemoveUnitButtonPressed));
+		this.GetNode<Button>("ManageSkillsButton").Connect("pressed", this, nameof(ManageSkillButtonPressed));
+
+		maxHpLabel = GetNode<Label>("MaxHP");
+		moveRangeLabel = GetNode<Label>("MoveRange");
+		sightRangeLabel = GetNode<Label>("SightRange");
+		abilityContainer = GetNode<Container>("AbilityContainer");
+		skillsContainer = this.GetNode<Container>("SkillsContainer");
+		unitTypeCombo = this.GetNode<OptionButton>("UnitTypeCombo");
+		windowDialog = this.GetNode<WindowDialog>("WindowDialog");
+		availableSkillsContainer = windowDialog.GetNode<Container>("AvailableSkillsContainer");
+
+		unitTypeCombo.Connect("item_selected", this, nameof(UnitTypeChanged));
 
 		var skills = Enum.GetValues(typeof(Skill)).Cast<Skill>().ToList();
 		var texture = ResourceLoader.Load<Texture>("assets/Skills.png");
@@ -40,13 +56,13 @@ public class TeamSelectUnit : VBoxContainer
 			};
 
 			skillNode.Connect("pressed", this, nameof(AddSkillButtonPressed), new Godot.Collections.Array { unitSkill });
-			this.GetNode<Container>("WindowDialog/GridContainer").AddChild(skillNode);
+			availableSkillsContainer.AddChild(skillNode);
 		}
 	}
 
-	private void ButtonPressed()
+	private void ManageSkillButtonPressed()
 	{
-		this.GetNode<WindowDialog>("WindowDialog").PopupCentered();
+		windowDialog.PopupCentered();
 	}
 
 	public void AddSkillButtonPressed(int unitSkill)
@@ -65,7 +81,6 @@ public class TeamSelectUnit : VBoxContainer
 
 	private void AddSkillButton(int unitSkill)
 	{
-		var skillsContainer = this.GetNode<Container>("SkillsContainer");
 		var texture = ResourceLoader.Load<Texture>("assets/Skills.png");
 		var skillNode = new TextureButton
 		{
@@ -90,15 +105,9 @@ public class TeamSelectUnit : VBoxContainer
 		UpdateUnitDetails();
 	}
 
-	private void RemoveUnitButtonPressed()
-	{
-		EmitSignal(nameof(UnitRemoved));
-	}
-
 	public void InitUnit(TransferConnectData.UnitData unit)
 	{
 		this.Unit = unit;
-		var unitTypeCombo = this.GetNode<OptionButton>("HBoxContainer/UnitTypeCombo");
 		var unitTypes = Enum.GetValues(typeof(UnitType)).Cast<UnitType>().ToList();
 		for (var i = 0; i < unitTypes.Count; i++)
 		{
@@ -128,7 +137,26 @@ public class TeamSelectUnit : VBoxContainer
 	{
 		var unit = UnitUtils.BuildUnit(new ServerPlayer(), this.Unit.UnitType, this.Unit.Skills);
 
-		this.GetNode<UnitDetails>("UnitDetails").SelectUnit(unit);
+		maxHpLabel.Text = "MaxHP " + unit?.MaxHp.ToString() ?? "unknown";
+		moveRangeLabel.Text = "Speed " + unit?.MoveDistance.ToString() ?? "unknown";
+		sightRangeLabel.Text = "Vision " + unit?.SightRange.ToString() ?? "unknown";
+		foreach (Node node in abilityContainer.GetChildren())
+		{
+			node.QueueFree();
+		}
+
+		foreach (var ability in unit?.Abilities ?? new HashSet<Ability>())
+		{
+			var abilityNode = new TextureRect
+			{
+				Texture = ResourceLoader.Load<Texture>($"assets/Abilities/{ability}.png"),
+				Expand = true,
+				StretchMode = TextureRect.StretchModeEnum.KeepAspect,
+				RectMinSize = Vector2.One * 50
+			};
+
+			abilityContainer.AddChild(abilityNode);
+		}
 
 		this.Visible = false;
 		this.CallDeferred("set_visible", true);

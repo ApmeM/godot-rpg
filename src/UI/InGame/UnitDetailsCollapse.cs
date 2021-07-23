@@ -7,11 +7,17 @@ public class UnitDetailsCollapse : Panel
 	public int MoveSpeed = 400;
 
 	public bool Displayed;
+    
+	private UnitDetails unitDetails;
+    private Button closeButton;
 
-	public override void _Ready()
+    public override void _Ready()
 	{
-		this.GetNode<Button>("Close").Connect("pressed", this, nameof(CloseButtonPressed));
-		this.GetNode<Button>("Close").Text = "<";
+		this.unitDetails = this.GetNode<UnitDetails>("UnitDetails");
+		this.closeButton = this.GetNode<Button>("Close");
+
+		this.closeButton.Connect("pressed", this, nameof(CloseButtonPressed));
+		this.closeButton.Text = "<";
 	}
 
 	public void CloseButtonPressed()
@@ -19,17 +25,17 @@ public class UnitDetailsCollapse : Panel
 		Displayed = !Displayed;
 		if (Displayed)
 		{
-			this.GetNode<Button>("Close").Text = ">";
+			this.closeButton.Text = ">";
 		}
 		else
 		{
-			this.GetNode<Button>("Close").Text = "<";
+			this.closeButton.Text = "<";
 		}
 	}
 
 	public void SelectUnit(ClientUnit unit)
 	{
-		GetNode<UnitDetails>("UnitDetails").SelectUnit(unit);
+		this.unitDetails.SelectUnit(unit);
 	}
 
 	public override void _Process(float delta)

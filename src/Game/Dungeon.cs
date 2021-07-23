@@ -13,6 +13,9 @@ public class Dungeon : Node2D
 	private Ability? currentAbility = null;
 	private Server serverOptional;
 
+	[Export]
+	public PackedScene UnitScene;
+
 	public override void _Ready()
 	{
 		GetNode<Button>("CanvasLayer/NextTurnButton").Connect("pressed", this, nameof(NextTurnPressed));
@@ -63,11 +66,9 @@ public class Dungeon : Node2D
 		maze.NewVisibleMap(initialData.VisibleMap);
 		maze.Connect(nameof(Maze.CellSelected), this, nameof(CellSelected));
 
-		var unitScene = ResourceLoader.Load<PackedScene>("Unit.tscn");
-
 		foreach (var unit in initialData.YourUnits)
 		{
-			var unitSceneInstance = (Unit)unitScene.Instance();
+			var unitSceneInstance = (Unit)UnitScene.Instance();
 			
 			unitSceneInstance.ClientUnit = new ClientUnit
 			{
@@ -93,7 +94,7 @@ public class Dungeon : Node2D
 		{
 			foreach (var unit in player.Units)
 			{
-				var unitSceneInstance = (Unit)unitScene.Instance();
+				var unitSceneInstance = (Unit)UnitScene.Instance();
 				unitSceneInstance.ClientUnit = new ClientUnit
 				{
 					PlayerId = player.PlayerId,
@@ -200,7 +201,7 @@ public class Dungeon : Node2D
 						this.currentAction = CurrentAction.None;
 						Unit target = null;
 						if (ability.TargetUnit)
-                        {
+						{
 							target = myUnits
 								.Union(otherUnits)
 								.Where(unit => (unit.NewPosition == null ? maze.WorldToMap(unit.Position) : unit.NewPosition.Value) == cell)
@@ -234,12 +235,12 @@ public class Dungeon : Node2D
 		RpcId(1, nameof(PlayerMoved), JsonConvert.SerializeObject(new TransferTurnDoneData
 		{
 			UnitActions = myUnits.ToDictionary(a => a.ClientUnit.UnitId, a => new TransferTurnDoneData.UnitActionData
-            {
-                Move = a.NewPosition,
-                Ability = a.Ability ?? Ability.None,
-                AbilityDirection = a.AbilityDirection,
-                AbilityFullUnitId = a.AbilityUnitTarget == null ? -1 : UnitUtils.GetFullUnitId(a.AbilityUnitTarget.ClientUnit.PlayerId, a.AbilityUnitTarget.ClientUnit.UnitId)
-            })
+			{
+				Move = a.NewPosition,
+				Ability = a.Ability ?? Ability.None,
+				AbilityDirection = a.AbilityDirection,
+				AbilityFullUnitId = a.AbilityUnitTarget == null ? -1 : UnitUtils.GetFullUnitId(a.AbilityUnitTarget.ClientUnit.PlayerId, a.AbilityUnitTarget.ClientUnit.UnitId)
+			})
 		}));
 	}
 
@@ -287,7 +288,7 @@ public class Dungeon : Node2D
 			if (!unitToShow.Visible)
 			{
 				unitToShow.Visible = true;
-                unitToShow.Position = maze.MapToWorld(player.Units[unitToShow.ClientUnit.UnitId].Position);
+				unitToShow.Position = maze.MapToWorld(player.Units[unitToShow.ClientUnit.UnitId].Position);
 			}
 		}
 

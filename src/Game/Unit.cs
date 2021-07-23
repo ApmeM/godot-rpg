@@ -21,7 +21,10 @@ public class Unit : Node2D
 	public Unit AbilityUnitTarget => shadow.AbilityUnitTarget;
 	public bool IsDead { get; private set; }
 
-    private UnitShadow shadow;
+	[Export]
+	public PackedScene UnitShadowScene;
+
+	private UnitShadow shadow;
 
 	[Signal]
 	public delegate void MoveDone();
@@ -32,7 +35,7 @@ public class Unit : Node2D
 	{
 		base._Ready();
 
-		this.shadow = (UnitShadow)ResourceLoader.Load<PackedScene>("UnitShadow.tscn").Instance();
+		this.shadow = (UnitShadow)UnitShadowScene.Instance();
 		this.shadow.Position = Position;
 		this.shadow.Visible = false;
 		this.GetParent<Maze>().AddChild(this.shadow);

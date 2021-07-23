@@ -1,0 +1,9 @@
+[gd_scene format=2]
+
+[node name="OptionButton" type="OptionButton"]
+margin_right = 201.0
+margin_bottom = 36.0
+text = "Choose team"
+__meta__ = {
+"_edit_use_anchors_": false
+}

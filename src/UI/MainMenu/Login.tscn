@@ -1,0 +1,82 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://UI/MainMenu/Login.cs" type="Script" id=1]
+
+[node name="LoginContainer" type="GridContainer"]
+margin_left = 5.0
+margin_top = 10.0
+margin_right = 1001.0
+margin_bottom = 499.0
+custom_constants/vseparation = 20
+custom_constants/hseparation = 20
+columns = 3
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ServerLabel" type="Label" parent="."]
+margin_top = 5.0
+margin_right = 318.0
+margin_bottom = 19.0
+size_flags_horizontal = 3
+text = "Server"
+align = 2
+
+[node name="ServerLineEdit" type="LineEdit" parent="."]
+margin_left = 338.0
+margin_right = 656.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+
+[node name="SpaceLabel1" type="Label" parent="."]
+margin_left = 676.0
+margin_top = 5.0
+margin_right = 994.0
+margin_bottom = 19.0
+size_flags_horizontal = 3
+
+[node name="LoginLabel" type="Label" parent="."]
+margin_top = 49.0
+margin_right = 318.0
+margin_bottom = 63.0
+size_flags_horizontal = 3
+text = "Login"
+align = 2
+
+[node name="LoginLineEdit" type="LineEdit" parent="."]
+margin_left = 338.0
+margin_top = 44.0
+margin_right = 656.0
+margin_bottom = 68.0
+size_flags_horizontal = 3
+
+[node name="SpaceLabel2" type="Label" parent="."]
+margin_left = 676.0
+margin_top = 49.0
+margin_right = 994.0
+margin_bottom = 63.0
+size_flags_horizontal = 3
+
+[node name="PasswordLabel" type="Label" parent="."]
+margin_top = 93.0
+margin_right = 318.0
+margin_bottom = 107.0
+size_flags_horizontal = 3
+text = "Password"
+align = 2
+
+[node name="PasswordLineEdit" type="LineEdit" parent="."]
+margin_left = 338.0
+margin_top = 88.0
+margin_right = 656.0
+margin_bottom = 112.0
+size_flags_horizontal = 3
+secret = true
+
+[node name="SpaceLabel3" type="Label" parent="."]
+margin_left = 676.0
+margin_top = 93.0
+margin_right = 994.0
+margin_bottom = 107.0
+size_flags_horizontal = 3
