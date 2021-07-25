@@ -1,146 +1,75 @@
 using Godot;
 using IsometricGame.Logic;
+using IsometricGame.Logic.Models;
+using System;
 using System.Collections.Generic;
 
 public class Lobby : Container
 {
-	private bool? isServer;
-	private List<TransferConnectData> teams;
-	private readonly Dictionary<int, Label> otherNames = new Dictionary<int, Label>();
-
 	[Signal]
-	public delegate void StartGameEvent(int selectedTeam, int botsCount, ServerConfiguration serverConfiguration);
+	public delegate void StartGameClientEvent(string lobbyId);
 
-	private int botsCount = 0;
-	private int playersCount = 1;
+	private Button startButton;
+	private Button addBotButton;
+	private VBoxContainer playersList;
+	private Container settingsContainer;
+	private Label captionLabel;
+	private CheckBox fullMapCheckbox;
+
+	private string lobbyId;
 
 	public override void _Ready()
 	{
 		base._Ready();
-		this.GetNode<Button>("VBoxContainer/HBoxContainer/StartButton").Connect("pressed", this, nameof(OnStartButtonPressed));
-		this.GetNode<Button>("VBoxContainer/HBoxContainer/AddBotButton").Connect("pressed", this, nameof(OnAddBotButtonPressed));
-		this.GetNode<OptionButton>("VBoxContainer/HBoxContainer2/VBoxContainer/TeamSelector").Connect("item_selected", this, nameof(TeamSelectorItemSelected));
-		GetTree().Connect("network_peer_connected", this, nameof(PlayerConnected));
-		GetTree().Connect("network_peer_disconnected", this, nameof(PlayerDisconnected));
-		//GetTree().Connect("connected_to_server", this, "ConnectedOk");
-		//GetTree().Connect("connection_failed", this, "ConnectedFail");
-		//GetTree().Connect("server_disconnected", this, "ServerDisconnected");
+		this.startButton = this.GetNode<Button>("VBoxContainer/HBoxContainer/StartButton");
+		this.addBotButton = this.GetNode<Button>("VBoxContainer/HBoxContainer/AddBotButton");
+		this.playersList = this.GetNode<VBoxContainer>("VBoxContainer/HBoxContainer2/VBoxContainer");
+		this.settingsContainer = this.GetNode<Container>("VBoxContainer/HBoxContainer2/VBoxContainer2");
+		this.captionLabel = this.GetNode<Label>("VBoxContainer/CaptionLabel");
+		this.fullMapCheckbox = settingsContainer.GetNode<CheckBox>("ViewFullMap");
+
+		this.startButton.Connect("pressed", this, nameof(OnStartButtonPressed));
+		this.addBotButton.Connect("pressed", this, nameof(OnAddBotButtonPressed));
 	}
 
-	public override void _EnterTree()
+	public void Create()
 	{
-		base._EnterTree();
-		if (isServer.HasValue)
-		{
-			this.GetNode<Button>("VBoxContainer/HBoxContainer/StartButton").Visible = isServer.Value;
-			this.GetNode<Button>("VBoxContainer/HBoxContainer/AddBotButton").Visible = isServer.Value;
-
-			if (isServer.Value)
-			{
-				var peer = new WebSocketServer();
-				peer.Listen(12345, null, true);
-				GetTree().NetworkPeer = peer;
-			}
-			else
-			{
-				var peer = new WebSocketClient();
-				peer.ConnectToUrl("ws://localhost:12345", null, true);
-				GetTree().NetworkPeer = peer;
-			}
-		}
+		GetNode<Communicator>("/root/Communicator").CreateLobby();
+		this.startButton.Visible = true;
+		this.addBotButton.Visible = true;
 	}
 
-	public override void _Process(float delta)
+	public void Join(string lobbyId)
 	{
-		base._Process(delta);
-		if (GetTree().NetworkPeer is WebSocketServer server && server.IsListening())
-		{
-			server.Poll();
-		}
-		else if (GetTree().NetworkPeer is WebSocketClient client &&
-		   (
-		   client.GetConnectionStatus() == NetworkedMultiplayerPeer.ConnectionStatus.Connected ||
-		   client.GetConnectionStatus() == NetworkedMultiplayerPeer.ConnectionStatus.Connecting
-		   ))
-		{
-			client.Poll();
-		}
+		GetNode<Communicator>("/root/Communicator").JoinLobby(lobbyId);
+		this.startButton.Visible = false;
+		this.addBotButton.Visible = false;
 	}
 
-	private void TeamSelectorItemSelected(int id)
+	public void LobbyNotFound(string lobbyId)
 	{
-		var team = this.teams[id];
-		Rpc(nameof(RegisterPlayer), team.TeamName);
-	}
-
-	public void OnStartButtonPressed()
-	{
-		Rpc(nameof(StartGame));
-	}
-
-	[RemoteSync]
-	private void StartGame()
-	{
-		var container = this.GetNode<Container>("VBoxContainer/HBoxContainer2/VBoxContainer2");
-		var serverConfiguration = new ServerConfiguration
-		{
-			FullMapVisible = container.GetNode<CheckBox>("ViewFullMap").Pressed,
-			PlayersCount = botsCount + playersCount,
-		};
-
-		EmitSignal(nameof(StartGameEvent), this.GetNode<OptionButton>("VBoxContainer/HBoxContainer2/VBoxContainer/TeamSelector").Selected, botsCount, serverConfiguration);
+		GD.Print("TODO: Lobby not found.");
 	}
 
 	public void OnAddBotButtonPressed()
 	{
-		Rpc(nameof(AddBot));
-		botsCount++;
+		GetNode<Communicator>("/root/Communicator").AddBot(lobbyId);
 	}
 
-	[RemoteSync]
-	public void AddBot()
+	public void PlayerJoinedToLobby(string lobbyId, string playerName)
 	{
-		var container = this.GetNode<Container>("VBoxContainer/HBoxContainer2/VBoxContainer/VBoxContainer");
-		container.AddChild(new Label { Text = "Bot" });
+		this.lobbyId = lobbyId;
+		this.captionLabel.Text = lobbyId;
+		this.playersList.AddChild(new Label { Text = playerName });
 	}
 
-	public void Start(bool isServer)
+	public void OnStartButtonPressed()
 	{
-		this.isServer = isServer;
-		this.teams = TransferConnectData.Load();
-		var dropDown = this.GetNode<OptionButton>("VBoxContainer/HBoxContainer2/VBoxContainer/TeamSelector");
-		dropDown.Clear();
-		foreach(var team in this.teams)
-		{
-			dropDown.AddItem(team.TeamName);
-		}
+		GetNode<Communicator>("/root/Communicator").StartGame(this.lobbyId, fullMapCheckbox.Pressed);
 	}
 
-	private void PlayerConnected(int id)
-	{
-		var team = this.teams[this.GetNode<OptionButton>("VBoxContainer/HBoxContainer2/VBoxContainer/TeamSelector").Selected];
-		RpcId(id, nameof(RegisterPlayer), team.TeamName);
-		playersCount++;
-	}
-
-	private void PlayerDisconnected(int id)
-	{
-		otherNames[id].QueueFree();
-		otherNames.Remove(id);
-		playersCount--;
-	}
-
-	[Remote]
-	private void RegisterPlayer(string playerData)
-	{
-		var otherClientId = GetTree().GetRpcSenderId();
-		if (!this.otherNames.ContainsKey(otherClientId))
-		{
-			otherNames[otherClientId] = new Label();
-			this.GetNode<VBoxContainer>("VBoxContainer/HBoxContainer2/VBoxContainer/VBoxContainer").AddChild(otherNames[otherClientId]);
-		}
-		
-		var label = this.otherNames[otherClientId];
-		label.Text = playerData;
-	}
+    public void GameStarted(string lobbyId)
+    {
+		EmitSignal(nameof(StartGameClientEvent), lobbyId);
+    }
 }

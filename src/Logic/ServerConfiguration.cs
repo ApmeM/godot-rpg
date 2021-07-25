@@ -1,6 +1,6 @@
 ﻿namespace IsometricGame.Logic
 {
-    public class ServerConfiguration : Godot.Object
+    public class ServerConfiguration
     {
         public static int DefaultMaxSkills = 8;
         public static int DefaultMaxUnits = 4;

@@ -13,6 +13,8 @@ namespace IsometricGame.Logic
 {
 	public class Server
 	{
+		public static Dictionary<string, LobbyData> lobbies = new Dictionary<string, LobbyData>();
+
 		private RoomMazeGenerator.Result Map;
 		private VectorGridGraph Astar;
 		private readonly Dictionary<int, ServerPlayer> Players = new Dictionary<int, ServerPlayer>();
@@ -45,7 +47,12 @@ namespace IsometricGame.Logic
 				}
 		}
 
-		public void Connect(int playerId, TransferConnectData connect, Action<TransferInitialData> initialize, Action<TransferTurnData> turnDone)
+        public static void Connect(string lobbyId, int playerId, TransferConnectData connectData, Action<TransferInitialData> initialize, Action<TransferTurnData> turnDone)
+        {
+			lobbies[lobbyId].Server.Connect(playerId, connectData, initialize, turnDone);
+        }
+
+		public void Connect(int playerId, TransferConnectData connectData, Action<TransferInitialData> initialize, Action<TransferTurnData> turnDone)
 		{
             if (this.Players.ContainsKey(playerId))
             {
@@ -54,14 +61,14 @@ namespace IsometricGame.Logic
 
 			var player = new ServerPlayer
 			{
-				PlayerName = connect.TeamName,
+				PlayerName = connectData.TeamName,
 			};
 
 			var playerNumber = Players.Count();
 			var centerX = Map.Rooms[playerNumber].X + Map.Rooms[playerNumber].Width / 2;
 			var centerY = this.Map.Rooms[playerNumber].Y + this.Map.Rooms[playerNumber].Height / 2;
 			var center = new Vector2(centerX, centerY);
-			foreach (var u in connect.Units.Take(configuration.MaxUnits))
+			foreach (var u in connectData.Units.Take(configuration.MaxUnits))
 			{
 				player.Units.Add(player.Units.Count + 1, UnitUtils.BuildUnit(player, u.UnitType, u.Skills.Take(configuration.MaxSkills).ToList()));
 			}
@@ -102,6 +109,11 @@ namespace IsometricGame.Logic
 					initMethod.Value(GetInitialData(initMethod.Key));
 				}
 			}
+		}
+
+		public static void PlayerMove(string lobbyId, int forPlayer, TransferTurnDoneData moves)
+		{
+			lobbies[lobbyId].Server.PlayerMove(forPlayer, moves);
 		}
 
 		public void PlayerMove(int forPlayer, TransferTurnDoneData moves)

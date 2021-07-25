@@ -23,6 +23,10 @@ as well as be occluded when standing in front or behind them."
 run/main_scene="res://Main.tscn"
 config/icon="res://assets/Icon.png"
 
+[autoload]
+
+Communicator="*res://Communicator.cs"
+
 [display]
 
 window/dpi/allow_hidpi=true

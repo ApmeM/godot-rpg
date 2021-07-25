@@ -16,7 +16,7 @@ public class TeamSelect : Container
 
 	private Container unitsContainer;
 	private LineEdit teamDescription;
-	private OptionButton chooseTeamOptionButton;
+	private TeamSelector chooseTeamOptionButton;
 	private Button addNewUnitButton;
 
 	public override void _Ready()
@@ -28,7 +28,7 @@ public class TeamSelect : Container
 
 		this.unitsContainer = GetNode<Container>("ContentContainer/ScrollUnitContainer/UnitManagerContainer/UnitsContainer");
 		this.teamDescription = GetNode<LineEdit>("ContentContainer/TeamDescriptionLineEdit");
-		this.chooseTeamOptionButton = GetNode<OptionButton>("ContentContainer/TeamContainer/ChooseTeamOptionButton");
+		this.chooseTeamOptionButton = GetNode<TeamSelector>("ContentContainer/TeamContainer/ChooseTeamOptionButton");
 		this.addNewUnitButton = this.GetNode<Button>("ContentContainer/ScrollUnitContainer/UnitManagerContainer/AddNewUnitButtonContainer/AddNewUnitButton");
 		addNewUnitButton.Connect("pressed", this, nameof(OnAddNewUnitButtonPressed));
 		chooseTeamOptionButton.Connect("item_selected", this, nameof(ItemSelected));
@@ -103,11 +103,7 @@ public class TeamSelect : Container
 	public void OnResetButtonPressed()
 	{
 		this.Teams = TransferConnectData.Load();
-		chooseTeamOptionButton.Clear();
-		foreach (var team in this.Teams)
-		{
-			chooseTeamOptionButton.AddItem(team.TeamName);
-		}
+		chooseTeamOptionButton.Refresh(this.Teams);
 
 		ItemSelected(0);
 	}

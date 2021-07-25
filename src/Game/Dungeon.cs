@@ -11,7 +11,7 @@ public class Dungeon : Node2D
 {
 	private CurrentAction currentAction = CurrentAction.None;
 	private Ability? currentAbility = null;
-	private Server serverOptional;
+	private string lobbyId;
 
 	[Export]
 	public PackedScene UnitScene;
@@ -22,44 +22,15 @@ public class Dungeon : Node2D
 		GetNode<UnitActions>("UnitActions").Connect(nameof(UnitActions.ActionSelected), this, nameof(UnitActionSelected));
 	}
 
-	public override void _Process(float delta)
+	public void NewGame(int selectedTeam, string lobbyId)
 	{
-		base._Process(delta);
-		if (GetTree().NetworkPeer is WebSocketServer server && server.IsListening())
-		{
-			server.Poll();
-		}
-		else if (GetTree().NetworkPeer is WebSocketClient client &&
-		   (
-		   client.GetConnectionStatus() == NetworkedMultiplayerPeer.ConnectionStatus.Connected ||
-		   client.GetConnectionStatus() == NetworkedMultiplayerPeer.ConnectionStatus.Connecting
-		   ))
-		{
-			client.Poll();
-		}
-	}
-
-	public void NewGame(int selectedTeam, Server server)
-	{
-		this.serverOptional = server;
+		this.lobbyId = lobbyId;
 		var data = TransferConnectData.Load()[selectedTeam];
-		RpcId(1, nameof(ConnectToServer), JsonConvert.SerializeObject(data));
-	}
-	
-	[RemoteSync]
-	private void ConnectToServer(string data)
-	{
-		TransferConnectData connectData = JsonConvert.DeserializeObject<TransferConnectData>(data);
-		var clientId = GetTree().GetRpcSenderId();
-		this.serverOptional.Connect(clientId, connectData, 
-			(initData) => { RpcId(clientId, nameof(Initialize), JsonConvert.SerializeObject(initData)); }, 
-			(turnData) => { RpcId(clientId, nameof(TurnDone), JsonConvert.SerializeObject(turnData)); });
+		GetNode<Communicator>("/root/Communicator").ConnectToServer(lobbyId, data);
 	}
 
-	[RemoteSync]
-	private void Initialize(string data)
+	public void Initialize(TransferInitialData initialData)
 	{
-		TransferInitialData initialData = JsonConvert.DeserializeObject<TransferInitialData>(data);
 		var maze = GetNode<Maze>("Maze");
 
 		maze.Initialize(initialData.VisibleMap.GetLength(0), initialData.VisibleMap.GetLength(1));
@@ -230,33 +201,25 @@ public class Dungeon : Node2D
 		var maze = GetNode<Maze>("Maze");
 		maze.RemoveHighliting();
 		GetNode<Button>("CanvasLayer/NextTurnButton").Visible = false;
+		
+        var data = new TransferTurnDoneData
+        {
+            UnitActions = myUnits.ToDictionary(a => a.ClientUnit.UnitId, a => new TransferTurnDoneData.UnitActionData
+            {
+                Move = a.NewPosition,
+                Ability = a.Ability ?? Ability.None,
+                AbilityDirection = a.AbilityDirection,
+                AbilityFullUnitId = a.AbilityUnitTarget == null ? -1 : UnitUtils.GetFullUnitId(a.AbilityUnitTarget.ClientUnit.PlayerId, a.AbilityUnitTarget.ClientUnit.UnitId)
+            })
+        };
 
 
-		RpcId(1, nameof(PlayerMoved), JsonConvert.SerializeObject(new TransferTurnDoneData
-		{
-			UnitActions = myUnits.ToDictionary(a => a.ClientUnit.UnitId, a => new TransferTurnDoneData.UnitActionData
-			{
-				Move = a.NewPosition,
-				Ability = a.Ability ?? Ability.None,
-				AbilityDirection = a.AbilityDirection,
-				AbilityFullUnitId = a.AbilityUnitTarget == null ? -1 : UnitUtils.GetFullUnitId(a.AbilityUnitTarget.ClientUnit.PlayerId, a.AbilityUnitTarget.ClientUnit.UnitId)
-			})
-		}));
+		GetNode<Communicator>("/root/Communicator").PlayerMoved(lobbyId, data);
+
 	}
 
-	[RemoteSync]
-	private void PlayerMoved(string data)
+	public async void TurnDone(TransferTurnData turnData)
 	{
-		TransferTurnDoneData turnData = JsonConvert.DeserializeObject<TransferTurnDoneData>(data);
-		var clientId = GetTree().GetRpcSenderId();
-
-		serverOptional.PlayerMove(clientId, turnData);
-	}
-
-	[RemoteSync]
-	private async void TurnDone(string data)
-	{
-		TransferTurnData turnData = JsonConvert.DeserializeObject<TransferTurnData>(data);
 		var maze = GetNode<Maze>("Maze");
 		maze.NewVisibleMap(turnData.VisibleMap);
 		var myUnits = this.GetTree().GetNodesInGroup(Groups.MyUnits).Cast<Unit>().ToList();

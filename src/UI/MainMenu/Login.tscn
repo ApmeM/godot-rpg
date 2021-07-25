@@ -28,6 +28,7 @@ margin_left = 338.0
 margin_right = 656.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
+text = "ApmeM.org"
 
 [node name="SpaceLabel1" type="Label" parent="."]
 margin_left = 676.0

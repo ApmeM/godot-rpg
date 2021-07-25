@@ -5,18 +5,17 @@ using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.Models;
 using System.Collections.Generic;
 
-public class Bot : Node
+public class Bot
 {
 	private TransferInitialData initialData;
+    private string lobbyId;
     private int myId;
-    private Server server;
-	private bool waitForMove = false;
 
-	public void NewGame(Server server, int myId)
+	public void NewGame(string lobbyId, int myId)
 	{
+		this.lobbyId = lobbyId;
 		this.myId = myId;
-		this.server = server;
-		this.server.Connect(myId, new TransferConnectData
+		Server.Connect(lobbyId, myId, new TransferConnectData
 		{
 			TeamName = $"Bot-{myId}",
 			Units = new List<TransferConnectData.UnitData>
@@ -32,24 +31,16 @@ public class Bot : Node
 	private void Initialize(TransferInitialData initialData)
 	{
 		this.initialData = initialData;
-		this.waitForMove = true;
+		_Process();
 	}
 
 	private void TurnDone(TransferTurnData obj)
 	{
-		this.waitForMove = true;
+		_Process();
 	}
 
-	public override void _Process(float delta)
+	public void _Process()
 	{
-		base._Process(delta);
-
-		if (!this.waitForMove)
-		{
-			return;
-		}
-
-		this.waitForMove = false;
 		var otherMoves = new Dictionary<int, TransferTurnDoneData.UnitActionData>();
 		foreach (var u in this.initialData.YourUnits)
 		{
@@ -61,7 +52,7 @@ public class Bot : Node
 			});
 		}
 
-		this.server.PlayerMove(myId, new TransferTurnDoneData
+		Server.PlayerMove(lobbyId, myId, new TransferTurnDoneData
 		{
 			UnitActions = otherMoves
 		});

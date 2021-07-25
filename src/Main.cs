@@ -3,51 +3,56 @@ using IsometricGame.Logic;
 
 public class Main : Node
 {
-	private Game game;
+	private Dungeon dungeon;
 	private Menu menu;
 	private Lobby lobby;
+
+	private int selectedTeam;
 
 	public override void _Ready()
 	{
 		base._Ready();
 
-		this.game = GetNode<Game>("Game");
+		this.dungeon = GetNode<Dungeon>("Dungeon");
 		this.menu = GetNode<Menu>("Menu");
 		this.lobby = GetNode<Lobby>("Lobby");
 
-		RemoveChild(this.game);
+		RemoveChild(this.dungeon);
 		RemoveChild(this.lobby);
 
 		this.menu.Connect(nameof(Menu.CreateLobby), this, nameof(CreateLobby));
 		this.menu.Connect(nameof(Menu.JoinLobby), this, nameof(JoinLobby));
-		this.lobby.Connect(nameof(Lobby.StartGameEvent), this, nameof(StartGame));
+		this.lobby.Connect(nameof(Lobby.StartGameClientEvent), this, nameof(StartGameClient));
 	}
 
 	public void GameOver()
 	{
-		RemoveChild(this.game);
+		RemoveChild(this.dungeon);
 		AddChild(this.menu);
 		this.menu.GameOver();
 	}
 
-	public void CreateLobby()
+	public void CreateLobby(int selectedTeam)
 	{
-		this.lobby.Start(true);
+		this.selectedTeam = selectedTeam;
 		RemoveChild(this.menu);
 		AddChild(this.lobby);
-	}
-	public void JoinLobby()
-	{
-		this.lobby.Start(false);
-		RemoveChild(this.menu);
-		AddChild(this.lobby);
+		this.lobby.Create();
 	}
 
-	public void StartGame(int selectedTeam, int botsCount, ServerConfiguration serverConfiguration)
+	public void JoinLobby(int selectedTeam, string lobbyId)
+	{
+		this.selectedTeam = selectedTeam;
+		RemoveChild(this.menu);
+		AddChild(this.lobby);
+		this.lobby.Join(lobbyId);
+	}
+
+	public void StartGameClient(string lobbyId)
 	{
 		RemoveChild(this.lobby);
-		AddChild(this.game);
+		AddChild(this.dungeon);
 
-		this.game.NewGame(selectedTeam, botsCount, serverConfiguration);
+		this.dungeon.NewGame(this.selectedTeam, lobbyId);
 	}
 }
