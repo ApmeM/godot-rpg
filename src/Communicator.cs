@@ -2,7 +2,6 @@ using Godot;
 using IsometricGame.Logic;
 using IsometricGame.Logic.Models;
 using Newtonsoft.Json;
-using System;
 
 public class Communicator : Node
 {
