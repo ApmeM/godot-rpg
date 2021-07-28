@@ -23,6 +23,9 @@ public class Maze : TileMap
 	public VectorGridGraph astar;
 	private int? attackRadius;
 
+	private TileMap floor;
+	private TileMap fog;
+
 	[Signal]
 	public delegate void CellSelected(Vector2 cell, Vector2 cellPosition, bool moveAvailable);
 
@@ -33,15 +36,15 @@ public class Maze : TileMap
 
 	public override void _Ready()
 	{
-		var floor = GetNode<TileMap>("Floor");
+		floor = GetNode<TileMap>("Floor");
+		fog = GetNode<TileMap>("Fog");
 		this.Clear();
 		floor.Clear();
+		fog.Clear();
 	}
 
 	public void NewVisibleMap(MapTile[,] maze)
 	{
-		var floor = GetNode<TileMap>("Floor");
-
 		for (var x = 0; x < maze.GetLength(0); x++)
 			for (var y = 0; y < maze.GetLength(1); y++)
 			{
@@ -55,15 +58,19 @@ public class Maze : TileMap
 							{
 								floor.SetCellv(position, Fate.GlobalFate.Chance(90) ? 1 : 0);
 							}
+
+							fog.SetCellv(position, -1);
 							break;
 						}
 					case MapTile.Wall:
 						{
 							this.SetCellv(position, 2);
+							fog.SetCellv(position, -1);
 							break;
 						}
 					default:
 						{
+							fog.SetCellv(position, 9);
 							break;
 						}
 				}
@@ -73,8 +80,6 @@ public class Maze : TileMap
 	public override void _Process(float delta)
 	{
 		base._Process(delta);
-
-		var floor = GetNode<TileMap>("Floor");
 
 		var mouse = floor.GetGlobalMousePosition();
 		var cell = floor.WorldToMap(mouse);
@@ -120,7 +125,6 @@ public class Maze : TileMap
 
 	private void RehighliteCells()
 	{
-		var floor = GetNode<TileMap>("Floor");
 		foreach (var cell in lastHighlitedCells)
 		{
 			floor.SetCellv(cell, Fate.GlobalFate.Chance(90) ? 1 : 0);
@@ -182,12 +186,12 @@ public class Maze : TileMap
 		EndHighliting();
 	}
 
-    #region HighlitingInternal
+	#region HighlitingInternal
 
-    private HighliteType? currentHighliteType;
+	private HighliteType? currentHighliteType;
 
 	private void BeginHighliting(HighliteType highliteType)
-    {
+	{
 		if (currentHighliteType != null)
 		{
 			throw new Exception("Previous highliting not finished.");
@@ -214,19 +218,19 @@ public class Maze : TileMap
 	}
 
 	private void EndHighliting()
-    {
-        EnsureHighliting();
-        RehighliteCells();
-        this.currentHighliteType = null;
-    }
+	{
+		EnsureHighliting();
+		RehighliteCells();
+		this.currentHighliteType = null;
+	}
 
-    private void EnsureHighliting()
-    {
-        if (this.currentHighliteType == null)
-        {
-            throw new Exception("Highliting not started.");
-        }
-    }
+	private void EnsureHighliting()
+	{
+		if (this.currentHighliteType == null)
+		{
+			throw new Exception("Highliting not started.");
+		}
+	}
 
 	#endregion
 }

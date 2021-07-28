@@ -1,9 +1,10 @@
-[gd_resource type="TileSet" load_steps=8 format=2]
+[gd_resource type="TileSet" load_steps=9 format=2]
 
 [ext_resource path="res://assets/Isotiles.png" type="Texture" id=1]
 [ext_resource path="res://Shaders/Redscale.tres" type="Material" id=2]
 [ext_resource path="res://Shaders/Greenscale.tres" type="Material" id=3]
 [ext_resource path="res://Shaders/Bluescale.tres" type="Material" id=4]
+[ext_resource path="res://Shaders/Fog.tres" type="Material" id=5]
 
 [sub_resource type="ConvexPolygonShape2D" id=1]
 points = PoolVector2Array( 0, -32, 64, 0, 0, 32, -64, 0 )
@@ -165,3 +166,18 @@ points = PoolVector2Array( -40, 16, 24, -16, 40, -8, -24, 24 )
 8/shape_one_way_margin = 0.0
 8/shapes = [  ]
 8/z_index = 0
+9/name = "Fog"
+9/texture = ExtResource( 1 )
+9/tex_offset = Vector2( 0, 0 )
+9/material = ExtResource( 5 )
+9/modulate = Color( 1, 1, 1, 1 )
+9/region = Rect2( 1180, 250, 135, 105 )
+9/tile_mode = 0
+9/occluder_offset = Vector2( 67.5, 52.5 )
+9/navigation_offset = Vector2( 67.5, 52.5 )
+9/shape_offset = Vector2( 0, 0 )
+9/shape_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
+9/shape_one_way = false
+9/shape_one_way_margin = 0.0
+9/shapes = [  ]
+9/z_index = 0

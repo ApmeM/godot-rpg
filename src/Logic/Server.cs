@@ -282,7 +282,7 @@ namespace IsometricGame.Logic
 					Abilities = a.Value.Abilities.ToList(),
 					Skills = a.Value.Skills.ToList()
 				}).ToList(),
-				VisibleMap = GetVisibleMap(forPlayer),
+				VisibleMap = GetVisibleMap(forPlayer, true),
 				OtherPlayers = Players.Where(a => a.Key != forPlayer).Select(a => new TransferInitialData.OtherPlayerData
 				{
 					PlayerId = a.Key,
@@ -321,7 +321,7 @@ namespace IsometricGame.Logic
 						MagicPower = a.Value.MagicPower,
 					};
 				}),
-				VisibleMap = this.GetVisibleMap(forPlayer),
+				VisibleMap = this.GetVisibleMap(forPlayer, false),
 				OtherPlayers = this.Players.Where(a => a.Key != forPlayer).ToDictionary(a => a.Key, a => new TransferTurnData.OtherPlayersData
 				{
 					Units = a.Value.Units.Where(b => IsVisible(player, (int)b.Value.Position.x, (int)b.Value.Position.y)).ToDictionary(b => b.Key, b =>
@@ -342,7 +342,7 @@ namespace IsometricGame.Logic
 			};
 		}
 
-		private MapTile[,] GetVisibleMap(int forPlayer)
+		private MapTile[,] GetVisibleMap(int forPlayer, bool isInitialize)
 		{
 			var player = Players[forPlayer];
 
@@ -350,7 +350,7 @@ namespace IsometricGame.Logic
 			for (var x = 0; x < Map.Regions.GetLength(0); x++)
 				for (var y = 0; y < Map.Regions.GetLength(1); y++)
 				{
-					if (!IsVisible(player, x, y) && !configuration.FullMapVisible)
+					if (!IsVisible(player, x, y) && (!configuration.FullMapVisible || !isInitialize ))
 					{
 						result[x, y] = MapTile.Unknown;
 					}
