@@ -82,7 +82,6 @@ namespace IsometricGame.Logic.ScriptHelpers
             var existingUnit = new ServerUnit
             {
                 UnitType = unitType,
-                Hp = 10,
             };
 
             SupportedUnitTypes[existingUnit.UnitType].Initialize(existingUnit);
@@ -93,6 +92,9 @@ namespace IsometricGame.Logic.ScriptHelpers
             }
 
             RefreshUnit(player, existingUnit);
+            
+            existingUnit.Hp = existingUnit.MaxHp;
+            
             return existingUnit;
         }
 
