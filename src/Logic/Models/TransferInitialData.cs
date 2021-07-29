@@ -7,6 +7,7 @@ namespace IsometricGame.Logic.Models
     public class TransferInitialData
     {
         public int YourPlayerId;
+        public float? Timeout;
         public List<OtherPlayerData> OtherPlayers;
         public List<YourUnitsData> YourUnits;
         public MapTile[,] VisibleMap;

@@ -26,6 +26,7 @@ config/icon="res://assets/Icon.png"
 [autoload]
 
 Communicator="*res://Communicator.cs"
+TimeoutChecker="*res://TimeoutChecker.cs"
 
 [display]
 

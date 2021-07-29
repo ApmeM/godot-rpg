@@ -13,7 +13,9 @@ namespace IsometricGame.Logic
 {
 	public class Server
 	{
-		public static Dictionary<string, LobbyData> lobbies = new Dictionary<string, LobbyData>();
+		public static Dictionary<string, LobbyData> Lobbies = new Dictionary<string, LobbyData>();
+
+		private static readonly TransferTurnDoneData emptyMoves = new TransferTurnDoneData();
 
 		private RoomMazeGenerator.Result Map;
 		private VectorGridGraph Astar;
@@ -21,7 +23,8 @@ namespace IsometricGame.Logic
 		private readonly Dictionary<int, TransferTurnDoneData> PlayersMove = new Dictionary<int, TransferTurnDoneData>();
 
 		private ServerConfiguration configuration;
-		private readonly Dictionary<int, Action<TransferInitialData>> initializeMethods = new Dictionary<int, Action<TransferInitialData>>();
+        private float? Timeout;
+        private readonly Dictionary<int, Action<TransferInitialData>> initializeMethods = new Dictionary<int, Action<TransferInitialData>>();
 		private readonly Dictionary<int, Action<TransferTurnData>> turnDoneMethods = new Dictionary<int, Action<TransferTurnData>>();
 		
 		public void Start(ServerConfiguration configuration)
@@ -49,7 +52,7 @@ namespace IsometricGame.Logic
 
         public static void Connect(string lobbyId, int playerId, TransferConnectData connectData, Action<TransferInitialData> initialize, Action<TransferTurnData> turnDone)
         {
-			lobbies[lobbyId].Server.Connect(playerId, connectData, initialize, turnDone);
+			Lobbies[lobbyId].Server.Connect(playerId, connectData, initialize, turnDone);
         }
 
 		public void Connect(int playerId, TransferConnectData connectData, Action<TransferInitialData> initialize, Action<TransferTurnData> turnDone)
@@ -118,7 +121,7 @@ namespace IsometricGame.Logic
 
 		public static void PlayerMove(string lobbyId, int forPlayer, TransferTurnDoneData moves)
 		{
-			lobbies[lobbyId].Server.PlayerMove(forPlayer, moves);
+			Lobbies[lobbyId].Server.PlayerMove(forPlayer, moves);
 		}
 
 		public void PlayerMove(int forPlayer, TransferTurnDoneData moves)
@@ -271,6 +274,7 @@ namespace IsometricGame.Logic
 		{
 			return new TransferInitialData
 			{
+				Timeout = this.configuration.TurnTimeout,
 				YourPlayerId = forPlayer,
 				YourUnits = Players[forPlayer].Units.Select(a => new TransferInitialData.YourUnitsData
 				{
@@ -388,5 +392,31 @@ namespace IsometricGame.Logic
 
 			return false;
 		}
-	}
+
+		public void CheckTimeout(float delta)
+        {
+            if (!configuration.TurnTimeout.HasValue)
+            {
+                return;
+            }
+            
+			this.Timeout = this.Timeout ?? configuration.TurnTimeout;
+            this.Timeout -= delta;
+            if (this.Timeout > 0)
+            {
+				return;
+            }
+
+			this.Timeout = configuration.TurnTimeout;
+			foreach(var player in this.Players)
+            {
+                if (PlayersMove.ContainsKey(player.Key))
+                {
+					continue;
+                }
+
+                this.PlayerMove(player.Key, emptyMoves);
+            }
+        }
+    }
 }

@@ -11,14 +11,30 @@ public class Dungeon : Node2D
 	private CurrentAction currentAction = CurrentAction.None;
 	private Ability? currentAbility = null;
 	private string lobbyId;
+	private float? Timeout;
+	private float? MaxTimeout;
 
 	[Export]
 	public PackedScene UnitScene;
+	
+	private Button nextTurnButton;
 
 	public override void _Ready()
 	{
-		GetNode<Button>("CanvasLayer/NextTurnButton").Connect("pressed", this, nameof(NextTurnPressed));
 		GetNode<UnitActions>("UnitActions").Connect(nameof(UnitActions.ActionSelected), this, nameof(UnitActionSelected));
+		
+		nextTurnButton = GetNode<Button>("CanvasLayer/NextTurnButton");
+		nextTurnButton.Connect("pressed", this, nameof(NextTurnPressed));
+	}
+
+	public override void _Process(float delta)
+	{
+		base._Process(delta);
+		if (Timeout.HasValue)
+		{
+			Timeout -= delta;
+			nextTurnButton.Text = $"GO ({(int)Timeout})";
+		}
 	}
 
 	public void NewGame(int selectedTeam, string lobbyId)
@@ -30,6 +46,11 @@ public class Dungeon : Node2D
 
 	public void Initialize(TransferInitialData initialData)
 	{
+		this.Timeout = initialData.Timeout;
+		this.MaxTimeout = initialData.Timeout;
+
+		nextTurnButton.Text = "GO";
+
 		var maze = GetNode<Maze>("Maze");
 
 		maze.Initialize(initialData.VisibleMap.GetLength(0), initialData.VisibleMap.GetLength(1));
@@ -201,16 +222,16 @@ public class Dungeon : Node2D
 		maze.RemoveHighliting();
 		GetNode<Button>("CanvasLayer/NextTurnButton").Visible = false;
 		
-        var data = new TransferTurnDoneData
-        {
-            UnitActions = myUnits.ToDictionary(a => a.ClientUnit.UnitId, a => new TransferTurnDoneData.UnitActionData
-            {
-                Move = a.NewPosition,
-                Ability = a.Ability ?? Ability.None,
-                AbilityDirection = a.AbilityDirection,
-                AbilityFullUnitId = a.AbilityUnitTarget == null ? -1 : UnitUtils.GetFullUnitId(a.AbilityUnitTarget.ClientUnit.PlayerId, a.AbilityUnitTarget.ClientUnit.UnitId)
-            })
-        };
+		var data = new TransferTurnDoneData
+		{
+			UnitActions = myUnits.ToDictionary(a => a.ClientUnit.UnitId, a => new TransferTurnDoneData.UnitActionData
+			{
+				Move = a.NewPosition,
+				Ability = a.Ability ?? Ability.None,
+				AbilityDirection = a.AbilityDirection,
+				AbilityFullUnitId = a.AbilityUnitTarget == null ? -1 : UnitUtils.GetFullUnitId(a.AbilityUnitTarget.ClientUnit.PlayerId, a.AbilityUnitTarget.ClientUnit.UnitId)
+			})
+		};
 
 
 		GetNode<Communicator>("/root/Communicator").PlayerMoved(lobbyId, data);
@@ -219,6 +240,7 @@ public class Dungeon : Node2D
 
 	public async void TurnDone(TransferTurnData turnData)
 	{
+		this.Timeout = this.MaxTimeout;
 		var maze = GetNode<Maze>("Maze");
 		maze.NewVisibleMap(turnData.VisibleMap);
 		var myUnits = this.GetTree().GetNodesInGroup(Groups.MyUnits).Cast<Unit>().ToList();

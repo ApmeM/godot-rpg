@@ -62,11 +62,29 @@ margin_right = 1014.0
 margin_bottom = 516.0
 size_flags_horizontal = 3
 
-[node name="ViewFullMap" type="CheckBox" parent="VBoxContainer/HBoxContainer2/VBoxContainer2"]
+[node name="ViewFullMapCheckbox" type="CheckBox" parent="VBoxContainer/HBoxContainer2/VBoxContainer2"]
 margin_right = 505.0
 margin_bottom = 38.0
 pressed = true
 text = "View full map"
+
+[node name="TurnTimeoutCheckbox" type="CheckBox" parent="VBoxContainer/HBoxContainer2/VBoxContainer2"]
+margin_top = 42.0
+margin_right = 505.0
+margin_bottom = 80.0
+pressed = true
+text = "With turn timeout"
+
+[node name="TurnTimeoutLineEdit" type="SpinBox" parent="VBoxContainer/HBoxContainer2/VBoxContainer2"]
+margin_top = 84.0
+margin_right = 505.0
+margin_bottom = 124.0
+max_value = 300.0
+step = 10.0
+value = 60.0
+rounded = true
+prefix = "Turn timeout"
+suffix = "seconds"
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
 margin_top = 554.0

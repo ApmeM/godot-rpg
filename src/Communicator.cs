@@ -66,9 +66,9 @@ public class Communicator : Node
 	[RemoteSync]
 	private void CreateLobbyOnServer()
 	{
-		var lobbyId = "Lobby" + Server.lobbies.Count;
+		var lobbyId = "Lobby" + Server.Lobbies.Count;
 		var lobbyData = new LobbyData();
-		Server.lobbies[lobbyId] = lobbyData;
+		Server.Lobbies[lobbyId] = lobbyData;
 		var creatorClientId = GetTree().GetRpcSenderId();
 		lobbyData.Creator = creatorClientId;
 		lobbyData.Players.Add(creatorClientId);
@@ -84,13 +84,13 @@ public class Communicator : Node
 	private void JoinLobbyOnServer(string lobbyId)
 	{
 		var clientId = GetTree().GetRpcSenderId();
-		if (!Server.lobbies.ContainsKey(lobbyId))
+		if (!Server.Lobbies.ContainsKey(lobbyId))
 		{
 			RpcId(clientId, nameof(LobbyNotFound), lobbyId);
 			return;
 		}
 
-		var lobbyData = Server.lobbies[lobbyId];
+		var lobbyData = Server.Lobbies[lobbyId];
 		foreach (var playerClientId in lobbyData.Players)
 		{
 			if (playerClientId == -1)
@@ -115,12 +115,12 @@ public class Communicator : Node
 	[RemoteSync]
 	public void AddBotOnServer(string lobbyId)
 	{
-		if (!Server.lobbies.ContainsKey(lobbyId))
+		if (!Server.Lobbies.ContainsKey(lobbyId))
 		{
 			return;
 		}
 
-		var lobbyData = Server.lobbies[lobbyId];
+		var lobbyData = Server.Lobbies[lobbyId];
 		var clientId = GetTree().GetRpcSenderId();
 		if (lobbyData.Creator != clientId)
 		{
@@ -156,20 +156,20 @@ public class Communicator : Node
 
 	#region Start game
 
-	public void StartGame(string lobbyId, bool fullMapVisible)
+	public void StartGame(string lobbyId, bool fullMapVisible, bool turnTimeoutEnaled, float turnTimeoutValue)
 	{
-		RpcId(1, nameof(StartGameOnServer), lobbyId, fullMapVisible);
+		RpcId(1, nameof(StartGameOnServer), lobbyId, fullMapVisible, turnTimeoutEnaled, turnTimeoutValue);
 	}
 
 	[RemoteSync]
-	public void StartGameOnServer(string lobbyId, bool fullMapVisible)
+	public void StartGameOnServer(string lobbyId, bool fullMapVisible, bool turnTimeoutEnaled, float turnTimeoutValue)
 	{
-		if (!Server.lobbies.ContainsKey(lobbyId))
+		if (!Server.Lobbies.ContainsKey(lobbyId))
 		{
 			return;
 		}
 
-		var lobbyData = Server.lobbies[lobbyId];
+		var lobbyData = Server.Lobbies[lobbyId];
 		var clientId = GetTree().GetRpcSenderId();
 		if (lobbyData.Creator != clientId)
 		{
@@ -180,6 +180,7 @@ public class Communicator : Node
 		lobbyData.Server.Start(new ServerConfiguration
 		{
 			FullMapVisible = fullMapVisible,
+			TurnTimeout = turnTimeoutEnaled ? (float?)turnTimeoutValue : null,
 			PlayersCount = lobbyData.Players.Count,
 		});
 
