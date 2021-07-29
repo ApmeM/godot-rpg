@@ -31,15 +31,9 @@ public class Bot
 	private void Initialize(TransferInitialData initialData)
 	{
 		this.initialData = initialData;
-		_Process();
 	}
 
 	private void TurnDone(TransferTurnData obj)
-	{
-		_Process();
-	}
-
-	public void _Process()
 	{
 		var otherMoves = new Dictionary<int, TransferTurnDoneData.UnitActionData>();
 		foreach (var u in this.initialData.YourUnits)

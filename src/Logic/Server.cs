@@ -108,6 +108,11 @@ namespace IsometricGame.Logic
 				{
 					initMethod.Value(GetInitialData(initMethod.Key));
 				}
+
+				foreach (var turnDoneMethod in turnDoneMethods)
+				{
+					turnDoneMethod.Value(GetTurnData(turnDoneMethod.Key, new Dictionary<long, ServerTurnDelta>()));
+				}
 			}
 		}
 
@@ -305,13 +310,13 @@ namespace IsometricGame.Logic
 				YourUnits = player.Units.ToDictionary(a => a.Key, a =>
 				{
 					var fullId = UnitUtils.GetFullUnitId(forPlayer, a.Key);
-					var delta = UnitsTurnDelta[fullId];
+					UnitsTurnDelta.TryGetValue(fullId, out var delta);
 					return new TransferTurnData.YourUnitsData
 					{
 						Position = a.Value.Position,
-						AttackDirection = a.Value.Hp <= 0 ? null : delta.AbilityDirection,
+						AttackDirection = a.Value.Hp <= 0 ? null : delta?.AbilityDirection,
 						Hp = a.Value.Hp,
-						AttackFrom = a.Value.Hp <= 0 ? null : delta.AbilityFrom,
+						AttackFrom = a.Value.Hp <= 0 ? null : delta?.AbilityFrom,
 						Effects = a.Value.Effects,
 						MoveDistance = a.Value.MoveDistance,
 						SightRange = a.Value.SightRange,
@@ -327,14 +332,14 @@ namespace IsometricGame.Logic
 					Units = a.Value.Units.Where(b => IsVisible(player, (int)b.Value.Position.x, (int)b.Value.Position.y)).ToDictionary(b => b.Key, b =>
 					{
 						var fullId = UnitUtils.GetFullUnitId(a.Key, b.Key);
-						var delta = UnitsTurnDelta[fullId];
+						UnitsTurnDelta.TryGetValue(fullId, out var delta);
 
 						return new TransferTurnData.OtherUnitsData
 						{
 							Position = b.Value.Position,
-							AttackDirection = b.Value.Hp <= 0 ? null : delta.AbilityDirection,
+							AttackDirection = b.Value.Hp <= 0 ? null : delta?.AbilityDirection,
 							Hp = b.Value.Hp,
-							AttackFrom = b.Value.Hp <= 0 ? null : delta.AbilityFrom,
+							AttackFrom = b.Value.Hp <= 0 ? null : delta?.AbilityFrom,
 							Effects = b.Value.Effects,
 						};
 					})
