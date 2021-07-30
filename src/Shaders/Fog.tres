@@ -10,8 +10,8 @@ uniform vec2 offset;
 void fragment()
 {
 	vec2 coord = SCREEN_UV + offset;
-	vec4 noise1 = texture(noise_texture, coord + TIME * 0.05);
-	vec4 noise2 = texture(noise_texture, vec2(coord.y, coord.x) - TIME * 0.05);
+	vec4 noise1 = texture(noise_texture, coord + TIME * 0.02);
+	vec4 noise2 = texture(noise_texture, vec2(coord.y, coord.x) - TIME * 0.02);
 	vec4 noise = mix(noise1, noise2, 0.5);
 	
 	vec4 original = texture(TEXTURE, UV);
@@ -19,7 +19,7 @@ void fragment()
 	if (original.a == 0.0) {
 		noise.a = 0.0;
 	}else{
-		noise.a = noise.r;
+		noise.a = noise.r * intensity;
 	}
 	
 	COLOR = noise;
@@ -33,6 +33,6 @@ noise = SubResource( 2 )
 
 [resource]
 shader = SubResource( 1 )
-shader_param/intensity = null
+shader_param/intensity = 1.0
 shader_param/offset = null
 shader_param/noise_texture = SubResource( 3 )
