@@ -9,6 +9,8 @@ namespace IsometricGame.Logic.Models
         public Dictionary<int, YourUnitsData> YourUnits;
         public MapTile[,] VisibleMap;
         public Dictionary<int, OtherPlayersData> OtherPlayers;
+        public bool GameOverWin;
+        public bool GameOverLoose;
 
         public class YourUnitsData
         {

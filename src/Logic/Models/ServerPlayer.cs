@@ -6,5 +6,6 @@ namespace IsometricGame.Logic.Models
     {
         public string PlayerName;
         public Dictionary<int, ServerUnit> Units = new Dictionary<int, ServerUnit>();
+        public bool IsGameOver;
     }
 }

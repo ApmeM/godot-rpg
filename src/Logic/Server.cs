@@ -20,6 +20,7 @@ namespace IsometricGame.Logic
 		private RoomMazeGenerator.Result Map;
 		private VectorGridGraph Astar;
 		private readonly Dictionary<int, ServerPlayer> Players = new Dictionary<int, ServerPlayer>();
+		private readonly Dictionary<int, ServerPlayer> PlayersGameOver = new Dictionary<int, ServerPlayer>();
 		private readonly Dictionary<int, TransferTurnDoneData> PlayersMove = new Dictionary<int, TransferTurnDoneData>();
 
 		private ServerConfiguration configuration;
@@ -50,12 +51,16 @@ namespace IsometricGame.Logic
 				}
 		}
 
-        public static void Connect(string lobbyId, int playerId, TransferConnectData connectData, Action<TransferInitialData> initialize, Action<TransferTurnData> turnDone)
-        {
+		public static void Connect(string lobbyId, int playerId, TransferConnectData connectData, 
+			Action<TransferInitialData> initialize, 
+			Action<TransferTurnData> turnDone)
+		{
 			Lobbies[lobbyId].Server.Connect(playerId, connectData, initialize, turnDone);
-        }
+		}
 
-		public void Connect(int playerId, TransferConnectData connectData, Action<TransferInitialData> initialize, Action<TransferTurnData> turnDone)
+		public void Connect(int playerId, TransferConnectData connectData, 
+			Action<TransferInitialData> initialize, 
+			Action<TransferTurnData> turnDone)
 		{
             if (this.Players.ContainsKey(playerId))
             {
@@ -126,6 +131,11 @@ namespace IsometricGame.Logic
 
 		public void PlayerMove(int forPlayer, TransferTurnDoneData moves)
         {
+            if (PlayersGameOver.ContainsKey(forPlayer))
+            {
+				return;
+            }
+
             // Put player move into dictionary
             PlayersMove[forPlayer] = moves;
 
@@ -262,15 +272,31 @@ namespace IsometricGame.Logic
 
 					u.Value.Hp = Math.Max(0, u.Value.Hp);
 				}
+
+				p.Value.IsGameOver = p.Value.IsGameOver || CheckGameOver(p.Value);
 			}
 
-            foreach (var turnDoneMethod in turnDoneMethods)
-            {
-                turnDoneMethod.Value(GetTurnData(turnDoneMethod.Key, UnitsTurnDelta));
-            }
-        }
+			foreach (var turnDoneMethod in turnDoneMethods)
+			{
+				turnDoneMethod.Value(GetTurnData(turnDoneMethod.Key, UnitsTurnDelta));
+			}
+			
+			foreach (var player in Players.ToList())
+			{
+                if (!player.Value.IsGameOver)
+                {
+					continue;
+                }
+				turnDoneMethods.Remove(player.Key);
+				initializeMethods.Remove(player.Key);
+				Players.Remove(player.Key);
+				PlayersGameOver[player.Key] = player.Value;
+			}
+			
+			// Todo: Remove lobby if game is over for all players.
+		}
 
-		private TransferInitialData GetInitialData(int forPlayer)
+        private TransferInitialData GetInitialData(int forPlayer)
 		{
 			return new TransferInitialData
 			{
@@ -311,6 +337,8 @@ namespace IsometricGame.Logic
 			var player = Players[forPlayer];
 			return new TransferTurnData
 			{
+				GameOverLoose = player.IsGameOver,
+				GameOverWin = Players.Where(a => a.Key != forPlayer).All(a => a.Value.IsGameOver),
 				YourUnits = player.Units.ToDictionary(a => a.Key, a =>
 				{
 					var fullId = UnitUtils.GetFullUnitId(forPlayer, a.Key);
@@ -351,7 +379,12 @@ namespace IsometricGame.Logic
 			};
 		}
 
-		private MapTile[,] GetVisibleMap(int forPlayer, bool isInitialize)
+        private bool CheckGameOver(ServerPlayer player)
+        {
+			return player.Units.All(unit => unit.Value.Hp <= 0);
+        }
+
+        private MapTile[,] GetVisibleMap(int forPlayer, bool isInitialize)
 		{
 			var player = Players[forPlayer];
 

@@ -23,6 +23,7 @@ public class Main : Node
 		this.menu.Connect(nameof(Menu.CreateLobby), this, nameof(CreateLobby));
 		this.menu.Connect(nameof(Menu.JoinLobby), this, nameof(JoinLobby));
 		this.lobby.Connect(nameof(Lobby.StartGameClientEvent), this, nameof(StartGameClient));
+		this.dungeon.Connect(nameof(Dungeon.GameOver), this, nameof(GameOver));
 	}
 
 	public void GameOver()

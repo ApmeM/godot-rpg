@@ -16,7 +16,9 @@ public class Dungeon : Node2D
 
 	[Export]
 	public PackedScene UnitScene;
-	
+	[Signal]
+	public delegate void GameOver();
+
 	private Button nextTurnButton;
 
 	public override void _Ready()
@@ -334,7 +336,14 @@ public class Dungeon : Node2D
 			await signal;
 		}
 		signals.Clear();
-		
-		GetNode<Button>("CanvasLayer/NextTurnButton").Visible = true;
+
+		if (turnData.GameOverLoose || turnData.GameOverWin)
+		{
+			EmitSignal(nameof(GameOver));
+		}
+		else
+		{
+			GetNode<Button>("CanvasLayer/NextTurnButton").Visible = true;
+		}
 	}
 }
