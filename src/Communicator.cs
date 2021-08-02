@@ -6,6 +6,9 @@ using System.Collections.Generic;
 
 public class Communicator : Node
 {
+    private const int BotId = -1;
+    private const string BotName = "Bot";
+
     public Dictionary<string, LobbyData> Lobbies = new Dictionary<string, LobbyData>();
 
     public override void _Process(float delta)
@@ -66,30 +69,30 @@ public class Communicator : Node
 
     #region Joining lobby
 
-    public void CreateLobby()
+    public void CreateLobby(string playerName)
     {
-        RpcId(1, nameof(CreateLobbyOnServer));
+        RpcId(1, nameof(CreateLobbyOnServer), playerName);
     }
 
     [RemoteSync]
-    private void CreateLobbyOnServer()
+    private void CreateLobbyOnServer(string playerName)
     {
         var lobbyId = "Lobby" + Lobbies.Count;
         var lobbyData = new LobbyData();
         Lobbies[lobbyId] = lobbyData;
         var creatorClientId = GetTree().GetRpcSenderId();
         lobbyData.Creator = creatorClientId;
-        lobbyData.Players.Add(creatorClientId);
-        RpcId(creatorClientId, nameof(PlayerJoinedToLobby), lobbyId, creatorClientId.ToString());
+        lobbyData.Players.Add(new LobbyData.PlayerData { ClientId = creatorClientId, PlayerName = playerName });
+        RpcId(creatorClientId, nameof(PlayerJoinedToLobby), lobbyId, playerName);
     }
 
-    public void JoinLobby(string lobbyId)
+    public void JoinLobby(string lobbyId, string playerName)
     {
-        RpcId(1, nameof(JoinLobbyOnServer), lobbyId);
+        RpcId(1, nameof(JoinLobbyOnServer), lobbyId, playerName);
     }
 
     [RemoteSync]
-    private void JoinLobbyOnServer(string lobbyId)
+    private void JoinLobbyOnServer(string lobbyId, string playerName)
     {
         var clientId = GetTree().GetRpcSenderId();
         if (!Lobbies.ContainsKey(lobbyId))
@@ -99,21 +102,21 @@ public class Communicator : Node
         }
 
         var lobbyData = Lobbies[lobbyId];
-        foreach (var playerClientId in lobbyData.Players)
+        foreach (var player in lobbyData.Players)
         {
-            if (playerClientId == -1)
+            if (player.ClientId == BotId)
             {
-                RpcId(clientId, nameof(PlayerJoinedToLobby), lobbyId, "Bot");
+                RpcId(clientId, nameof(PlayerJoinedToLobby), lobbyId, player.PlayerName);
             }
             else
             {
-                RpcId(playerClientId, nameof(PlayerJoinedToLobby), lobbyId, clientId.ToString());
-                RpcId(clientId, nameof(PlayerJoinedToLobby), lobbyId, playerClientId.ToString());
+                RpcId(player.ClientId, nameof(PlayerJoinedToLobby), lobbyId, playerName);
+                RpcId(clientId, nameof(PlayerJoinedToLobby), lobbyId, player.PlayerName);
             }
         }
 
-        lobbyData.Players.Add(clientId);
-        RpcId(clientId, nameof(PlayerJoinedToLobby), lobbyId, clientId.ToString());
+        lobbyData.Players.Add(new LobbyData.PlayerData { ClientId = clientId, PlayerName = playerName });;
+        RpcId(clientId, nameof(PlayerJoinedToLobby), lobbyId, playerName);
     }
     public void AddBot(string lobbyId)
     {
@@ -135,16 +138,16 @@ public class Communicator : Node
             return;
         }
 
-        lobbyData.Players.Add(-1);
+        lobbyData.Players.Add(new LobbyData.PlayerData { ClientId = BotId, PlayerName = BotName });
 
-        foreach (var playerClientId in lobbyData.Players)
+        foreach (var player in lobbyData.Players)
         {
-            if (playerClientId == -1)
+            if (player.ClientId == BotId)
             {
                 continue;
             }
 
-            RpcId(playerClientId, nameof(PlayerJoinedToLobby), lobbyId, "Bot");
+            RpcId(player.ClientId, nameof(PlayerJoinedToLobby), lobbyId, BotName);
         }
     }
 
@@ -193,9 +196,9 @@ public class Communicator : Node
         });
 
         var botNumber = 0;
-        foreach (var playerClientId in lobbyData.Players)
+        foreach (var player in lobbyData.Players)
         {
-            if (playerClientId == -1)
+            if (player.ClientId == BotId)
             {
                 botNumber--;
 
@@ -204,7 +207,7 @@ public class Communicator : Node
             }
             else
             {
-                RpcId(playerClientId, nameof(GameStarted), lobbyId);
+                RpcId(player.ClientId, nameof(GameStarted), lobbyId);
             }
         }
     }

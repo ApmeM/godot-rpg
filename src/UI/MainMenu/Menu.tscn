@@ -1,10 +1,9 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://assets/Fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://UI/MainMenu/Menu.cs" type="Script" id=2]
 [ext_resource path="res://UI/MainMenu/TeamSelect.tscn" type="PackedScene" id=3]
 [ext_resource path="res://UI/MainMenu/TeamSelector.tscn" type="PackedScene" id=4]
-[ext_resource path="res://UI/MainMenu/Login.tscn" type="PackedScene" id=5]
 
 [sub_resource type="DynamicFont" id=1]
 size = 24
@@ -75,22 +74,45 @@ margin_right = 1001.0
 margin_bottom = 499.0
 tabs_visible = false
 
-[node name="LoginContentContainer" type="HBoxContainer" parent="VBoxContainer/TabContainer/Online/TabContainer"]
-visible = false
+[node name="LoginContentContainer" type="VBoxContainer" parent="VBoxContainer/TabContainer/Online/TabContainer"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = 4.0
 margin_top = 8.0
 margin_right = -4.0
 margin_bottom = -4.0
+
+[node name="LoginContainer" type="HBoxContainer" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer"]
+margin_right = 988.0
+margin_bottom = 40.0
+
+[node name="LoginLabel" type="Label" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/LoginContainer"]
+margin_top = 5.0
+margin_right = 75.0
+margin_bottom = 35.0
+text = "Login"
+
+[node name="LoginLineEdit" type="LineEdit" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/LoginContainer"]
+margin_left = 79.0
+margin_right = 988.0
+margin_bottom = 40.0
+size_flags_horizontal = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ConnectContentContainer" type="HBoxContainer" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer"]
+margin_top = 44.0
+margin_right = 988.0
+margin_bottom = 202.0
 custom_constants/separation = 50
 
-[node name="ServerContainer" type="VBoxContainer" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer"]
+[node name="ServerContainer" type="VBoxContainer" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/ConnectContentContainer"]
 margin_right = 469.0
-margin_bottom = 477.0
+margin_bottom = 158.0
 size_flags_horizontal = 3
 
-[node name="ServerLabel" type="Label" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/ServerContainer"]
+[node name="ServerLabel" type="Label" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/ConnectContentContainer/ServerContainer"]
 margin_right = 469.0
 margin_bottom = 30.0
 size_flags_horizontal = 3
@@ -99,14 +121,14 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="IpLabel" type="Label" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/ServerContainer"]
+[node name="IpLabel" type="Label" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/ConnectContentContainer/ServerContainer"]
 margin_top = 34.0
 margin_right = 469.0
 margin_bottom = 64.0
 size_flags_horizontal = 3
 text = "127.0.0.1"
 
-[node name="ServerButton" type="Button" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/ServerContainer"]
+[node name="ServerButton" type="Button" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/ConnectContentContainer/ServerContainer"]
 margin_top = 68.0
 margin_right = 469.0
 margin_bottom = 104.0
@@ -116,13 +138,13 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="ClientContainer" type="VBoxContainer" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer"]
+[node name="ClientContainer" type="VBoxContainer" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/ConnectContentContainer"]
 margin_left = 519.0
 margin_right = 988.0
-margin_bottom = 477.0
+margin_bottom = 158.0
 size_flags_horizontal = 3
 
-[node name="ClientLabel" type="Label" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/ClientContainer"]
+[node name="ClientLabel" type="Label" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/ConnectContentContainer/ClientContainer"]
 margin_right = 469.0
 margin_bottom = 30.0
 size_flags_horizontal = 3
@@ -131,16 +153,44 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Login" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/ClientContainer" instance=ExtResource( 5 )]
-margin_left = 0.0
+[node name="CredentialsContainer" type="GridContainer" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/ConnectContentContainer/ClientContainer"]
 margin_top = 34.0
 margin_right = 469.0
-margin_bottom = 194.0
+margin_bottom = 118.0
+columns = 2
 
-[node name="ClientButton" type="Button" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/ClientContainer"]
-margin_top = 198.0
+[node name="ServerLabel" type="Label" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/ConnectContentContainer/ClientContainer/CredentialsContainer"]
+margin_top = 5.0
+margin_right = 130.0
+margin_bottom = 35.0
+text = "Server"
+
+[node name="ServerLineEdit" type="LineEdit" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/ConnectContentContainer/ClientContainer/CredentialsContainer"]
+margin_left = 134.0
 margin_right = 469.0
-margin_bottom = 234.0
+margin_bottom = 40.0
+size_flags_horizontal = 3
+
+[node name="PasswordLabel" type="Label" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/ConnectContentContainer/ClientContainer/CredentialsContainer"]
+margin_top = 49.0
+margin_right = 130.0
+margin_bottom = 79.0
+text = "Password"
+
+[node name="PasswordLineEdit" type="LineEdit" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/ConnectContentContainer/ClientContainer/CredentialsContainer"]
+margin_left = 134.0
+margin_top = 44.0
+margin_right = 469.0
+margin_bottom = 84.0
+size_flags_horizontal = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ClientButton" type="Button" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/ConnectContentContainer/ClientContainer"]
+margin_top = 122.0
+margin_right = 469.0
+margin_bottom = 158.0
 shortcut = SubResource( 4 )
 text = "Connect"
 __meta__ = {
@@ -148,6 +198,7 @@ __meta__ = {
 }
 
 [node name="LobbyContentContainer" type="VBoxContainer" parent="VBoxContainer/TabContainer/Online/TabContainer"]
+visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = 4.0
