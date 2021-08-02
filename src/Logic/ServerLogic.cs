@@ -11,10 +11,8 @@ using System.Linq;
 
 namespace IsometricGame.Logic
 {
-	public class Server
+	public class ServerLogic
 	{
-		public static Dictionary<string, LobbyData> Lobbies = new Dictionary<string, LobbyData>();
-
 		private static readonly TransferTurnDoneData emptyMoves = new TransferTurnDoneData();
 
 		private RoomMazeGenerator.Result Map;
@@ -49,13 +47,6 @@ namespace IsometricGame.Logic
 						this.Astar.Paths.Add(new Vector2(x, y));
 					}
 				}
-		}
-
-		public static void Connect(string lobbyId, int playerId, TransferConnectData connectData, 
-			Action<TransferInitialData> initialize, 
-			Action<TransferTurnData> turnDone)
-		{
-			Lobbies[lobbyId].Server.Connect(playerId, connectData, initialize, turnDone);
 		}
 
 		public void Connect(int playerId, TransferConnectData connectData, 
@@ -122,11 +113,6 @@ namespace IsometricGame.Logic
 					turnDoneMethod.Value(GetTurnData(turnDoneMethod.Key, new Dictionary<long, ServerTurnDelta>()));
 				}
 			}
-		}
-
-		public static void PlayerMove(string lobbyId, int forPlayer, TransferTurnDoneData moves)
-		{
-			Lobbies[lobbyId].Server.PlayerMove(forPlayer, moves);
 		}
 
 		public void PlayerMove(int forPlayer, TransferTurnDoneData moves)
