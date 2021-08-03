@@ -131,6 +131,7 @@ namespace IsometricGame.Logic
             }
 
 			// When all players send their turns - apply all.
+			this.Timeout = configuration.TurnTimeout;
 			var UnitsTurnDelta = new Dictionary<long, ServerTurnDelta>();
 			var occupiedCells = new HashSet<Vector2>();
 			foreach (var actionPlayer in Players)
