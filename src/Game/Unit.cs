@@ -108,6 +108,7 @@ public class Unit : Node2D
 		if (newHp <= 0 && !IsDead)
 		{
 			this.IsDead = true;
+			shadow.HideShadow();
 			this.AnimateUnit("dead", attackFrom ?? Vector2.Up);
 			return ToSignal(this, nameof(UnitAnimationDone));
 		}
@@ -138,18 +139,25 @@ public class Unit : Node2D
 			return ToSignal(GetTree().CreateTimer(0), "timeout");
 		}
 
+		shadow.HideShadow();
 		this.AnimateUnit("attack", attackDirection.Value);
 		return ToSignal(this, nameof(UnitAnimationDone));
 	}
 
 	public SignalAwaiter MoveUnitTo(Vector2 newTarget)
-	{
+    {
+        var maze = GetParent<Maze>();
+        var playerPosition = maze.WorldToMap(Position);
+        if (playerPosition == newTarget)
+        {
+			return ToSignal(GetTree().CreateTimer(0), "timeout");
+		}
 		shadow.HideShadow();
-		IsometricMove.MoveBy(this.path, Position, newTarget, GetParent<Maze>());
+		IsometricMove.MoveBy(this.path, Position, newTarget, maze);
 		return ToSignal(this, nameof(MoveDone));
-	}
+    }
 
-	public void MoveShadowTo(Vector2 newTarget)
+    public void MoveShadowTo(Vector2 newTarget)
 	{
 		if (!shadow.Visible)
 		{
