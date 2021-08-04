@@ -132,14 +132,14 @@ namespace IsometricGame.Logic
 
 			// When all players send their turns - apply all.
 			this.Timeout = configuration.TurnTimeout;
-			var UnitsTurnDelta = new Dictionary<long, ServerTurnDelta>();
+			var unitsTurnDelta = new Dictionary<long, ServerTurnDelta>();
 			var occupiedCells = new HashSet<Vector2>();
 			foreach (var actionPlayer in Players)
             {
                 foreach (var actionUnit in actionPlayer.Value.Units)
                 {
                     var fullId = UnitUtils.GetFullUnitId(actionPlayer.Key, actionUnit.Key);
-					UnitsTurnDelta[fullId] = new ServerTurnDelta();
+					unitsTurnDelta[fullId] = new ServerTurnDelta();
 
 					if (actionUnit.Value.Hp <= 0)
                     {
@@ -199,7 +199,7 @@ namespace IsometricGame.Logic
 				foreach (var unitMove in playerMove.Value.UnitActions)
 				{
 					var actionFullId = UnitUtils.GetFullUnitId(playerMove.Key, unitMove.Key);
-					var actionDelta = UnitsTurnDelta[actionFullId];
+					var actionDelta = unitsTurnDelta[actionFullId];
 					var actionPlayer = Players[playerMove.Key];
 					var actionUnit = actionPlayer.Units[unitMove.Key];
 					if (unitMove.Value.AbilityDirection.HasValue && actionUnit.Hp > 0)
@@ -232,7 +232,7 @@ namespace IsometricGame.Logic
 								if (ability.IsApplicable(this.Astar, actionPlayer, actionUnit, targetPlayer.Value, targetUnit.Value, actionDelta.AbilityDirection.Value))
 								{
 									var targetFullId = UnitUtils.GetFullUnitId(targetPlayer.Key, targetUnit.Key);
-									var targetDelta = UnitsTurnDelta[targetFullId];
+									var targetDelta = unitsTurnDelta[targetFullId];
 									targetDelta.AbilityFrom = actionUnit.Position - targetUnit.Value.Position;
 									targetDelta.Actions.AddRange(ability.Apply(actionUnit, targetUnit.Value));
 								}
@@ -249,7 +249,7 @@ namespace IsometricGame.Logic
 				foreach (var u in p.Value.Units)
 				{
 					var targetFullId = UnitUtils.GetFullUnitId(p.Key, u.Key);
-					var targetDelta = UnitsTurnDelta[targetFullId];
+					var targetDelta = unitsTurnDelta[targetFullId];
 					foreach (var action in targetDelta.Actions)
 					{
 						action.Apply(u.Value);
@@ -265,7 +265,7 @@ namespace IsometricGame.Logic
 
 			foreach (var turnDoneMethod in turnDoneMethods)
 			{
-				turnDoneMethod.Value(GetTurnData(turnDoneMethod.Key, UnitsTurnDelta));
+				turnDoneMethod.Value(GetTurnData(turnDoneMethod.Key, unitsTurnDelta));
 			}
 			
 			foreach (var player in Players.ToList())
