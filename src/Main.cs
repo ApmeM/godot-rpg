@@ -33,20 +33,20 @@ public class Main : Node
         this.menu.GameOver();
     }
 
-    public void CreateLobby(int selectedTeam, string playerName)
+    public void CreateLobby(int selectedTeam)
     {
         this.selectedTeam = selectedTeam;
         RemoveChild(this.menu);
         AddChild(this.lobby);
-        this.lobby.Create(playerName);
+        this.lobby.Create();
     }
 
-    public void JoinLobby(int selectedTeam, string lobbyId, string playerName)
+    public void JoinLobby(int selectedTeam, string lobbyId)
     {
         this.selectedTeam = selectedTeam;
         RemoveChild(this.menu);
         AddChild(this.lobby);
-        this.lobby.Join(lobbyId, playerName);
+        this.lobby.Join(lobbyId);
     }
 
     public void StartGameClient(string lobbyId)

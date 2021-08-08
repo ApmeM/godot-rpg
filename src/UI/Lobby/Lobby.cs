@@ -38,16 +38,16 @@ public class Lobby : Container
         this.turnTimeoutSpinBox.Visible = this.turnTimeoutCheckbox.Pressed;
     }
 
-    public void Create(string playerName)
+    public void Create()
     {
-        GetNode<Communicator>("/root/Communicator").CreateLobby(playerName);
+        GetNode<Communicator>("/root/Communicator").CreateLobby();
         this.startButton.Visible = true;
         this.addBotButton.Visible = true;
     }
 
-    public void Join(string lobbyId, string playerName)
+    public void Join(string lobbyId)
     {
-        GetNode<Communicator>("/root/Communicator").JoinLobby(lobbyId, playerName);
+        GetNode<Communicator>("/root/Communicator").JoinLobby(lobbyId);
         this.startButton.Visible = false;
         this.addBotButton.Visible = false;
     }

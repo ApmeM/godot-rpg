@@ -82,70 +82,8 @@ margin_top = 8.0
 margin_right = -4.0
 margin_bottom = -4.0
 
-[node name="LoginContainer" type="HBoxContainer" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer"]
+[node name="ClientLabel" type="Label" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer"]
 margin_right = 988.0
-margin_bottom = 40.0
-
-[node name="LoginLabel" type="Label" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/LoginContainer"]
-margin_top = 5.0
-margin_right = 75.0
-margin_bottom = 35.0
-text = "Login"
-
-[node name="LoginLineEdit" type="LineEdit" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/LoginContainer"]
-margin_left = 79.0
-margin_right = 988.0
-margin_bottom = 40.0
-size_flags_horizontal = 3
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="ConnectContentContainer" type="HBoxContainer" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer"]
-margin_top = 44.0
-margin_right = 988.0
-margin_bottom = 202.0
-custom_constants/separation = 50
-
-[node name="ServerContainer" type="VBoxContainer" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/ConnectContentContainer"]
-margin_right = 469.0
-margin_bottom = 158.0
-size_flags_horizontal = 3
-
-[node name="ServerLabel" type="Label" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/ConnectContentContainer/ServerContainer"]
-margin_right = 469.0
-margin_bottom = 30.0
-size_flags_horizontal = 3
-text = "Start as server"
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="IpLabel" type="Label" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/ConnectContentContainer/ServerContainer"]
-margin_top = 34.0
-margin_right = 469.0
-margin_bottom = 64.0
-size_flags_horizontal = 3
-text = "127.0.0.1"
-
-[node name="ServerButton" type="Button" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/ConnectContentContainer/ServerContainer"]
-margin_top = 68.0
-margin_right = 469.0
-margin_bottom = 104.0
-shortcut = SubResource( 4 )
-text = "Server"
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="ClientContainer" type="VBoxContainer" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/ConnectContentContainer"]
-margin_left = 519.0
-margin_right = 988.0
-margin_bottom = 158.0
-size_flags_horizontal = 3
-
-[node name="ClientLabel" type="Label" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/ConnectContentContainer/ClientContainer"]
-margin_right = 469.0
 margin_bottom = 30.0
 size_flags_horizontal = 3
 text = "Join server"
@@ -153,46 +91,98 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="CredentialsContainer" type="GridContainer" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/ConnectContentContainer/ClientContainer"]
+[node name="CredentialsContainer" type="GridContainer" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer"]
 margin_top = 34.0
-margin_right = 469.0
-margin_bottom = 118.0
+margin_right = 988.0
+margin_bottom = 162.0
 columns = 2
 
-[node name="ServerLabel" type="Label" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/ConnectContentContainer/ClientContainer/CredentialsContainer"]
+[node name="ServerLabel" type="Label" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/CredentialsContainer"]
 margin_top = 5.0
 margin_right = 130.0
 margin_bottom = 35.0
 text = "Server"
 
-[node name="ServerLineEdit" type="LineEdit" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/ConnectContentContainer/ClientContainer/CredentialsContainer"]
+[node name="ServerLineEdit" type="LineEdit" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/CredentialsContainer"]
 margin_left = 134.0
-margin_right = 469.0
+margin_right = 988.0
 margin_bottom = 40.0
 size_flags_horizontal = 3
+text = "91.146.57.100"
 
-[node name="PasswordLabel" type="Label" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/ConnectContentContainer/ClientContainer/CredentialsContainer"]
+[node name="LoginLabel" type="Label" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/CredentialsContainer"]
 margin_top = 49.0
 margin_right = 130.0
 margin_bottom = 79.0
-text = "Password"
+text = "Login"
 
-[node name="PasswordLineEdit" type="LineEdit" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/ConnectContentContainer/ClientContainer/CredentialsContainer"]
+[node name="LoginLineEdit" type="LineEdit" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/CredentialsContainer"]
 margin_left = 134.0
 margin_top = 44.0
-margin_right = 469.0
+margin_right = 988.0
 margin_bottom = 84.0
 size_flags_horizontal = 3
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="ClientButton" type="Button" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/ConnectContentContainer/ClientContainer"]
-margin_top = 122.0
-margin_right = 469.0
-margin_bottom = 158.0
+[node name="PasswordLabel" type="Label" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/CredentialsContainer"]
+margin_top = 93.0
+margin_right = 130.0
+margin_bottom = 123.0
+text = "Password"
+
+[node name="PasswordLineEdit" type="LineEdit" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/CredentialsContainer"]
+margin_left = 134.0
+margin_top = 88.0
+margin_right = 988.0
+margin_bottom = 128.0
+size_flags_horizontal = 3
+secret = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="IncorrectLoginLabel" type="Label" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer"]
+visible = false
+margin_top = 166.0
+margin_right = 988.0
+margin_bottom = 196.0
+size_flags_horizontal = 3
+custom_colors/font_color = Color( 1, 0, 0, 1 )
+text = "Incorrect login"
+align = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ClientButton" type="Button" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer"]
+margin_top = 166.0
+margin_right = 988.0
+margin_bottom = 202.0
 shortcut = SubResource( 4 )
 text = "Connect"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ServerLabel" type="Label" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer"]
+margin_top = 206.0
+margin_right = 988.0
+margin_bottom = 236.0
+size_flags_horizontal = 3
+text = "Or"
+align = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ServerButton" type="Button" parent="VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer"]
+margin_top = 240.0
+margin_right = 988.0
+margin_bottom = 276.0
+shortcut = SubResource( 4 )
+text = "Start as Server"
 __meta__ = {
 "_edit_use_anchors_": false
 }

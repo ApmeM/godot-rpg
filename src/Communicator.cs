@@ -2,7 +2,10 @@ using Godot;
 using IsometricGame.Logic;
 using IsometricGame.Logic.Models;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Text;
 
 public class Communicator : Node
 {
@@ -10,6 +13,26 @@ public class Communicator : Node
     private const string BotName = "Bot";
 
     public Dictionary<string, LobbyData> Lobbies = new Dictionary<string, LobbyData>();
+    public Dictionary<int, string> PlayerNames = new Dictionary<int, string>();
+
+    public Dictionary<string, string> Credentials = new Dictionary<string, string>();
+
+    public override void _Ready()
+    {
+        base._Ready();
+
+        var file = new File();
+        if (file.Open("user://logins", File.ModeFlags.Read) == Error.Ok)
+        {
+            var creds = file.GetPascalString();
+            this.Credentials = JsonConvert.DeserializeObject<Dictionary<string, string>>(creds);
+            file.Close();
+        }
+        else
+        {
+            this.Credentials["Server"] = "";
+        }
+    }
 
     public override void _Process(float delta)
     {
@@ -43,9 +66,15 @@ public class Communicator : Node
 
         GetTree().Connect("network_peer_connected", this, nameof(PlayerConnected));
         GetTree().Connect("network_peer_disconnected", this, nameof(PlayerDisconnected));
+
+        this.PlayerNames.Clear();
+        this.Lobbies.Clear();
+        this.PlayerNames[1] = "Server";
+        
+        LoginSuccess();
     }
 
-    public void CreateClient(string serverAddress)
+    public void CreateClient(string serverAddress, string login, string password)
     {
         var peer = new WebSocketClient();
         peer.ConnectToUrl($"ws://{serverAddress}:12345", null, true);
@@ -53,6 +82,61 @@ public class Communicator : Node
 
         GetTree().Connect("network_peer_connected", this, nameof(PlayerConnected));
         GetTree().Connect("network_peer_disconnected", this, nameof(PlayerDisconnected));
+        GetTree().Connect("connected_to_server", this, nameof(PlayerConnectedToServer), new Godot.Collections.Array { login, password });
+    }
+
+    [RemoteSync]
+    private void LoginOnServer(string login, string password)
+    {
+        var clientId = GetTree().GetRpcSenderId();
+        if (string.IsNullOrWhiteSpace(login) || string.IsNullOrWhiteSpace(password))
+        {
+            RpcId(clientId, nameof(IncorrectLogin));
+            return;
+        }
+
+        var hash = Convert.ToBase64String(MD5.Create().ComputeHash(Encoding.Unicode.GetBytes($"{login}_{password}")));
+        if (!this.Credentials.ContainsKey(login))
+        {
+            this.Credentials[login] = hash;
+            this.PlayerNames[clientId] = login;
+            RpcId(clientId, nameof(LoginSuccess));
+
+            var file = new File();
+            if (file.Open("user://logins", File.ModeFlags.Write) == Error.Ok)
+            {
+                var creds = JsonConvert.SerializeObject(Credentials);
+                file.StorePascalString(creds);
+                file.Close();
+            }
+        }
+        else if (this.Credentials[login] == hash)
+        {
+            this.PlayerNames[clientId] = login;
+            RpcId(clientId, nameof(LoginSuccess));
+        }
+        else
+        {
+            RpcId(clientId, nameof(IncorrectLogin));
+        }
+    }
+
+    [RemoteSync]
+    private void LoginSuccess()
+    {
+        GetNode<Menu>("/root/Main/Menu").LoginSuccess();
+    }
+
+    [RemoteSync]
+    private void IncorrectLogin()
+    {
+        GetTree().NetworkPeer = null;
+
+        GetTree().Disconnect("network_peer_connected", this, nameof(PlayerConnected));
+        GetTree().Disconnect("network_peer_disconnected", this, nameof(PlayerDisconnected));
+        GetTree().Disconnect("connected_to_server", this, nameof(PlayerConnectedToServer));
+
+        GetNode<Menu>("/root/Main/Menu").IncorrectLogin();
     }
 
     private void PlayerConnected(int id)
@@ -60,8 +144,19 @@ public class Communicator : Node
         GD.Print("player connected");
     }
 
+    private void PlayerConnectedToServer(string login, string password)
+    {
+        RpcId(1, nameof(LoginOnServer), login, password);
+    }
+
     private void PlayerDisconnected(int id)
     {
+        if(!PlayerNames.ContainsKey(id))
+        {
+            return;
+        }
+
+        this.PlayerNames.Remove(id);
         GD.Print("player disconnected");
     }
 
@@ -69,30 +164,31 @@ public class Communicator : Node
 
     #region Joining lobby
 
-    public void CreateLobby(string playerName)
+    public void CreateLobby()
     {
-        RpcId(1, nameof(CreateLobbyOnServer), playerName);
+        RpcId(1, nameof(CreateLobbyOnServer));
     }
 
     [RemoteSync]
-    private void CreateLobbyOnServer(string playerName)
+    private void CreateLobbyOnServer()
     {
         var lobbyId = "Lobby" + Lobbies.Count;
         var lobbyData = new LobbyData();
         Lobbies[lobbyId] = lobbyData;
         var creatorClientId = GetTree().GetRpcSenderId();
+        var playerName = this.PlayerNames[creatorClientId];
         lobbyData.Creator = creatorClientId;
         lobbyData.Players.Add(new LobbyData.PlayerData { ClientId = creatorClientId, PlayerName = playerName });
         RpcId(creatorClientId, nameof(PlayerJoinedToLobby), lobbyId, playerName);
     }
 
-    public void JoinLobby(string lobbyId, string playerName)
+    public void JoinLobby(string lobbyId)
     {
-        RpcId(1, nameof(JoinLobbyOnServer), lobbyId, playerName);
+        RpcId(1, nameof(JoinLobbyOnServer), lobbyId);
     }
 
     [RemoteSync]
-    private void JoinLobbyOnServer(string lobbyId, string playerName)
+    private void JoinLobbyOnServer(string lobbyId)
     {
         var clientId = GetTree().GetRpcSenderId();
         if (!Lobbies.ContainsKey(lobbyId))
@@ -102,6 +198,7 @@ public class Communicator : Node
         }
 
         var lobbyData = Lobbies[lobbyId];
+        var playerName = this.PlayerNames[clientId];
         foreach (var player in lobbyData.Players)
         {
             if (player.ClientId == BotId)
