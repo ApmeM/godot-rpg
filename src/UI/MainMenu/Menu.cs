@@ -10,6 +10,9 @@ public class Menu : Container
     private LineEdit loginText;
     private LineEdit serverText;
     private LineEdit passwordText;
+    private Button serverButton;
+    private Button clientButton;
+    private Label serverLabel;
 
     [Signal]
     public delegate void JoinLobby(int selectedTeam, string lobbyId);
@@ -17,8 +20,9 @@ public class Menu : Container
     public override void _Ready()
     {
         base._Ready();
-        this.GetNode<Button>("VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/ServerButton").Connect("pressed", this, nameof(OnServerButtonPressed));
-        this.GetNode<Button>("VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/ClientButton").Connect("pressed", this, nameof(OnClientButtonPressed));
+        this.serverButton = this.GetNode<Button>("VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/ServerButton");
+        this.clientButton = this.GetNode<Button>("VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/ClientButton");
+        this.serverLabel = this.GetNode<Label>("VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/ServerLabel");
 
         this.GetNode<Button>("VBoxContainer/TabContainer/Online/TabContainer/LobbyContentContainer/ActionContainer/CustomContainer/GridContainer/CreateButton").Connect("pressed", this, nameof(OnCreateButtonPressed));
         this.GetNode<Button>("VBoxContainer/TabContainer/Online/TabContainer/LobbyContentContainer/ActionContainer/CustomContainer/GridContainer/JoinButton").Connect("pressed", this, nameof(OnJoinButtonPressed));
@@ -32,6 +36,15 @@ public class Menu : Container
         this.lobbyId = this.GetNode<LineEdit>("VBoxContainer/TabContainer/Online/TabContainer/LobbyContentContainer/ActionContainer/CustomContainer/GridContainer/lobbyIdLineEdit");
         this.teamSelector = this.GetNode<TeamSelector>("VBoxContainer/TabContainer/Online/TabContainer/LobbyContentContainer/TeamSelector");
         this.onlineTabs = this.GetNode<TabContainer>("VBoxContainer/TabContainer/Online/TabContainer");
+
+        this.serverButton.Connect("pressed", this, nameof(OnServerButtonPressed));
+        this.clientButton.Connect("pressed", this, nameof(OnClientButtonPressed));
+
+        if (OS.GetName() == "HTML5")
+        {
+            this.serverButton.Visible = false;
+            this.serverLabel.Visible = false;
+        }
 
         this.teamSelector.Refresh(FileStorage.LoadTeams());
 
