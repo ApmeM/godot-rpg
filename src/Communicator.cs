@@ -160,10 +160,14 @@ public class Communicator : Node
         var lobbyData = new LobbyData();
         Lobbies[lobbyId] = lobbyData;
         var creatorClientId = GetTree().GetRpcSenderId();
-        var playerName = this.PlayerNames[creatorClientId];
         lobbyData.Creator = creatorClientId;
-        lobbyData.Players.Add(new LobbyData.PlayerData { ClientId = creatorClientId, PlayerName = playerName });
-        RpcId(creatorClientId, nameof(PlayerJoinedToLobby), lobbyId, playerName);
+        RpcId(creatorClientId, nameof(CreateLobbyDone), lobbyId);
+    }
+
+    [RemoteSync]
+    private void CreateLobbyDone(string lobbyId)
+    {
+        GetNode<Menu>("/root/Main/Menu").LobbyCreated(lobbyId);
     }
 
     public void JoinLobby(string lobbyId)
@@ -181,24 +185,10 @@ public class Communicator : Node
             return;
         }
 
-        var lobbyData = Lobbies[lobbyId];
         var playerName = this.PlayerNames[clientId];
-        foreach (var player in lobbyData.Players)
-        {
-            if (player.ClientId == BotId)
-            {
-                RpcId(clientId, nameof(PlayerJoinedToLobby), lobbyId, player.PlayerName);
-            }
-            else
-            {
-                RpcId(player.ClientId, nameof(PlayerJoinedToLobby), lobbyId, playerName);
-                RpcId(clientId, nameof(PlayerJoinedToLobby), lobbyId, player.PlayerName);
-            }
-        }
-
-        lobbyData.Players.Add(new LobbyData.PlayerData { ClientId = clientId, PlayerName = playerName });;
-        RpcId(clientId, nameof(PlayerJoinedToLobby), lobbyId, playerName);
+        SendAllNewPlayerJoinedLobby(lobbyId, clientId, playerName);
     }
+
     public void AddBot(string lobbyId)
     {
         RpcId(1, nameof(AddBotOnServer), lobbyId);
@@ -219,23 +209,42 @@ public class Communicator : Node
             return;
         }
 
-        lobbyData.Players.Add(new LobbyData.PlayerData { ClientId = BotId, PlayerName = BotName });
+        SendAllNewPlayerJoinedLobby(lobbyId, BotId, BotName);
+    }
 
+    private void SendAllNewPlayerJoinedLobby(string lobbyId, int clientId, string playerName)
+    {
+        var lobbyData = Lobbies[lobbyId];
         foreach (var player in lobbyData.Players)
         {
-            if (player.ClientId == BotId)
+            if (player.ClientId != BotId)
             {
-                continue;
+                RpcId(player.ClientId, nameof(PlayerJoinedToLobby), playerName);
             }
 
-            RpcId(player.ClientId, nameof(PlayerJoinedToLobby), lobbyId, BotName);
+            if (clientId != BotId)
+            {
+                RpcId(clientId, nameof(PlayerJoinedToLobby), player.PlayerName);
+            }
+        }
+
+        lobbyData.Players.Add(new LobbyData.PlayerData { ClientId = clientId, PlayerName = playerName });
+        if (clientId != BotId)
+        {
+            RpcId(clientId, nameof(YouJoinedToLobby), clientId == lobbyData.Creator, lobbyId, playerName);
         }
     }
 
     [RemoteSync]
-    private void PlayerJoinedToLobby(string lobbyId, string playerName)
+    private void PlayerJoinedToLobby(string playerName)
     {
-        GetNode<Lobby>("/root/Main/Lobby").PlayerJoinedToLobby(lobbyId, playerName);
+        GetNode<Lobby>("/root/Main/Lobby").PlayerJoinedToLobby(playerName);
+    }
+
+    [RemoteSync]
+    private void YouJoinedToLobby(bool creator, string lobbyId, string playerName)
+    {
+        GetNode<Lobby>("/root/Main/Lobby").YouJoinedToLobby(creator, lobbyId, playerName);
     }
 
     [RemoteSync]

@@ -1,5 +1,4 @@
 using Godot;
-using IsometricGame.Logic;
 using IsometricGame.Logic.ScriptHelpers;
 
 public class Menu : Container
@@ -12,8 +11,6 @@ public class Menu : Container
     private LineEdit serverText;
     private LineEdit passwordText;
 
-    [Signal]
-    public delegate void CreateLobby(int selectedTeam);
     [Signal]
     public delegate void JoinLobby(int selectedTeam, string lobbyId);
 
@@ -82,11 +79,16 @@ public class Menu : Container
 
     private void OnCreateButtonPressed()
     {
-        EmitSignal(nameof(CreateLobby), this.teamSelector.Selected);
+        GetNode<Communicator>("/root/Communicator").CreateLobby();
+    }
+
+    public void LobbyCreated(string lobbyId)
+    {
+        EmitSignal(nameof(JoinLobby), this.teamSelector.Selected, lobbyId);
     }
 
     private void OnJoinButtonPressed()
     {
-        EmitSignal(nameof(JoinLobby), this.teamSelector.Selected, lobbyId.Text);
+        LobbyCreated(this.lobbyId.Text);
     }
 }

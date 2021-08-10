@@ -20,7 +20,6 @@ public class Main : Node
         RemoveChild(this.dungeon);
         RemoveChild(this.lobby);
 
-        this.menu.Connect(nameof(Menu.CreateLobby), this, nameof(CreateLobby));
         this.menu.Connect(nameof(Menu.JoinLobby), this, nameof(JoinLobby));
         this.lobby.Connect(nameof(Lobby.StartGameClientEvent), this, nameof(StartGameClient));
         this.dungeon.Connect(nameof(Dungeon.GameOver), this, nameof(GameOver));
@@ -31,14 +30,6 @@ public class Main : Node
         RemoveChild(this.dungeon);
         AddChild(this.menu);
         this.menu.GameOver();
-    }
-
-    public void CreateLobby(int selectedTeam)
-    {
-        this.selectedTeam = selectedTeam;
-        RemoveChild(this.menu);
-        AddChild(this.lobby);
-        this.lobby.Create();
     }
 
     public void JoinLobby(int selectedTeam, string lobbyId)

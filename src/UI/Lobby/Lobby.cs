@@ -38,18 +38,9 @@ public class Lobby : Container
         this.turnTimeoutSpinBox.Visible = this.turnTimeoutCheckbox.Pressed;
     }
 
-    public void Create()
-    {
-        GetNode<Communicator>("/root/Communicator").CreateLobby();
-        this.startButton.Visible = true;
-        this.addBotButton.Visible = true;
-    }
-
     public void Join(string lobbyId)
     {
         GetNode<Communicator>("/root/Communicator").JoinLobby(lobbyId);
-        this.startButton.Visible = false;
-        this.addBotButton.Visible = false;
     }
 
     public void LobbyNotFound(string lobbyId)
@@ -62,8 +53,15 @@ public class Lobby : Container
         GetNode<Communicator>("/root/Communicator").AddBot(lobbyId);
     }
 
-    public void PlayerJoinedToLobby(string lobbyId, string playerName)
+    public void PlayerJoinedToLobby(string playerName)
     {
+        this.playersList.AddChild(new Label { Text = playerName });
+    }
+
+    public void YouJoinedToLobby(bool creator, string lobbyId, string playerName)
+    {
+        this.startButton.Visible = creator;
+        this.addBotButton.Visible = creator;
         this.lobbyId = lobbyId;
         this.captionLabel.Text = lobbyId;
         this.playersList.AddChild(new Label { Text = playerName });
