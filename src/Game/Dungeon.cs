@@ -45,7 +45,7 @@ public class Dungeon : Node2D
     public void NewGame(int selectedTeam, string lobbyId)
     {
         this.lobbyId = lobbyId;
-        var data = TransferConnectData.Load()[selectedTeam];
+        var data = FileStorage.LoadTeams()[selectedTeam];
         communicator.ConnectToServer(lobbyId, data);
     }
 

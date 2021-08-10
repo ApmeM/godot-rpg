@@ -1,5 +1,6 @@
 using Godot;
 using IsometricGame.Logic;
+using IsometricGame.Logic.ScriptHelpers;
 
 public class Menu : Container
 {
@@ -21,7 +22,7 @@ public class Menu : Container
         base._Ready();
         this.GetNode<Button>("VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/ServerButton").Connect("pressed", this, nameof(OnServerButtonPressed));
         this.GetNode<Button>("VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/ClientButton").Connect("pressed", this, nameof(OnClientButtonPressed));
-        
+
         this.GetNode<Button>("VBoxContainer/TabContainer/Online/TabContainer/LobbyContentContainer/ActionContainer/CustomContainer/GridContainer/CreateButton").Connect("pressed", this, nameof(OnCreateButtonPressed));
         this.GetNode<Button>("VBoxContainer/TabContainer/Online/TabContainer/LobbyContentContainer/ActionContainer/CustomContainer/GridContainer/JoinButton").Connect("pressed", this, nameof(OnJoinButtonPressed));
 
@@ -35,7 +36,18 @@ public class Menu : Container
         this.teamSelector = this.GetNode<TeamSelector>("VBoxContainer/TabContainer/Online/TabContainer/LobbyContentContainer/TeamSelector");
         this.onlineTabs = this.GetNode<TabContainer>("VBoxContainer/TabContainer/Online/TabContainer");
 
-        this.teamSelector.Refresh(TransferConnectData.Load());
+        this.teamSelector.Refresh(FileStorage.LoadTeams());
+
+        var login = FileStorage.LoadLogin();
+        if (string.IsNullOrWhiteSpace(login))
+        {
+            this.loginText.GrabFocus();
+        }
+        else
+        {
+            this.loginText.Text = login;
+            this.passwordText.GrabFocus();
+        }
     }
 
     public void GameOver()
@@ -45,6 +57,10 @@ public class Menu : Container
     public void LoginSuccess()
     {
         this.onlineTabs.CurrentTab = 1;
+        if (!string.IsNullOrWhiteSpace(this.loginText.Text))
+        {
+            FileStorage.SaveLogin(this.loginText.Text);
+        }
     }
 
     public async void IncorrectLogin()

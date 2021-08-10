@@ -1,6 +1,7 @@
 using Godot;
 using Godot.Collections;
 using IsometricGame.Logic;
+using IsometricGame.Logic.ScriptHelpers;
 using System.Collections.Generic;
 
 public class TeamSelect : Container
@@ -96,13 +97,13 @@ public class TeamSelect : Container
 
 	public void OnSaveButtonPressed()
 	{
-		TransferConnectData.Save(Teams);
+		FileStorage.SaveTeams(Teams);
 		EmitSignal(nameof(TeamsUpdated));
 	}
 
 	public void OnResetButtonPressed()
 	{
-		this.Teams = TransferConnectData.Load();
+		this.Teams = FileStorage.LoadTeams();
 		chooseTeamOptionButton.Refresh(this.Teams);
 
 		ItemSelected(0);

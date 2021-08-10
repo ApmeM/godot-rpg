@@ -1,6 +1,7 @@
 using Godot;
 using IsometricGame.Logic;
 using IsometricGame.Logic.Models;
+using IsometricGame.Logic.ScriptHelpers;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -20,18 +21,7 @@ public class Communicator : Node
     public override void _Ready()
     {
         base._Ready();
-
-        var file = new File();
-        if (file.Open("user://logins", File.ModeFlags.Read) == Error.Ok)
-        {
-            var creds = file.GetPascalString();
-            this.Credentials = JsonConvert.DeserializeObject<Dictionary<string, string>>(creds);
-            file.Close();
-        }
-        else
-        {
-            this.Credentials["Server"] = "";
-        }
+        this.Credentials = FileStorage.LoadCredentials() ?? new Dictionary<string, string> { { "Server", "" } };
     }
 
     public override void _Process(float delta)
@@ -102,13 +92,7 @@ public class Communicator : Node
             this.PlayerNames[clientId] = login;
             RpcId(clientId, nameof(LoginSuccess));
 
-            var file = new File();
-            if (file.Open("user://logins", File.ModeFlags.Write) == Error.Ok)
-            {
-                var creds = JsonConvert.SerializeObject(Credentials);
-                file.StorePascalString(creds);
-                file.Close();
-            }
+            FileStorage.SaveCredentials(this.Credentials);
         }
         else if (this.Credentials[login] == hash)
         {
