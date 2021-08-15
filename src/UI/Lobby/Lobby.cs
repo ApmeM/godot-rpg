@@ -1,11 +1,7 @@
 using Godot;
-using System;
 
 public class Lobby : Container
 {
-    [Signal]
-    public delegate void StartGameClientEvent(string lobbyId);
-
     private Button startButton;
     private Button addBotButton;
     private VBoxContainer playersList;
@@ -38,16 +34,6 @@ public class Lobby : Container
         this.turnTimeoutSpinBox.Visible = this.turnTimeoutCheckbox.Pressed;
     }
 
-    public void Join(string lobbyId)
-    {
-        GetNode<Communicator>("/root/Communicator").JoinLobby(lobbyId);
-    }
-
-    public void LobbyNotFound(string lobbyId)
-    {
-        GD.Print("TODO: Lobby not found.");
-    }
-
     private void OnAddBotButtonPressed()
     {
         GetNode<Communicator>("/root/Communicator").AddBot(lobbyId);
@@ -73,10 +59,5 @@ public class Lobby : Container
             fullMapCheckbox.Pressed, 
             turnTimeoutCheckbox.Pressed,
             (float)turnTimeoutSpinBox.Value);
-    }
-
-    public void GameStarted(string lobbyId)
-    {
-        EmitSignal(nameof(StartGameClientEvent), lobbyId);
     }
 }

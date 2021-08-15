@@ -7,15 +7,16 @@ public class Menu : Container
     private TeamSelector teamSelector;
     private TabContainer onlineTabs;
     private Label incorrectLoginLabel;
+    private Label joinLobbyLabel;
     private LineEdit loginText;
     private LineEdit serverText;
     private LineEdit passwordText;
     private Button serverButton;
     private Button clientButton;
     private Label serverLabel;
+    private Communicator communicator;
 
-    [Signal]
-    public delegate void JoinLobby(int selectedTeam, string lobbyId);
+    public int SelectedTeam => this.teamSelector.Selected;
 
     public override void _Ready()
     {
@@ -28,6 +29,7 @@ public class Menu : Container
         this.GetNode<Button>("VBoxContainer/TabContainer/Online/TabContainer/LobbyContentContainer/ActionContainer/CustomContainer/GridContainer/JoinButton").Connect("pressed", this, nameof(OnJoinButtonPressed));
 
         this.incorrectLoginLabel = this.GetNode<Label>("VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/IncorrectLoginLabel");
+        this.joinLobbyLabel = this.GetNode<Label>("VBoxContainer/TabContainer/Online/TabContainer/LobbyContentContainer/ActionContainer/CustomContainer/GridContainer/JoinLabel");
 
         this.loginText = this.GetNode<LineEdit>("VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/CredentialsContainer/LoginLineEdit");
         this.serverText = this.GetNode<LineEdit>("VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/CredentialsContainer/ServerLineEdit");
@@ -39,6 +41,8 @@ public class Menu : Container
 
         this.serverButton.Connect("pressed", this, nameof(OnServerButtonPressed));
         this.clientButton.Connect("pressed", this, nameof(OnClientButtonPressed));
+
+        this.communicator = GetNode<Communicator>("/root/Communicator");
 
         if (OS.GetName() == "HTML5")
         {
@@ -82,26 +86,35 @@ public class Menu : Container
 
     private void OnServerButtonPressed()
     {
-        GetNode<Communicator>("/root/Communicator").CreateServer();
+        this.communicator.CreateServer();
     }
 
     private void OnClientButtonPressed()
     {
-        GetNode<Communicator>("/root/Communicator").CreateClient(this.serverText.Text, this.loginText.Text, this.passwordText.Text);
+        this.communicator.CreateClient(this.serverText.Text, this.loginText.Text, this.passwordText.Text);
     }
 
     private void OnCreateButtonPressed()
     {
-        GetNode<Communicator>("/root/Communicator").CreateLobby();
+        this.communicator.CreateLobby();
     }
 
     public void LobbyCreated(string lobbyId)
     {
-        EmitSignal(nameof(JoinLobby), this.teamSelector.Selected, lobbyId);
+        this.communicator.JoinLobby(lobbyId);
     }
 
     private void OnJoinButtonPressed()
     {
-        LobbyCreated(this.lobbyId.Text);
+        this.communicator.JoinLobby(this.lobbyId.Text);
+    }
+
+    public async void LobbyNotFound()
+    {
+        joinLobbyLabel.AddColorOverride("font_color", new Color(1, 0, 0));
+        joinLobbyLabel.Text = "Lobby not found.";
+        await ToSignal(GetTree().CreateTimer(3), "timeout");
+        joinLobbyLabel.AddColorOverride("font_color", new Color(1, 1, 1));
+        joinLobbyLabel.Text = "And join existing lobby";
     }
 }

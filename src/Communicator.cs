@@ -17,11 +17,13 @@ public class Communicator : Node
     public Dictionary<int, string> PlayerNames = new Dictionary<int, string>();
 
     public Dictionary<string, string> Credentials = new Dictionary<string, string>();
+    private Main main;
 
     public override void _Ready()
     {
         base._Ready();
         this.Credentials = FileStorage.LoadCredentials() ?? new Dictionary<string, string> { { "Server", "" } };
+        this.main = GetNode<Main>("/root/Main");
     }
 
     public override void _Process(float delta)
@@ -108,7 +110,7 @@ public class Communicator : Node
     [RemoteSync]
     private void LoginSuccess()
     {
-        GetNode<Menu>("/root/Main/Menu").LoginSuccess();
+        this.main.LoginSuccess();
     }
 
     [RemoteSync]
@@ -120,7 +122,7 @@ public class Communicator : Node
         GetTree().Disconnect("network_peer_disconnected", this, nameof(PlayerDisconnected));
         GetTree().Disconnect("connected_to_server", this, nameof(PlayerConnectedToServer));
 
-        GetNode<Menu>("/root/Main/Menu").IncorrectLogin();
+        this.main.IncorrectLogin();
     }
 
     private void PlayerConnected(int id)
@@ -167,7 +169,7 @@ public class Communicator : Node
     [RemoteSync]
     private void CreateLobbyDone(string lobbyId)
     {
-        GetNode<Menu>("/root/Main/Menu").LobbyCreated(lobbyId);
+        this.main.LobbyCreated(lobbyId);
     }
 
     public void JoinLobby(string lobbyId)
@@ -185,8 +187,21 @@ public class Communicator : Node
             return;
         }
 
+        var lobbyData = Lobbies[lobbyId];
+        if (lobbyData.Server != null)
+        {
+            RpcId(clientId, nameof(LobbyNotFound), lobbyId);
+            return;
+        }
+
         var playerName = this.PlayerNames[clientId];
         SendAllNewPlayerJoinedLobby(lobbyId, clientId, playerName);
+    }
+
+    [RemoteSync]
+    private void LobbyNotFound(string lobbyId)
+    {
+        this.main.LobbyNotFound(lobbyId);
     }
 
     public void AddBot(string lobbyId)
@@ -215,6 +230,11 @@ public class Communicator : Node
     private void SendAllNewPlayerJoinedLobby(string lobbyId, int clientId, string playerName)
     {
         var lobbyData = Lobbies[lobbyId];
+        if (clientId != BotId)
+        {
+            RpcId(clientId, nameof(YouJoinedToLobby), clientId == lobbyData.Creator, lobbyId, playerName);
+        }
+
         foreach (var player in lobbyData.Players)
         {
             if (player.ClientId != BotId)
@@ -229,28 +249,18 @@ public class Communicator : Node
         }
 
         lobbyData.Players.Add(new LobbyData.PlayerData { ClientId = clientId, PlayerName = playerName });
-        if (clientId != BotId)
-        {
-            RpcId(clientId, nameof(YouJoinedToLobby), clientId == lobbyData.Creator, lobbyId, playerName);
-        }
     }
 
     [RemoteSync]
     private void PlayerJoinedToLobby(string playerName)
     {
-        GetNode<Lobby>("/root/Main/Lobby").PlayerJoinedToLobby(playerName);
+        this.main.PlayerJoinedToLobby(playerName);
     }
 
     [RemoteSync]
     private void YouJoinedToLobby(bool creator, string lobbyId, string playerName)
     {
-        GetNode<Lobby>("/root/Main/Lobby").YouJoinedToLobby(creator, lobbyId, playerName);
-    }
-
-    [RemoteSync]
-    private void LobbyNotFound(string lobbyId)
-    {
-        GetNode<Lobby>("/root/Main/Lobby").LobbyNotFound(lobbyId);
+        this.main.YouJoinedToLobby(creator, lobbyId, playerName);
     }
 
     #endregion
@@ -305,7 +315,7 @@ public class Communicator : Node
     [RemoteSync]
     private void GameStarted(string lobbyId)
     {
-        GetNode<Lobby>("/root/Main/Lobby").GameStarted(lobbyId);
+        this.main.GameStarted(lobbyId);
     }
 
     #endregion
@@ -332,7 +342,7 @@ public class Communicator : Node
     private void Initialize(string data)
     {
         TransferInitialData initialData = JsonConvert.DeserializeObject<TransferInitialData>(data);
-        GetNode<Dungeon>("/root/Main/Dungeon").Initialize(initialData);
+        this.main.Initialize(initialData);
     }
 
     public void PlayerMoved(string lobbyId, TransferTurnDoneData data)
@@ -353,7 +363,7 @@ public class Communicator : Node
     private void TurnDone(string data)
     {
         TransferTurnData turnData = JsonConvert.DeserializeObject<TransferTurnData>(data);
-        GetNode<Dungeon>("/root/Main/Dungeon").TurnDone(turnData);
+        this.main.TurnDone(turnData);
     }
 
     #endregion

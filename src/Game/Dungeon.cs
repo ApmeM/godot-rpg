@@ -5,6 +5,7 @@ using IsometricGame.Logic.Models;
 using IsometricGame.Logic.ScriptHelpers;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 public class Dungeon : Node2D
 {
@@ -16,8 +17,6 @@ public class Dungeon : Node2D
 
     [Export]
     public PackedScene UnitScene;
-    [Signal]
-    public delegate void GameOver();
 
     private Button nextTurnButton;
     private Communicator communicator;
@@ -243,7 +242,7 @@ public class Dungeon : Node2D
 
     }
 
-    public async void TurnDone(TransferTurnData turnData)
+    public async Task TurnDone(TransferTurnData turnData)
     {
         this.Timeout = this.MaxTimeout;
         var maze = GetNode<Maze>("Maze");
@@ -340,13 +339,6 @@ public class Dungeon : Node2D
         }
         signals.Clear();
 
-        if (turnData.GameOverLoose || turnData.GameOverWin)
-        {
-            EmitSignal(nameof(GameOver));
-        }
-        else
-        {
-            GetNode<Button>("CanvasLayer/NextTurnButton").Visible = true;
-        }
+        GetNode<Button>("CanvasLayer/NextTurnButton").Visible = true;
     }
 }

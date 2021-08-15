@@ -1,13 +1,11 @@
 using Godot;
-using IsometricGame.Logic;
+using IsometricGame.Logic.Models;
 
 public class Main : Node
 {
     private Dungeon dungeon;
     private Menu menu;
     private Lobby lobby;
-
-    private int selectedTeam;
 
     public override void _Ready()
     {
@@ -19,32 +17,61 @@ public class Main : Node
 
         RemoveChild(this.dungeon);
         RemoveChild(this.lobby);
-
-        this.menu.Connect(nameof(Menu.JoinLobby), this, nameof(JoinLobby));
-        this.lobby.Connect(nameof(Lobby.StartGameClientEvent), this, nameof(StartGameClient));
-        this.dungeon.Connect(nameof(Dungeon.GameOver), this, nameof(GameOver));
     }
 
-    public void GameOver()
+    public void LoginSuccess()
     {
-        RemoveChild(this.dungeon);
-        AddChild(this.menu);
-        this.menu.GameOver();
+        this.menu.LoginSuccess();
     }
 
-    public void JoinLobby(int selectedTeam, string lobbyId)
+    public void IncorrectLogin()
     {
-        this.selectedTeam = selectedTeam;
+        this.menu.IncorrectLogin();
+    }
+
+    public void LobbyCreated(string lobbyId)
+    {
+        this.menu.LobbyCreated(lobbyId);
+    }
+
+    public void LobbyNotFound(string lobbyId)
+    {
+        this.menu.LobbyNotFound();
+    }
+
+    public void YouJoinedToLobby(bool creator, string lobbyId, string playerName)
+    {
         RemoveChild(this.menu);
         AddChild(this.lobby);
-        this.lobby.Join(lobbyId);
+        this.lobby.YouJoinedToLobby(creator, lobbyId, playerName);
     }
 
-    public void StartGameClient(string lobbyId)
+    public void PlayerJoinedToLobby(string playerName)
+    {
+        this.lobby.PlayerJoinedToLobby(playerName);
+    }
+
+    public void GameStarted(string lobbyId)
     {
         RemoveChild(this.lobby);
         AddChild(this.dungeon);
 
-        this.dungeon.NewGame(this.selectedTeam, lobbyId);
+        this.dungeon.NewGame(this.menu.SelectedTeam, lobbyId);
+    }
+
+    public async void TurnDone(TransferTurnData turnData)
+    {
+        await this.dungeon.TurnDone(turnData);
+        if (turnData.GameOverLoose || turnData.GameOverWin)
+        {
+            RemoveChild(this.dungeon);
+            AddChild(this.menu);
+            this.menu.GameOver();
+        }
+    }
+
+    internal void Initialize(TransferInitialData initialData)
+    {
+        this.dungeon.Initialize(initialData);
     }
 }
