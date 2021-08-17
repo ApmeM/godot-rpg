@@ -10,6 +10,8 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
     {
         public bool TargetUnit => false;
 
+        public string Description => "Melee attack: \n Damage: 10.";
+
         public List<IAbilityAction> Apply(ServerUnit actionUnit, ServerUnit targetUnit)
         {
             return new List<IAbilityAction>

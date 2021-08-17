@@ -12,6 +12,8 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
     {
         public bool TargetUnit => true;
 
+        public string Description => "Heal: \n Hp increase: 10.";
+
         public List<IAbilityAction> Apply(ServerUnit actionUnit, ServerUnit targetUnit)
         {
             return new List<IAbilityAction>

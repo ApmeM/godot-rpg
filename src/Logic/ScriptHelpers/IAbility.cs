@@ -6,6 +6,7 @@ namespace IsometricGame.Logic.ScriptHelpers
 {
     public interface IAbility
     {
+        string Description { get; }
         bool TargetUnit { get; }
         void HighliteMaze(Maze maze, Vector2 pos, ClientUnit currentUnit);
         bool IsApplicable(VectorGridGraph astar, ServerPlayer actionPlayer, ServerUnit actionUnit, ServerPlayer targetPlayer, ServerUnit targetUnit, Vector2 abilityDirection);

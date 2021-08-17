@@ -46,9 +46,19 @@ namespace IsometricGame.Logic.ScriptHelpers
             { Effect.Haste, new HasteEffect() },
         };
 
+        public static ISkill FindSkill(Skill skill)
+        {
+            return SupportedSkills[skill];
+        }
+
         public static IAbility FindAbility(Ability ability)
         {
             return SupportedAbilities[ability];
+        }
+
+        public static IEffect FindEffect(Effect effect)
+        {
+            return SupportedEffects[effect];
         }
 
         public static void RefreshUnit(ServerPlayer player, ServerUnit existingUnit)

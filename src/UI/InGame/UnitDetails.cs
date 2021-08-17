@@ -1,6 +1,7 @@
 using Godot;
 using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.Models;
+using IsometricGame.Logic.ScriptHelpers;
 using System.Collections.Generic;
 
 public class UnitDetails : VBoxContainer
@@ -48,7 +49,8 @@ public class UnitDetails : VBoxContainer
 				},
 				Expand = true,
 				StretchMode = TextureRect.StretchModeEnum.KeepAspect,
-				RectMinSize = Vector2.One * 50
+				RectMinSize = Vector2.One * 50,
+				HintTooltip = UnitUtils.FindSkill((Skill)unitSkill).Description
 			};
 
 			skillsContainer.AddChild(skillNode);
@@ -67,7 +69,8 @@ public class UnitDetails : VBoxContainer
 				Texture = ResourceLoader.Load<Texture>($"assets/Effects/{effect.Effect}.png"),
 				Expand = true,
 				StretchMode = TextureRect.StretchModeEnum.KeepAspect,
-				RectMinSize = Vector2.One * 50
+				RectMinSize = Vector2.One * 50,
+				HintTooltip = UnitUtils.FindEffect(effect.Effect).Description
 			};
 			var durationNode = new Label
 			{

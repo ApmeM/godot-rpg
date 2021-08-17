@@ -12,6 +12,8 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
     {
         public bool TargetUnit => false;
 
+        public string Description => $"Haste: \n Apply effect: {UnitUtils.FindEffect(Effect.Haste).Description}\n  Duration: 10.";
+
         public List<IAbilityAction> Apply(ServerUnit actionUnit, ServerUnit targetUnit)
         {
             return new List<IAbilityAction>
