@@ -25,6 +25,7 @@ namespace IsometricGame.Logic.Models
             public float AOEAttackRadius;
             public float AttackPower;
             public float MagicPower;
+            public List<int> Changes;
         }
 
         public class OtherPlayersData
@@ -38,6 +39,7 @@ namespace IsometricGame.Logic.Models
             public int Hp;
             public Vector2? AttackFrom;
             public List<EffectDuration> Effects;
+            public List<int> Changes;
         }
     }
 }

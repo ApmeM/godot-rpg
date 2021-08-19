@@ -2,7 +2,7 @@
 using Godot;
 using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.Models;
-using IsometricGame.Logic.ScriptHelpers.Abilities.Action;
+using IsometricGame.Logic.ScriptHelpers.AppliedActions;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -14,11 +14,11 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
 
         public string Description => "Heal: \n Hp increase: 10.";
 
-        public List<IAbilityAction> Apply(ServerUnit actionUnit, ServerUnit targetUnit)
+        public List<IAppliedAction> Apply(ServerUnit actionUnit, ServerUnit targetUnit)
         {
-            return new List<IAbilityAction>
+            return new List<IAppliedAction>
             {
-                new ChangeHpAbilityAction(+(int)(actionUnit.MagicPower * 10)),
+                new ChangeHpAppliedAction(+(int)(actionUnit.MagicPower * 10), targetUnit),
             };
         }
 
@@ -35,7 +35,7 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
 
         public bool IsApplicable(VectorGridGraph astar, ServerPlayer actionPlayer, ServerUnit actionUnit, ServerPlayer targetPlayer, ServerUnit targetUnit, Vector2 abilityDirection)
         {
-            if (actionPlayer != targetPlayer || targetUnit.Hp >= targetUnit.MaxHp)
+            if (actionPlayer != targetPlayer)
             {
                 return false;
             }

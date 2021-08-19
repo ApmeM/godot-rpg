@@ -325,12 +325,14 @@ public class Dungeon : Node2D
         foreach (var unit in myUnits)
         {
             signals.Add(unit.UnitHit(turnData.YourUnits[unit.ClientUnit.UnitId].AttackFrom, turnData.YourUnits[unit.ClientUnit.UnitId].Hp));
+            unit.ShowChanges(turnData.YourUnits[unit.ClientUnit.UnitId].Changes);
         }
 
         foreach (var unit in visibleUnits)
         {
             var player = turnData.OtherPlayers[unit.ClientUnit.PlayerId];
             signals.Add(unit.UnitHit(player.Units[unit.ClientUnit.UnitId].AttackFrom, player.Units[unit.ClientUnit.UnitId].Hp));
+            unit.ShowChanges(player.Units[unit.ClientUnit.UnitId].Changes);
         }
 
         foreach (var signal in signals)

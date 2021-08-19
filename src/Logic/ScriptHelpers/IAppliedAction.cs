@@ -2,8 +2,8 @@
 
 namespace IsometricGame.Logic.ScriptHelpers
 {
-    public interface IAbilityAction
+    public interface IAppliedAction
     {
-        void Apply(ServerUnit unit);
+        void Apply();
     }
 }

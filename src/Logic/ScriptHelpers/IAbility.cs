@@ -10,6 +10,6 @@ namespace IsometricGame.Logic.ScriptHelpers
         bool TargetUnit { get; }
         void HighliteMaze(Maze maze, Vector2 pos, ClientUnit currentUnit);
         bool IsApplicable(VectorGridGraph astar, ServerPlayer actionPlayer, ServerUnit actionUnit, ServerPlayer targetPlayer, ServerUnit targetUnit, Vector2 abilityDirection);
-        List<IAbilityAction> Apply(ServerUnit actionUnit, ServerUnit targetUnit);
+        List<IAppliedAction> Apply(ServerUnit actionUnit, ServerUnit targetUnit);
     }
 }

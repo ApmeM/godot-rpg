@@ -1,4 +1,6 @@
 ﻿using IsometricGame.Logic.Models;
+using IsometricGame.Logic.ScriptHelpers.AppliedActions;
+using System.Collections.Generic;
 
 namespace IsometricGame.Logic.ScriptHelpers.Effects
 {
@@ -6,9 +8,12 @@ namespace IsometricGame.Logic.ScriptHelpers.Effects
     {
         public string Description => "Haste effect: \n  Speed: x1.5 times.";
 
-        public void Apply(ServerUnit unit)
+        public List<IAppliedAction> Apply(ServerUnit unit)
         {
-            unit.MoveDistance = (int)(unit.MoveDistance * 1.5f);
+            return new List<IAppliedAction>
+            {
+                new ChangeMoveDistanceAppliedAction((int)(unit.MoveDistance * 0.5f), unit)
+            };
         }
     }
 }

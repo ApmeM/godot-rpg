@@ -61,32 +61,6 @@ namespace IsometricGame.Logic.ScriptHelpers
             return SupportedEffects[effect];
         }
 
-        public static void RefreshUnit(ServerPlayer player, ServerUnit existingUnit)
-        {
-            existingUnit.MaxHp = 10;
-            existingUnit.MoveDistance = 5;
-            existingUnit.SightRange = 6;
-            existingUnit.RangedAttackDistance = 1;
-            existingUnit.AOEAttackRadius = 1;
-            existingUnit.AttackPower = 1;
-            existingUnit.MagicPower = 1;
-            existingUnit.Abilities.Clear();
-
-            SupportedUnitTypes[existingUnit.UnitType].Apply(existingUnit);
-            foreach (var skill in existingUnit.Skills)
-            {
-                SupportedSkills[skill].Apply(player, existingUnit);
-            }
-
-            foreach (var effect in existingUnit.Effects)
-            {
-                SupportedEffects[effect.Effect].Apply(existingUnit);
-                effect.Duration--;
-            }
-
-            existingUnit.Effects.RemoveAll(a => a.Duration <= 0);
-        }
-
         public static ServerUnit BuildUnit(ServerPlayer player, UnitType unitType, List<Skill> skills)
         {
             var existingUnit = new ServerUnit
@@ -106,6 +80,24 @@ namespace IsometricGame.Logic.ScriptHelpers
             existingUnit.Hp = existingUnit.MaxHp;
             
             return existingUnit;
+        }
+
+        public static void RefreshUnit(ServerPlayer player, ServerUnit existingUnit)
+        {
+            existingUnit.MaxHp = 10;
+            existingUnit.MoveDistance = 5;
+            existingUnit.SightRange = 6;
+            existingUnit.RangedAttackDistance = 1;
+            existingUnit.AOEAttackRadius = 1;
+            existingUnit.AttackPower = 1;
+            existingUnit.MagicPower = 1;
+            existingUnit.Abilities.Clear();
+
+            SupportedUnitTypes[existingUnit.UnitType].Apply(existingUnit);
+            foreach (var skill in existingUnit.Skills)
+            {
+                SupportedSkills[skill].Apply(player, existingUnit);
+            }
         }
 
         public static long GetFullUnitId(int playerId, int unitId)

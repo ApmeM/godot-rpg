@@ -8,6 +8,6 @@ namespace IsometricGame.Logic.Models
     {
         public Vector2? AbilityDirection;
         public Vector2? AbilityFrom;
-        public List<IAbilityAction> Actions = new List<IAbilityAction>();
+        public List<int> HpChanges = new List<int>();
     }
 }

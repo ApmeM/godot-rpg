@@ -2,26 +2,28 @@
 using IsometricGame.Logic.Models;
 using System.Linq;
 
-namespace IsometricGame.Logic.ScriptHelpers.Abilities.Action
+namespace IsometricGame.Logic.ScriptHelpers.AppliedActions
 {
-    public class ApplyEffectAbilityAction : IAbilityAction
+    public class ApplyEffectAppliedAction : IAppliedAction
     {
         private readonly Effect effect;
         private readonly int duration;
+        private readonly ServerUnit unit;
 
-        public ApplyEffectAbilityAction(Effect effect, int duration)
+        public ApplyEffectAppliedAction(Effect effect, int duration, ServerUnit unit)
         {
             this.effect = effect;
             this.duration = duration;
+            this.unit = unit;
         }
 
-        public void Apply(ServerUnit unit)
+        public void Apply()
         {
-            var existingEffect = unit.Effects.FirstOrDefault(a => a.Effect == effect);
+            var existingEffect = this.unit.Effects.FirstOrDefault(a => a.Effect == effect);
             if (existingEffect == null)
             {
                 existingEffect = new EffectDuration { Effect = effect };
-                unit.Effects.Add(existingEffect);
+                this.unit.Effects.Add(existingEffect);
             }
 
             existingEffect.Duration = duration;

@@ -2,7 +2,7 @@
 using Godot;
 using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.Models;
-using IsometricGame.Logic.ScriptHelpers.Abilities.Action;
+using IsometricGame.Logic.ScriptHelpers.AppliedActions;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -14,11 +14,11 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
 
         public string Description => $"Haste: \n Apply effect: {UnitUtils.FindEffect(Effect.Haste).Description}\n  Duration: 10.";
 
-        public List<IAbilityAction> Apply(ServerUnit actionUnit, ServerUnit targetUnit)
+        public List<IAppliedAction> Apply(ServerUnit actionUnit, ServerUnit targetUnit)
         {
-            return new List<IAbilityAction>
+            return new List<IAppliedAction>
             {
-                new ApplyEffectAbilityAction(Effect.Haste, 10)
+                new ApplyEffectAppliedAction(Effect.Haste, 10, targetUnit)
             };
         }
 

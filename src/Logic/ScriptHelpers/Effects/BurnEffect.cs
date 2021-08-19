@@ -1,4 +1,6 @@
 ﻿using IsometricGame.Logic.Models;
+using IsometricGame.Logic.ScriptHelpers.AppliedActions;
+using System.Collections.Generic;
 
 namespace IsometricGame.Logic.ScriptHelpers.Effects
 {
@@ -6,12 +8,12 @@ namespace IsometricGame.Logic.ScriptHelpers.Effects
     {
         public string Description => "Burn effect: \n  Damage: 1";
 
-        public void Apply(ServerUnit unit)
+        public List<IAppliedAction> Apply(ServerUnit unit)
         {
-            if (unit.Hp > 0)
+            return new List<IAppliedAction>
             {
-                unit.Hp -= 1;
-            }
+                new ChangeHpAppliedAction(-1, unit)
+            };
         }
     }
 }

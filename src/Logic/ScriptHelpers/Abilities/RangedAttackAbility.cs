@@ -1,7 +1,7 @@
 ﻿using BrainAI.Pathfinding.BreadthFirst;
 using Godot;
 using IsometricGame.Logic.Models;
-using IsometricGame.Logic.ScriptHelpers.Abilities.Action;
+using IsometricGame.Logic.ScriptHelpers.AppliedActions;
 using System.Collections.Generic;
 
 namespace IsometricGame.Logic.ScriptHelpers.Abilities
@@ -12,11 +12,11 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
 
         public string Description => "Ranged attack: \n Damage: 5.";
 
-        public List<IAbilityAction> Apply(ServerUnit actionUnit, ServerUnit targetUnit)
+        public List<IAppliedAction> Apply(ServerUnit actionUnit, ServerUnit targetUnit)
         {
-            return new List<IAbilityAction>
+            return new List<IAppliedAction>
             {
-                new ChangeHpAbilityAction(-(int)(actionUnit.AttackPower * 5)),
+                new ChangeHpAppliedAction(-(int)(actionUnit.AttackPower * 5), targetUnit),
             };
         }
 
