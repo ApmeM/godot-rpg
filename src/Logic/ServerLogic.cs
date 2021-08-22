@@ -123,9 +123,14 @@ namespace IsometricGame.Logic
             }
 
             // Put player move into dictionary
-            PlayersMove[forPlayer] = moves;
+            if (!Players.ContainsKey(forPlayer))
+            {
+				return;
+            }
 
-            if (PlayersMove.Count != Players.Count)
+            PlayersMove[forPlayer] = moves;
+            
+			if (PlayersMove.Count != Players.Count)
             {
                 return;
             }
@@ -143,6 +148,11 @@ namespace IsometricGame.Logic
 				{
 					var fullId = UnitUtils.GetFullUnitId(actionPlayer.Key, actionUnit.Key);
 					unitsTurnDelta[fullId] = new ServerTurnDelta();
+					PlayersMove[actionPlayer.Key].UnitActions = PlayersMove[actionPlayer.Key].UnitActions ?? new Dictionary<int, TransferTurnDoneData.UnitActionData>();
+                    if (!PlayersMove[actionPlayer.Key].UnitActions.ContainsKey(actionUnit.Key))
+                    {
+						PlayersMove[actionPlayer.Key].UnitActions[actionUnit.Key] = new TransferTurnDoneData.UnitActionData();
+					}
 				}
 			}
 
@@ -151,28 +161,31 @@ namespace IsometricGame.Logic
             {
                 foreach (var actionUnit in actionPlayer.Value.Units)
                 {
-					if (actionUnit.Value.Hp <= 0)
+                    var unitMove = PlayersMove[actionPlayer.Key].UnitActions[actionUnit.Key];
+                    if (actionUnit.Value.Hp > 0 && unitMove.Move.HasValue)
                     {
-						occupiedCells.Add(actionUnit.Value.Position);
-						continue;
-					}
-					if (!PlayersMove.ContainsKey(actionPlayer.Key))
-                    {
-						occupiedCells.Add(actionUnit.Value.Position);
-						continue;
+                        continue;
                     }
-					var playerMove = PlayersMove[actionPlayer.Key];
-                    if (!playerMove.UnitActions.ContainsKey(actionUnit.Key))
-                    {
-						occupiedCells.Add(actionUnit.Value.Position);
+                    
+					occupiedCells.Add(actionUnit.Value.Position);
+                }
+            }
+
+			/* Increase Hp for units that do not have any commands */
+			foreach (var actionPlayer in Players)
+			{
+				foreach (var actionUnit in actionPlayer.Value.Units)
+				{
+					var unitMove = PlayersMove[actionPlayer.Key].UnitActions[actionUnit.Key];
+					if (unitMove.Move.HasValue || actionUnit.Value.Hp <= 0 || unitMove.Ability != Ability.None)
+					{
 						continue;
 					}
-					var unitMove = playerMove.UnitActions[actionUnit.Key];
-					if (!unitMove.Move.HasValue)
-                    {
-						occupiedCells.Add(actionUnit.Value.Position);
-						continue;
-					}
+
+					var targetFullId = UnitUtils.GetFullUnitId(actionPlayer.Key, actionUnit.Key);
+					var targetDelta = unitsTurnDelta[targetFullId];
+					targetDelta.HpChanges.Add(actionUnit.Value.MaxHp / 10);
+					actionUnit.Value.Hp += actionUnit.Value.MaxHp / 10;
 				}
 			}
 
@@ -181,19 +194,7 @@ namespace IsometricGame.Logic
 			{
 				foreach (var actionUnit in actionPlayer.Value.Units)
 				{
-					if (!PlayersMove.ContainsKey(actionPlayer.Key))
-                    {
-						continue;
-                    }
-
-					var playerMove = PlayersMove[actionPlayer.Key];
-                    if (!playerMove.UnitActions.ContainsKey(actionUnit.Key))
-                    {
-						continue;
-                    }
-					
-					var unitMove = playerMove.UnitActions[actionUnit.Key];
-                 
+					var unitMove = PlayersMove[actionPlayer.Key].UnitActions[actionUnit.Key];
 					if (!unitMove.Move.HasValue || actionUnit.Value.Hp <= 0)
                     {
                         continue;
@@ -222,18 +223,7 @@ namespace IsometricGame.Logic
 			{
 				foreach (var actionUnit in actionPlayer.Value.Units)
 				{
-					if (!PlayersMove.ContainsKey(actionPlayer.Key))
-					{
-						continue;
-					}
-
-					var playerMove = PlayersMove[actionPlayer.Key];
-					if (!playerMove.UnitActions.ContainsKey(actionUnit.Key))
-					{
-						continue;
-					}
-
-					var unitMove = playerMove.UnitActions[actionUnit.Key];
+					var unitMove = PlayersMove[actionPlayer.Key].UnitActions[actionUnit.Key];
 					var actionFullId = UnitUtils.GetFullUnitId(actionPlayer.Key, actionUnit.Key);
 					var actionDelta = unitsTurnDelta[actionFullId];
 					if (unitMove.AbilityDirection.HasValue && actionUnit.Value.Hp > 0)
