@@ -12,13 +12,14 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
     {
         public bool TargetUnit => false;
 
-        public string Description => $"Haste: \n Apply effect: {UnitUtils.FindEffect(Effect.Haste).Description}\n  Duration: 10.";
+        public string Description => $"Haste: \n Apply effect: {UnitUtils.FindEffect(Effect.Haste).Description}\n  Duration: 10.\n Cost: 5";
 
         public List<IAppliedAction> Apply(ServerUnit actionUnit, ServerUnit targetUnit)
         {
             return new List<IAppliedAction>
             {
-                new ApplyEffectAppliedAction(Effect.Haste, 10, targetUnit)
+                new ApplyEffectAppliedAction(Effect.Haste, 10, targetUnit),
+                new ChangeMpAppliedAction(-5, actionUnit),
             };
         }
 
@@ -40,7 +41,12 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
             {
                 return false;
             }
-        
+
+            if (actionUnit.Mp < 5)
+            {
+                return false;
+            }
+
             BreadthFirstPathfinder.Search(astar, actionUnit.Position, (int)(actionUnit.RangedAttackDistance * 5), out var visited);
             if (!visited.ContainsKey(actionUnit.Position + abilityDirection))
             {

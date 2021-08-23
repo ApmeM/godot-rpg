@@ -78,13 +78,15 @@ namespace IsometricGame.Logic.ScriptHelpers
             RefreshUnit(player, existingUnit);
             
             existingUnit.Hp = existingUnit.MaxHp;
-            
+            existingUnit.Mp = existingUnit.MaxMp;
+
             return existingUnit;
         }
 
         public static void RefreshUnit(ServerPlayer player, ServerUnit existingUnit)
         {
             existingUnit.MaxHp = 10;
+            existingUnit.MaxMp = 10;
             existingUnit.MoveDistance = 5;
             existingUnit.SightRange = 6;
             existingUnit.RangedAttackDistance = 1;

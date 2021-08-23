@@ -18,6 +18,8 @@ namespace IsometricGame.Logic.Models
         public UnitType UnitType;
         public int MaxHp;
         public int Hp;
+        public int MaxMp;
+        public int Mp;
         public Dictionary<Ability, IAbility> Abilities;
         public HashSet<Skill> Skills;
         public List<EffectDuration> Effects;

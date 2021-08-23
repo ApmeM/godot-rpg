@@ -17,3 +17,4 @@ margin_right = -8.0
 margin_bottom = -28.0
 
 [node name="Dungeon" parent="." instance=ExtResource( 1 )]
+UnitScene = null

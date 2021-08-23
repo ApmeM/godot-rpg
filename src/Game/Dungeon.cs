@@ -29,6 +29,8 @@ public class Dungeon : Node2D
         nextTurnButton.Connect("pressed", this, nameof(NextTurnPressed));
 
         communicator = GetNode<Communicator>("/root/Communicator");
+
+        UnitScene = ResourceLoader.Load<PackedScene>("Game/Unit.tscn");
     }
 
     public override void _Process(float delta)
@@ -76,6 +78,8 @@ public class Dungeon : Node2D
                 AOEAttackRadius = unit.AOEAttackRadius,
                 MaxHp = unit.MaxHp,
                 Hp = unit.MaxHp,
+                MaxMp = unit.MaxMp,
+                Mp = unit.MaxMp,
                 Abilities = unit.Abilities.ToDictionary(a => a, a => UnitUtils.FindAbility(a)),
                 Skills = unit.Skills.ToHashSet()
             };
@@ -254,6 +258,7 @@ public class Dungeon : Node2D
 
         foreach (var unit in myUnits)
         {
+            unit.ClientUnit.Mp = turnData.YourUnits[unit.ClientUnit.UnitId].Mp;
             unit.ClientUnit.Effects = turnData.YourUnits[unit.ClientUnit.UnitId].Effects;
             unit.ClientUnit.MoveDistance = turnData.YourUnits[unit.ClientUnit.UnitId].MoveDistance;
             unit.ClientUnit.SightRange = turnData.YourUnits[unit.ClientUnit.UnitId].SightRange;
@@ -307,7 +312,8 @@ public class Dungeon : Node2D
 
         foreach (var unit in myUnits)
         {
-            signals.Add(unit.Attack(turnData.YourUnits[unit.ClientUnit.UnitId].AttackDirection));
+            unit.Mp = turnData.YourUnits[unit.ClientUnit.UnitId].Mp;
+            signals.Add(unit.Attack(turnData.YourUnits[unit.ClientUnit.UnitId].AbilityDirection));
         }
 
         foreach (var unit in visibleUnits)
@@ -324,15 +330,19 @@ public class Dungeon : Node2D
 
         foreach (var unit in myUnits)
         {
-            signals.Add(unit.UnitHit(turnData.YourUnits[unit.ClientUnit.UnitId].AttackFrom, turnData.YourUnits[unit.ClientUnit.UnitId].Hp));
-            unit.ShowChanges(turnData.YourUnits[unit.ClientUnit.UnitId].Changes);
+            signals.Add(unit.UnitHit(turnData.YourUnits[unit.ClientUnit.UnitId].AbilityFrom, turnData.YourUnits[unit.ClientUnit.UnitId].Hp));
+            unit.ShowHpChanges(
+                turnData.YourUnits[unit.ClientUnit.UnitId].HpChanges,
+                turnData.YourUnits[unit.ClientUnit.UnitId].MpChanges);
         }
 
         foreach (var unit in visibleUnits)
         {
             var player = turnData.OtherPlayers[unit.ClientUnit.PlayerId];
             signals.Add(unit.UnitHit(player.Units[unit.ClientUnit.UnitId].AttackFrom, player.Units[unit.ClientUnit.UnitId].Hp));
-            unit.ShowChanges(player.Units[unit.ClientUnit.UnitId].Changes);
+            unit.ShowHpChanges(
+                player.Units[unit.ClientUnit.UnitId].HpChanges,
+                null);
         }
 
         foreach (var signal in signals)

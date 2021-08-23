@@ -12,13 +12,14 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
     {
         public bool TargetUnit => true;
 
-        public string Description => "Heal: \n Hp increase: 10.";
+        public string Description => "Heal: \n Hp increase: 10.\n Cost: 2";
 
         public List<IAppliedAction> Apply(ServerUnit actionUnit, ServerUnit targetUnit)
         {
             return new List<IAppliedAction>
             {
                 new ChangeHpAppliedAction(+(int)(actionUnit.MagicPower * 10), targetUnit),
+                new ChangeMpAppliedAction(-2, targetUnit),
             };
         }
 
@@ -36,6 +37,11 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
         public bool IsApplicable(VectorGridGraph astar, ServerPlayer actionPlayer, ServerUnit actionUnit, ServerPlayer targetPlayer, ServerUnit targetUnit, Vector2 abilityDirection)
         {
             if (actionPlayer != targetPlayer)
+            {
+                return false;
+            }
+
+            if (actionUnit.Mp < 2)
             {
                 return false;
             }

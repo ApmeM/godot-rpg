@@ -38,6 +38,7 @@ namespace IsometricGame.Logic.Models
             public float MagicPower;
             public UnitType UnitType;
             public int MaxHp;
+            public int MaxMp;
             public List<Ability> Abilities;
             public List<Skill> Skills;
         }

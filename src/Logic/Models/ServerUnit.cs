@@ -1,6 +1,5 @@
 ﻿using Godot;
 using IsometricGame.Logic.Enums;
-using System;
 using System.Collections.Generic;
 
 namespace IsometricGame.Logic.Models
@@ -11,6 +10,9 @@ namespace IsometricGame.Logic.Models
         public UnitType UnitType;
         public int MaxHp;
         public int Hp;
+
+        public int MaxMp;
+        public int Mp;
 
         public int MoveDistance;
         public int SightRange;

@@ -21,11 +21,21 @@ public class Unit : Node2D
     public Unit AbilityUnitTarget => shadow.AbilityUnitTarget;
     public bool IsDead { get; private set; }
 
+    public int Mp
+    {
+        set
+        {
+            this.mpBar.Value = value;
+        }
+    }
+
     [Export]
     public PackedScene UnitShadowScene;
 
     private UnitShadow shadow;
     private FloatingTextManager hpPopup;
+    private TextureProgress hpBar;
+    private TextureProgress mpBar;
 
     [Signal]
     public delegate void MoveDone();
@@ -43,8 +53,13 @@ public class Unit : Node2D
 
         this.GetNode<AnimatedSprite>("AnimatedSprite").Frames = ResourceLoader.Load<SpriteFrames>($"Units/{ClientUnit.UnitType}.tres");
         this.shadow.GetNode<AnimatedSprite>("Shadow").Frames = ResourceLoader.Load<SpriteFrames>($"Units/{ClientUnit.UnitType}.tres");
-        this.GetNode<TextureProgress>("TextureProgress").MaxValue = ClientUnit.MaxHp;
-        this.GetNode<TextureProgress>("TextureProgress").Value = ClientUnit.Hp;
+        this.hpBar = this.GetNode<TextureProgress>("HpBar");
+        this.hpBar.MaxValue = this.ClientUnit.MaxHp;
+        this.hpBar.Value = ClientUnit.Hp;
+
+        this.mpBar = this.GetNode<TextureProgress>("MpBar");
+        this.mpBar.MaxValue = this.ClientUnit.MaxMp;
+        this.mpBar.Value = ClientUnit.Mp;
 
         this.hpPopup = this.GetNode<FloatingTextManager>("HpPopup");
     }
@@ -93,19 +108,19 @@ public class Unit : Node2D
     public SignalAwaiter UnitHit(Vector2? attackFrom, int newHp)
     {
         var oldHp = this.ClientUnit.Hp;
-        
-        this.GetNode<TextureProgress>("TextureProgress").Value = newHp;
+
+        this.hpBar.Value = newHp;
         if (this.ClientUnit.MaxHp * 0.75 < newHp)
         {
-            this.GetNode<TextureProgress>("TextureProgress").TextureProgress_ = ResourceLoader.Load<Texture>("assets/Hp/Green.png");
+            this.hpBar.TextureProgress_ = ResourceLoader.Load<Texture>("assets/Hp/Green.png");
         }
         else if (this.ClientUnit.MaxHp * 0.33 < newHp)
         {
-            this.GetNode<TextureProgress>("TextureProgress").TextureProgress_ = ResourceLoader.Load<Texture>("assets/Hp/Yellow.png");
+            this.hpBar.TextureProgress_ = ResourceLoader.Load<Texture>("assets/Hp/Yellow.png");
         }
         else
         {
-            this.GetNode<TextureProgress>("TextureProgress").TextureProgress_ = ResourceLoader.Load<Texture>("assets/Hp/Red.png");
+            this.hpBar.TextureProgress_ = ResourceLoader.Load<Texture>("assets/Hp/Red.png");
         }
         this.ClientUnit.Hp = newHp;
         if (newHp <= 0 && !IsDead)
@@ -182,18 +197,25 @@ public class Unit : Node2D
         shadow.AbilityShadowTo(ability, cell, target);
     }
 
-    public async void ShowChanges(List<int> changes)
+    public async void ShowHpChanges(List<int> hpChanges, List<int> mpChanges)
     {
-        if (changes == null)
-        {
-            return;
-        }
-
         var sceneTree = GetTree();
-        foreach (var change in changes)
+        if (hpChanges != null)
         {
-            this.hpPopup.ShowValue(change.ToString(), change > 0 ? new Color(0, 1, 0) : new Color(1, 0, 0));
-            await ToSignal(sceneTree.CreateTimer(0.5f), "timeout");
+            foreach (var change in hpChanges)
+            {
+                this.hpPopup.ShowValue(change.ToString(), change > 0 ? new Color(0, 1, 0) : new Color(1, 0, 0));
+                await ToSignal(sceneTree.CreateTimer(0.5f), "timeout");
+            }
+        }
+        
+        if (mpChanges != null)
+        {
+            foreach (var change in mpChanges)
+            {
+                this.hpPopup.ShowValue(change.ToString(), new Color(0, 0, 1));
+                await ToSignal(sceneTree.CreateTimer(0.5f), "timeout");
+            }
         }
     }
 }

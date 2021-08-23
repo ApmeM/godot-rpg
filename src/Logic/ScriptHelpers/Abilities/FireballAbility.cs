@@ -11,14 +11,15 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
     {
         public bool TargetUnit => false;
 
-        public string Description => $"Fireball: \n Direct Damage: 2. \n Apply effect: { UnitUtils.FindEffect(Effect.Burn).Description } \n  Duration: 5";
+        public string Description => $"Fireball: \n Direct Damage: 2. \n Apply effect: { UnitUtils.FindEffect(Effect.Burn).Description } \n  Duration: 5\n Cost: 5";
 
         public List<IAppliedAction> Apply(ServerUnit actionUnit, ServerUnit targetUnit)
         {
             return new List<IAppliedAction>
             {
                 new ChangeHpAppliedAction(-(int)(actionUnit.MagicPower * 2), targetUnit),
-                new ApplyEffectAppliedAction(Effect.Burn, 5, targetUnit)
+                new ApplyEffectAppliedAction(Effect.Burn, 5, targetUnit),
+                new ChangeMpAppliedAction(-5, actionUnit),
             };
         }
 
@@ -30,6 +31,11 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
         public bool IsApplicable(VectorGridGraph astar, ServerPlayer actionPlayer, ServerUnit actionUnit, ServerPlayer targetPlayer, ServerUnit targetUnit, Vector2 abilityDirection)
         {
             if (actionPlayer == targetPlayer)
+            {
+                return false;
+            }
+
+            if (actionUnit.Mp < 5)
             {
                 return false;
             }

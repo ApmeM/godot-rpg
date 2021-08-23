@@ -182,10 +182,13 @@ namespace IsometricGame.Logic
 						continue;
 					}
 
+
 					var targetFullId = UnitUtils.GetFullUnitId(actionPlayer.Key, actionUnit.Key);
 					var targetDelta = unitsTurnDelta[targetFullId];
+					appliedActions.Add(new ChangeHpAppliedAction(actionUnit.Value.MaxHp / 10, actionUnit.Value));
+					appliedActions.Add(new ChangeMpAppliedAction(actionUnit.Value.MaxMp / 10, actionUnit.Value));
 					targetDelta.HpChanges.Add(actionUnit.Value.MaxHp / 10);
-					actionUnit.Value.Hp += actionUnit.Value.MaxHp / 10;
+					targetDelta.MpChanges.Add(actionUnit.Value.MaxMp / 10);
 				}
 			}
 
@@ -262,6 +265,7 @@ namespace IsometricGame.Logic
                                     var actions = ability.Apply(actionUnit.Value, targetUnit.Value);
 									appliedActions.AddRange(actions);
 									targetDelta.HpChanges.AddRange(actions.OfType<ChangeHpAppliedAction>().Select(a => a.Value).ToList());
+									targetDelta.MpChanges.AddRange(actions.OfType<ChangeMpAppliedAction>().Select(a => a.Value).ToList());
 								}
 							}
 						}
@@ -297,6 +301,7 @@ namespace IsometricGame.Logic
 						var actions = UnitUtils.FindEffect(effect.Effect).Apply(actionUnit.Value);
 						appliedActions.AddRange(actions);
 						targetDelta.HpChanges.AddRange(actions.OfType<ChangeHpAppliedAction>().Select(a => a.Value).ToList());
+						targetDelta.MpChanges.AddRange(actions.OfType<ChangeMpAppliedAction>().Select(a => a.Value).ToList());
 						effect.Duration--;
 					}
 
@@ -316,6 +321,7 @@ namespace IsometricGame.Logic
 				foreach (var actionUnit in actionPlayer.Value.Units)
 				{
 					actionUnit.Value.Hp = Mathf.Clamp(actionUnit.Value.Hp, 0, actionUnit.Value.MaxHp);
+					actionUnit.Value.Mp = Mathf.Clamp(actionUnit.Value.Mp, 0, actionUnit.Value.MaxMp);
 				}
 
 				actionPlayer.Value.IsGameOver = actionPlayer.Value.IsGameOver || CheckGameOver(actionPlayer.Value);
@@ -360,6 +366,7 @@ namespace IsometricGame.Logic
 					AttackPower = a.Value.AttackPower,
 					MagicPower = a.Value.MagicPower,
 					MaxHp = a.Value.MaxHp,
+					MaxMp = a.Value.MaxMp,
 					UnitType = a.Value.UnitType,
 					Abilities = a.Value.Abilities.ToList(),
 					Skills = a.Value.Skills.ToList()
@@ -393,9 +400,10 @@ namespace IsometricGame.Logic
 					return new TransferTurnData.YourUnitsData
 					{
 						Position = a.Value.Position,
-						AttackDirection = a.Value.Hp <= 0 ? null : delta?.AbilityDirection,
+						AbilityDirection = a.Value.Hp <= 0 ? null : delta?.AbilityDirection,
 						Hp = a.Value.Hp,
-						AttackFrom = a.Value.Hp <= 0 ? null : delta?.AbilityFrom,
+						Mp = a.Value.Mp,
+						AbilityFrom = a.Value.Hp <= 0 ? null : delta?.AbilityFrom,
 						Effects = a.Value.Effects,
 						MoveDistance = a.Value.MoveDistance,
 						SightRange = a.Value.SightRange,
@@ -403,7 +411,8 @@ namespace IsometricGame.Logic
 						AOEAttackRadius = a.Value.AOEAttackRadius,
 						AttackPower = a.Value.AttackPower,
 						MagicPower = a.Value.MagicPower,
-						Changes = delta?.HpChanges
+						HpChanges = delta?.HpChanges,
+						MpChanges = delta?.MpChanges,
 					};
 				}),
 				VisibleMap = this.GetVisibleMap(forPlayer, false),
@@ -421,7 +430,7 @@ namespace IsometricGame.Logic
 							Hp = b.Value.Hp,
 							AttackFrom = b.Value.Hp <= 0 ? null : delta?.AbilityFrom,
 							Effects = b.Value.Effects,
-							Changes = delta?.HpChanges
+							HpChanges = delta?.HpChanges,
 						};
 					})
 				})
