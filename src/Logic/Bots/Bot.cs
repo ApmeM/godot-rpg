@@ -8,14 +8,20 @@ using System.Collections.Generic;
 public class Bot
 {
 	private TransferInitialData initialData;
-    private ServerLogic server;
+    private GameData gameData;
     private int myId;
+    private ServerLogic serverLogic;
 
-	public void NewGame(ServerLogic server, int myId)
+    public Bot()
+    {
+		this.serverLogic = new ServerLogic();
+    }
+
+    public void NewGame(GameData gameData, int myId)
 	{
-		this.server = server;
+		this.gameData = gameData;
 		this.myId = myId;
-		server.Connect(myId, new TransferConnectData
+		this.serverLogic.Connect(gameData, myId, new TransferConnectData
 		{
 			TeamName = $"Bot-{myId}",
 			Units = new List<TransferConnectData.UnitData>
@@ -46,7 +52,7 @@ public class Bot
 			});
 		}
 
-		server.PlayerMove(this.myId, new TransferTurnDoneData
+		serverLogic.PlayerMove(gameData, this.myId, new TransferTurnDoneData
 		{
 			UnitActions = otherMoves
 		});

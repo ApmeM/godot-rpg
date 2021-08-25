@@ -14,16 +14,19 @@ public class Communicator : Node
     private const string BotName = "Bot";
 
     public Dictionary<string, LobbyData> Lobbies = new Dictionary<string, LobbyData>();
+    public Dictionary<string, GameData> Games = new Dictionary<string, GameData>();
     public Dictionary<int, string> PlayerNames = new Dictionary<int, string>();
 
     public Dictionary<string, string> Credentials = new Dictionary<string, string>();
     private Main main;
+    private ServerLogic serverLogic;
 
     public override void _Ready()
     {
         base._Ready();
         this.Credentials = FileStorage.LoadCredentials() ?? new Dictionary<string, string> { { "Server", "" } };
         this.main = GetNode<Main>("/root/Main");
+        this.serverLogic = new ServerLogic();
     }
 
     public override void _Process(float delta)
@@ -42,9 +45,9 @@ public class Communicator : Node
             client.Poll();
         }
 
-        foreach (var lobby in this.Lobbies)
+        foreach (var lobby in this.Games)
         {
-            lobby.Value.Server?.CheckTimeout(delta);
+            this.serverLogic.CheckTimeout(lobby.Value, delta);
         }
     }
 
@@ -188,12 +191,6 @@ public class Communicator : Node
         }
 
         var lobbyData = Lobbies[lobbyId];
-        if (lobbyData.Server != null)
-        {
-            RpcId(clientId, nameof(LobbyNotFound), lobbyId);
-            return;
-        }
-
         var playerName = this.PlayerNames[clientId];
         SendAllNewPlayerJoinedLobby(lobbyId, clientId, playerName);
     }
@@ -287,13 +284,15 @@ public class Communicator : Node
             return;
         }
 
-        lobbyData.Server = new ServerLogic();
-        lobbyData.Server.Start(new ServerConfiguration
+        var game = this.serverLogic.Start(new ServerConfiguration
         {
             FullMapVisible = fullMapVisible,
             TurnTimeout = turnTimeoutEnaled ? (float?)turnTimeoutValue : null,
             PlayersCount = lobbyData.Players.Count,
         });
+
+        Lobbies.Remove(lobbyId);
+        Games.Add(lobbyId, game);
 
         var botNumber = 0;
         foreach (var player in lobbyData.Players)
@@ -303,7 +302,7 @@ public class Communicator : Node
                 botNumber--;
 
                 var bot = new Bot();
-                bot.NewGame(lobbyData.Server, botNumber);
+                bot.NewGame(game, botNumber);
             }
             else
             {
@@ -333,7 +332,7 @@ public class Communicator : Node
         TransferConnectData connectData = JsonConvert.DeserializeObject<TransferConnectData>(data);
         var clientId = GetTree().GetRpcSenderId();
 
-        Lobbies[lobbyId].Server.Connect(clientId, connectData,
+        this.serverLogic.Connect(Games[lobbyId], clientId, connectData,
             (initData) => { RpcId(clientId, nameof(Initialize), JsonConvert.SerializeObject(initData)); },
             (turnData) => { RpcId(clientId, nameof(TurnDone), JsonConvert.SerializeObject(turnData)); });
     }
@@ -356,7 +355,7 @@ public class Communicator : Node
         TransferTurnDoneData turnData = JsonConvert.DeserializeObject<TransferTurnDoneData>(data);
         var clientId = GetTree().GetRpcSenderId();
 
-        Lobbies[lobbyId].Server.PlayerMove(clientId, turnData);
+        this.serverLogic.PlayerMove(Games[lobbyId], clientId, turnData);
     }
 
     [RemoteSync]
