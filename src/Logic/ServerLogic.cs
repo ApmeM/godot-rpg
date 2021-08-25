@@ -369,8 +369,6 @@ namespace IsometricGame.Logic
 				gameData.Players.Remove(actionPlayer.Key);
 				gameData.PlayersGameOver[actionPlayer.Key] = actionPlayer.Value;
 			}
-
-			// Todo: Remove game if it is over for all players.
 		}
 
 		private TransferInitialData GetInitialData(GameData gameData, int forPlayer)

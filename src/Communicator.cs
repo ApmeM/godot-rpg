@@ -356,6 +356,11 @@ public class Communicator : Node
         var clientId = GetTree().GetRpcSenderId();
 
         this.serverLogic.PlayerMove(Games[lobbyId], clientId, turnData);
+
+        if (Games[lobbyId].Players.Count == 0)
+        {
+            Games.Remove(lobbyId);
+        }
     }
 
     [RemoteSync]
