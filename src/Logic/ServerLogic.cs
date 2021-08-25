@@ -22,10 +22,10 @@ namespace IsometricGame.Logic
 		private readonly Dictionary<int, TransferTurnDoneData> PlayersMove = new Dictionary<int, TransferTurnDoneData>();
 
 		private ServerConfiguration configuration;
-        private float? Timeout;
-        private readonly Dictionary<int, Action<TransferInitialData>> initializeMethods = new Dictionary<int, Action<TransferInitialData>>();
+		private float? Timeout;
+		private readonly Dictionary<int, Action<TransferInitialData>> initializeMethods = new Dictionary<int, Action<TransferInitialData>>();
 		private readonly Dictionary<int, Action<TransferTurnData>> turnDoneMethods = new Dictionary<int, Action<TransferTurnData>>();
-		
+
 		public void Start(ServerConfiguration configuration)
 		{
 			this.configuration = configuration;
@@ -49,17 +49,18 @@ namespace IsometricGame.Logic
 				}
 		}
 
-		public void Connect(int playerId, TransferConnectData connectData, 
-			Action<TransferInitialData> initialize, 
+		public void Connect(int playerId, TransferConnectData connectData,
+			Action<TransferInitialData> initialize,
 			Action<TransferTurnData> turnDone)
 		{
-            if (this.Players.ContainsKey(playerId))
-            {
+			if (this.Players.ContainsKey(playerId))
+			{
 				throw new Exception($"Player with id {playerId} already connected");
-            }
+			}
 
 			var player = new ServerPlayer
 			{
+				PlayerId = playerId,
 				PlayerName = connectData.TeamName,
 			};
 
@@ -69,7 +70,11 @@ namespace IsometricGame.Logic
 			var center = new Vector2(centerX, centerY);
 			foreach (var u in connectData.Units.Take(configuration.MaxUnits))
 			{
-				player.Units.Add(player.Units.Count + 1, UnitUtils.BuildUnit(player, u.UnitType, u.Skills.Take(configuration.MaxSkills).ToList()));
+				var unitId = player.Units.Count + 1;
+				var unit = UnitUtils.BuildUnit(player, u.UnitType, u.Skills.Take(this.configuration.MaxSkills).ToList());
+				unit.UnitId = unitId;
+				unit.Player = player;
+				player.Units.Add(unitId, unit);
 			}
 
 			var positions = new List<Vector2>
@@ -79,11 +84,11 @@ namespace IsometricGame.Logic
 				Vector2.Up,
 				Vector2.Down,
 				Vector2.Zero
-            };
+			};
 
 			var index = 0;
-            foreach (var unit in player.Units)
-            {
+			foreach (var unit in player.Units)
+			{
 				unit.Value.Position = center + positions[index];
 				index++;
 			}
@@ -116,24 +121,24 @@ namespace IsometricGame.Logic
 		}
 
 		public void PlayerMove(int forPlayer, TransferTurnDoneData moves)
-        {
-            if (PlayersGameOver.ContainsKey(forPlayer))
-            {
+		{
+			if (PlayersGameOver.ContainsKey(forPlayer))
+			{
 				return;
-            }
+			}
 
-            // Put player move into dictionary
-            if (!Players.ContainsKey(forPlayer))
-            {
+			// Put player move into dictionary
+			if (!Players.ContainsKey(forPlayer))
+			{
 				return;
-            }
+			}
 
-            PlayersMove[forPlayer] = moves;
-            
+			PlayersMove[forPlayer] = moves;
+
 			if (PlayersMove.Count != Players.Count)
-            {
-                return;
-            }
+			{
+				return;
+			}
 
 			// When all players send their turns - apply all.
 			this.Timeout = configuration.TurnTimeout;
@@ -146,11 +151,11 @@ namespace IsometricGame.Logic
 			{
 				foreach (var actionUnit in actionPlayer.Value.Units)
 				{
-					var fullId = UnitUtils.GetFullUnitId(actionPlayer.Key, actionUnit.Key);
+					var fullId = UnitUtils.GetFullUnitId(actionUnit.Value);
 					unitsTurnDelta[fullId] = new ServerTurnDelta();
 					PlayersMove[actionPlayer.Key].UnitActions = PlayersMove[actionPlayer.Key].UnitActions ?? new Dictionary<int, TransferTurnDoneData.UnitActionData>();
-                    if (!PlayersMove[actionPlayer.Key].UnitActions.ContainsKey(actionUnit.Key))
-                    {
+					if (!PlayersMove[actionPlayer.Key].UnitActions.ContainsKey(actionUnit.Key))
+					{
 						PlayersMove[actionPlayer.Key].UnitActions[actionUnit.Key] = new TransferTurnDoneData.UnitActionData();
 					}
 				}
@@ -158,18 +163,18 @@ namespace IsometricGame.Logic
 
 			/* Calculate move blockers */
 			foreach (var actionPlayer in Players)
-            {
-                foreach (var actionUnit in actionPlayer.Value.Units)
-                {
-                    var unitMove = PlayersMove[actionPlayer.Key].UnitActions[actionUnit.Key];
-                    if (actionUnit.Value.Hp > 0 && unitMove.Move.HasValue)
-                    {
-                        continue;
-                    }
-                    
+			{
+				foreach (var actionUnit in actionPlayer.Value.Units)
+				{
+					var unitMove = PlayersMove[actionPlayer.Key].UnitActions[actionUnit.Key];
+					if (actionUnit.Value.Hp > 0 && unitMove.Move.HasValue)
+					{
+						continue;
+					}
+
 					occupiedCells.Add(actionUnit.Value.Position);
-                }
-            }
+				}
+			}
 
 			/* Increase Hp for units that do not have any commands */
 			foreach (var actionPlayer in Players)
@@ -183,12 +188,10 @@ namespace IsometricGame.Logic
 					}
 
 
-					var targetFullId = UnitUtils.GetFullUnitId(actionPlayer.Key, actionUnit.Key);
+					var targetFullId = UnitUtils.GetFullUnitId(actionUnit.Value);
 					var targetDelta = unitsTurnDelta[targetFullId];
 					appliedActions.Add(new ChangeHpAppliedAction(actionUnit.Value.MaxHp / 10, actionUnit.Value));
 					appliedActions.Add(new ChangeMpAppliedAction(actionUnit.Value.MaxMp / 10, actionUnit.Value));
-					targetDelta.HpChanges.Add(actionUnit.Value.MaxHp / 10);
-					targetDelta.MpChanges.Add(actionUnit.Value.MaxMp / 10);
 				}
 			}
 
@@ -199,27 +202,27 @@ namespace IsometricGame.Logic
 				{
 					var unitMove = PlayersMove[actionPlayer.Key].UnitActions[actionUnit.Key];
 					if (!unitMove.Move.HasValue || actionUnit.Value.Hp <= 0)
-                    {
-                        continue;
-                    }
+					{
+						continue;
+					}
 
-                    var path = BreadthFirstPathfinder.Search(this.Astar, actionUnit.Value.Position, unitMove.Move.Value)
-                        .Take(actionUnit.Value.MoveDistance + 1)
-                        .ToList();
+					var path = BreadthFirstPathfinder.Search(this.Astar, actionUnit.Value.Position, unitMove.Move.Value)
+						.Take(actionUnit.Value.MoveDistance + 1)
+						.ToList();
 
-                    for (var i = path.Count; i > 0; i--)
-                    {
-                        if (occupiedCells.Contains(path[i - 1]))
-                        {
-                            continue;
-                        }
+					for (var i = path.Count; i > 0; i--)
+					{
+						if (occupiedCells.Contains(path[i - 1]))
+						{
+							continue;
+						}
 
-                        actionUnit.Value.Position = path[i - 1];
-                        occupiedCells.Add(actionUnit.Value.Position);
-                        break;
-                    }
-                }
-            }
+						actionUnit.Value.Position = path[i - 1];
+						occupiedCells.Add(actionUnit.Value.Position);
+						break;
+					}
+				}
+			}
 
 			/* Execute abilities */
 			foreach (var actionPlayer in Players)
@@ -227,55 +230,75 @@ namespace IsometricGame.Logic
 				foreach (var actionUnit in actionPlayer.Value.Units)
 				{
 					var unitMove = PlayersMove[actionPlayer.Key].UnitActions[actionUnit.Key];
-					var actionFullId = UnitUtils.GetFullUnitId(actionPlayer.Key, actionUnit.Key);
+					var actionFullId = UnitUtils.GetFullUnitId(actionUnit.Value);
 					var actionDelta = unitsTurnDelta[actionFullId];
-					if (unitMove.AbilityDirection.HasValue && actionUnit.Value.Hp > 0)
+					if (
+						!unitMove.AbilityDirection.HasValue ||
+						actionUnit.Value.Hp <= 0 ||
+						!actionUnit.Value.Abilities.Contains(unitMove.Ability))
 					{
-						if (!actionUnit.Value.Abilities.Contains(unitMove.Ability))
-						{
-							continue;
-						}
+						continue;
+					}
 
-						var ability = UnitUtils.FindAbility(unitMove.Ability);
+					var wasApplied = false;
 
-						if (ability.TargetUnit)
-						{
-							var targetPlayerId = UnitUtils.GetPlayerId(unitMove.AbilityFullUnitId);
-							var targetUnitId = UnitUtils.GetUnitId(unitMove.AbilityFullUnitId);
-							var targetPlayer = Players[targetPlayerId];
-							var targetUnit = targetPlayer.Units[targetUnitId];
+					var ability = UnitUtils.FindAbility(unitMove.Ability);
+					if (ability.TargetUnit)
+					{
+						var targetPlayerId = UnitUtils.GetPlayerId(unitMove.AbilityFullUnitId);
+						var targetUnitId = UnitUtils.GetUnitId(unitMove.AbilityFullUnitId);
+						var targetPlayer = Players[targetPlayerId];
+						var targetUnit = targetPlayer.Units[targetUnitId];
 
-							actionDelta.AbilityDirection = targetUnit.Position - actionUnit.Value.Position;
-						}
-						else
-						{
-							actionDelta.AbilityDirection = unitMove.AbilityDirection.Value;
-						}
+						actionDelta.AbilityDirection = targetUnit.Position - actionUnit.Value.Position;
+					}
+					else
+					{
+						actionDelta.AbilityDirection = unitMove.AbilityDirection.Value;
+						wasApplied = true;
 
-						foreach (var targetPlayer in Players)
+					}
+
+					foreach (var targetPlayer in Players)
+					{
+						foreach (var targetUnit in targetPlayer.Value.Units)
 						{
-							foreach (var targetUnit in targetPlayer.Value.Units)
+							var isApplicable = ability.IsApplicable(this.Astar, actionUnit.Value, targetUnit.Value, actionDelta.AbilityDirection.Value);
+							if (!isApplicable)
 							{
-								if (ability.IsApplicable(this.Astar, actionPlayer.Value, actionUnit.Value, targetPlayer.Value, targetUnit.Value, actionDelta.AbilityDirection.Value))
-								{
-									var targetFullId = UnitUtils.GetFullUnitId(targetPlayer.Key, targetUnit.Key);
-									var targetDelta = unitsTurnDelta[targetFullId];
-									targetDelta.AbilityFrom = actionUnit.Value.Position - targetUnit.Value.Position;
-
-                                    var actions = ability.Apply(actionUnit.Value, targetUnit.Value);
-									appliedActions.AddRange(actions);
-									targetDelta.HpChanges.AddRange(actions.OfType<ChangeHpAppliedAction>().Select(a => a.Value).ToList());
-									targetDelta.MpChanges.AddRange(actions.OfType<ChangeMpAppliedAction>().Select(a => a.Value).ToList());
-								}
+								continue;
 							}
+
+							var targetFullId = UnitUtils.GetFullUnitId(targetUnit.Value);
+							var targetDelta = unitsTurnDelta[targetFullId];
+							targetDelta.AbilityFrom = actionUnit.Value.Position - targetUnit.Value.Position;
+
+							wasApplied = true;
+
+							var actions = ability.Apply(actionUnit.Value, targetUnit.Value);
+							appliedActions.AddRange(actions);
 						}
 					}
+
+					if (wasApplied)
+					{
+						var costs = ability.ApplyCost(actionUnit.Value);
+						appliedActions.AddRange(costs);
+					}
 				}
-            }
+			}
 
 			foreach (var action in appliedActions)
 			{
 				action.Apply();
+				if (action is ChangeHpAppliedAction hpAction)
+				{
+					unitsTurnDelta[hpAction.FullUnitId].HpChanges.Add(hpAction.Value);
+				}
+				if (action is ChangeMpAppliedAction mpAction)
+				{
+					unitsTurnDelta[mpAction.FullUnitId].MpChanges.Add(mpAction.Value);
+				}
 			}
 			appliedActions.Clear();
 
@@ -293,15 +316,13 @@ namespace IsometricGame.Logic
 			{
 				foreach (var actionUnit in actionPlayer.Value.Units)
 				{
-					var targetFullId = UnitUtils.GetFullUnitId(actionPlayer.Key, actionUnit.Key);
+					var targetFullId = UnitUtils.GetFullUnitId(actionUnit.Value);
 					var targetDelta = unitsTurnDelta[targetFullId];
 
 					foreach (var effect in actionUnit.Value.Effects)
 					{
 						var actions = UnitUtils.FindEffect(effect.Effect).Apply(actionUnit.Value);
 						appliedActions.AddRange(actions);
-						targetDelta.HpChanges.AddRange(actions.OfType<ChangeHpAppliedAction>().Select(a => a.Value).ToList());
-						targetDelta.MpChanges.AddRange(actions.OfType<ChangeMpAppliedAction>().Select(a => a.Value).ToList());
 						effect.Duration--;
 					}
 
@@ -312,6 +333,14 @@ namespace IsometricGame.Logic
 			foreach (var action in appliedActions)
 			{
 				action.Apply();
+				if (action is ChangeHpAppliedAction hpAction)
+				{
+					unitsTurnDelta[hpAction.FullUnitId].HpChanges.Add(hpAction.Value);
+				}
+				if (action is ChangeMpAppliedAction mpAction)
+				{
+					unitsTurnDelta[mpAction.FullUnitId].MpChanges.Add(mpAction.Value);
+				}
 			}
 			appliedActions.Clear();
 
@@ -333,23 +362,23 @@ namespace IsometricGame.Logic
 			{
 				turnDoneMethod.Value(GetTurnData(turnDoneMethod.Key, unitsTurnDelta));
 			}
-			
+
 			foreach (var actionPlayer in Players.ToList())
 			{
-                if (!actionPlayer.Value.IsGameOver)
-                {
+				if (!actionPlayer.Value.IsGameOver)
+				{
 					continue;
-                }
+				}
 				turnDoneMethods.Remove(actionPlayer.Key);
 				initializeMethods.Remove(actionPlayer.Key);
 				Players.Remove(actionPlayer.Key);
 				PlayersGameOver[actionPlayer.Key] = actionPlayer.Value;
 			}
-			
+
 			// Todo: Remove lobby if game is over for all players.
 		}
 
-        private TransferInitialData GetInitialData(int forPlayer)
+		private TransferInitialData GetInitialData(int forPlayer)
 		{
 			return new TransferInitialData
 			{
@@ -395,7 +424,7 @@ namespace IsometricGame.Logic
 				GameOverWin = Players.Where(a => a.Key != forPlayer).All(a => a.Value.IsGameOver),
 				YourUnits = player.Units.ToDictionary(a => a.Key, a =>
 				{
-					var fullId = UnitUtils.GetFullUnitId(forPlayer, a.Key);
+					var fullId = UnitUtils.GetFullUnitId(a.Value);
 					UnitsTurnDelta.TryGetValue(fullId, out var delta);
 					return new TransferTurnData.YourUnitsData
 					{
@@ -420,7 +449,7 @@ namespace IsometricGame.Logic
 				{
 					Units = a.Value.Units.Where(b => IsVisible(player, (int)b.Value.Position.x, (int)b.Value.Position.y)).ToDictionary(b => b.Key, b =>
 					{
-						var fullId = UnitUtils.GetFullUnitId(a.Key, b.Key);
+						var fullId = UnitUtils.GetFullUnitId(b.Value);
 						UnitsTurnDelta.TryGetValue(fullId, out var delta);
 
 						return new TransferTurnData.OtherUnitsData
@@ -437,12 +466,12 @@ namespace IsometricGame.Logic
 			};
 		}
 
-        private bool CheckGameOver(ServerPlayer player)
-        {
+		private bool CheckGameOver(ServerPlayer player)
+		{
 			return player.Units.All(unit => unit.Value.Hp <= 0);
-        }
+		}
 
-        private MapTile[,] GetVisibleMap(int forPlayer, bool isInitialize)
+		private MapTile[,] GetVisibleMap(int forPlayer, bool isInitialize)
 		{
 			var player = Players[forPlayer];
 
@@ -450,7 +479,7 @@ namespace IsometricGame.Logic
 			for (var x = 0; x < Map.Regions.GetLength(0); x++)
 				for (var y = 0; y < Map.Regions.GetLength(1); y++)
 				{
-					if (!IsVisible(player, x, y) && (!configuration.FullMapVisible || !isInitialize ))
+					if (!IsVisible(player, x, y) && (!configuration.FullMapVisible || !isInitialize))
 					{
 						result[x, y] = MapTile.Unknown;
 					}
@@ -469,14 +498,15 @@ namespace IsometricGame.Logic
 
 		private static bool IsVisible(ServerPlayer player, int x, int y)
 		{
-			foreach(var unit in player.Units.Values)
+			foreach (var unit in player.Units.Values)
 			{
 				if (unit.Hp <= 0)
 				{
 					continue;
 				}
 
-				if ((Math.Abs(x - unit.Position.x) + Math.Abs(y - unit.Position.y)) <= unit.SightRange){
+				if ((Math.Abs(x - unit.Position.x) + Math.Abs(y - unit.Position.y)) <= unit.SightRange)
+				{
 					return true;
 				}
 			}
@@ -485,29 +515,29 @@ namespace IsometricGame.Logic
 		}
 
 		public void CheckTimeout(float delta)
-        {
-            if (!configuration.TurnTimeout.HasValue)
-            {
-                return;
-            }
-            
-			this.Timeout = this.Timeout ?? configuration.TurnTimeout;
-            this.Timeout -= delta;
-            if (this.Timeout > 0)
-            {
+		{
+			if (!configuration.TurnTimeout.HasValue)
+			{
 				return;
-            }
+			}
+
+			this.Timeout = this.Timeout ?? configuration.TurnTimeout;
+			this.Timeout -= delta;
+			if (this.Timeout > 0)
+			{
+				return;
+			}
 
 			this.Timeout = configuration.TurnTimeout;
-			foreach(var player in this.Players)
-            {
-                if (PlayersMove.ContainsKey(player.Key))
-                {
+			foreach (var player in this.Players)
+			{
+				if (PlayersMove.ContainsKey(player.Key))
+				{
 					continue;
-                }
+				}
 
-                this.PlayerMove(player.Key, emptyMoves);
-            }
-        }
-    }
+				this.PlayerMove(player.Key, emptyMoves);
+			}
+		}
+	}
 }

@@ -102,6 +102,11 @@ namespace IsometricGame.Logic.ScriptHelpers
             }
         }
 
+        public static long GetFullUnitId(ServerUnit unit)
+        {
+            return GetFullUnitId(unit.Player.PlayerId, unit.UnitId);
+        }
+
         public static long GetFullUnitId(int playerId, int unitId)
         {
             return ((long)playerId << 32) | ((long)unitId & 0xFFFFFFFFL);

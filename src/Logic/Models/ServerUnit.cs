@@ -6,6 +6,9 @@ namespace IsometricGame.Logic.Models
 {
     public class ServerUnit
     {
+        public int UnitId;
+        public ServerPlayer Player;
+
         public Vector2 Position;
         public UnitType UnitType;
         public int MaxHp;

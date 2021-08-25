@@ -12,22 +12,14 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
 
         public string Description => "Ranged attack: \n Damage: 5.";
 
-        public List<IAppliedAction> Apply(ServerUnit actionUnit, ServerUnit targetUnit)
-        {
-            return new List<IAppliedAction>
-            {
-                new ChangeHpAppliedAction(-(int)(actionUnit.AttackPower * 5), targetUnit),
-            };
-        }
-
         public void HighliteMaze(Maze maze, Vector2 pos, ClientUnit currentUnit)
         {
             maze.HighliteAvailableAttacks(pos, (int)(currentUnit.RangedAttackDistance * 5), (int)(currentUnit.AOEAttackRadius * 2));
         }
 
-        public bool IsApplicable(VectorGridGraph astar, ServerPlayer actionPlayer, ServerUnit actionUnit, ServerPlayer targetPlayer, ServerUnit targetUnit, Vector2 abilityDirection)
+        public bool IsApplicable(VectorGridGraph astar, ServerUnit actionUnit, ServerUnit targetUnit, Vector2 abilityDirection)
         {
-            if (actionPlayer == targetPlayer)
+            if (actionUnit.Player == targetUnit.Player)
             {
                 return false;
             }
@@ -40,7 +32,19 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
 
             BreadthFirstPathfinder.Search(astar, actionUnit.Position + abilityDirection, (int)(actionUnit.AOEAttackRadius * 2), out visited);
             return visited.ContainsKey(targetUnit.Position);
+        }
 
+        public List<IAppliedAction> ApplyCost(ServerUnit actionUnit)
+        {
+            return new List<IAppliedAction>();
+        }
+
+        public List<IAppliedAction> Apply(ServerUnit actionUnit, ServerUnit targetUnit)
+        {
+            return new List<IAppliedAction>
+            {
+                new ChangeHpAppliedAction(-(int)(actionUnit.AttackPower * 5), targetUnit),
+            };
         }
     }
 }

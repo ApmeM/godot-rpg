@@ -14,15 +14,6 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
 
         public string Description => "Heal: \n Hp increase: 10.\n Cost: 2";
 
-        public List<IAppliedAction> Apply(ServerUnit actionUnit, ServerUnit targetUnit)
-        {
-            return new List<IAppliedAction>
-            {
-                new ChangeHpAppliedAction(+(int)(actionUnit.MagicPower * 10), targetUnit),
-                new ChangeMpAppliedAction(-2, targetUnit),
-            };
-        }
-
         public void HighliteMaze(Maze maze, Vector2 pos, ClientUnit currentUnit)
         {
             var myUnits = maze.GetTree().GetNodesInGroup(Groups.MyUnits).Cast<Unit>();
@@ -34,9 +25,9 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
             maze.HighliteAvailableAttacks(targetCells, (int)(currentUnit.AOEAttackRadius * 0));
         }
 
-        public bool IsApplicable(VectorGridGraph astar, ServerPlayer actionPlayer, ServerUnit actionUnit, ServerPlayer targetPlayer, ServerUnit targetUnit, Vector2 abilityDirection)
+        public bool IsApplicable(VectorGridGraph astar, ServerUnit actionUnit, ServerUnit targetUnit, Vector2 abilityDirection)
         {
-            if (actionPlayer != targetPlayer)
+            if (actionUnit.Player != targetUnit.Player)
             {
                 return false;
             }
@@ -54,6 +45,22 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
 
             BreadthFirstPathfinder.Search(astar, actionUnit.Position + abilityDirection, (int)(actionUnit.AOEAttackRadius * 0), out visited);
             return visited.ContainsKey(targetUnit.Position);
+        }
+
+        public List<IAppliedAction> ApplyCost(ServerUnit actionUnit)
+        {
+            return new List<IAppliedAction>
+            {
+                new ChangeMpAppliedAction(-2, actionUnit),
+            };
+        }
+
+        public List<IAppliedAction> Apply(ServerUnit actionUnit, ServerUnit targetUnit)
+        {
+            return new List<IAppliedAction>
+            {
+                new ChangeHpAppliedAction(+(int)(actionUnit.MagicPower * 10), targetUnit),
+            };
         }
     }
 }

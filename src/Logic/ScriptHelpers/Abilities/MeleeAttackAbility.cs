@@ -12,21 +12,14 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
 
         public string Description => "Melee attack: \n Damage: 10.";
 
-        public List<IAppliedAction> Apply(ServerUnit actionUnit, ServerUnit targetUnit)
-        {
-            return new List<IAppliedAction>
-            {
-                new ChangeHpAppliedAction(-(int)(actionUnit.AttackPower * 10), targetUnit),
-            };
-        }
         public void HighliteMaze(Maze maze, Vector2 pos, ClientUnit currentUnit)
         {
             maze.HighliteAvailableAttacks(pos, 1, (int)currentUnit.AOEAttackRadius);
         }
 
-        public bool IsApplicable(VectorGridGraph astar, ServerPlayer actionPlayer, ServerUnit actionUnit, ServerPlayer targetPlayer, ServerUnit targetUnit, Vector2 abilityDirection)
+        public bool IsApplicable(VectorGridGraph astar, ServerUnit actionUnit, ServerUnit targetUnit, Vector2 abilityDirection)
         {
-            if (actionPlayer == targetPlayer)
+            if (actionUnit.Player == targetUnit.Player)
             {
                 return false;
             }
@@ -40,6 +33,19 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
             BreadthFirstPathfinder.Search(astar, actionUnit.Position + abilityDirection, (int)(actionUnit.AOEAttackRadius), out visited);
             return visited.ContainsKey(targetUnit.Position);
 
+        }
+
+        public List<IAppliedAction> ApplyCost(ServerUnit actionUnit)
+        {
+            return new List<IAppliedAction>();
+        }
+
+        public List<IAppliedAction> Apply(ServerUnit actionUnit, ServerUnit targetUnit)
+        {
+            return new List<IAppliedAction>
+            {
+                new ChangeHpAppliedAction(-(int)(actionUnit.AttackPower * 10), targetUnit),
+            };
         }
     }
 }
