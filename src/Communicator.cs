@@ -5,6 +5,7 @@ using IsometricGame.Logic.ScriptHelpers;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -12,12 +13,16 @@ public class Communicator : Node
 {
     private const int BotId = -1;
     private const string BotName = "Bot";
+    private const int ConnectionPort = 12345;
 
-    public Dictionary<string, LobbyData> Lobbies = new Dictionary<string, LobbyData>();
-    public Dictionary<string, GameData> Games = new Dictionary<string, GameData>();
-    public Dictionary<int, string> PlayerNames = new Dictionary<int, string>();
+    private static int LobbyIndex = 0;
 
-    public Dictionary<string, string> Credentials = new Dictionary<string, string>();
+    public readonly Dictionary<string, LobbyData> Lobbies = new Dictionary<string, LobbyData>();
+    public readonly Dictionary<string, GameData> Games = new Dictionary<string, GameData>();
+    public readonly Dictionary<int, string> ActiveLogins = new Dictionary<int, string>();
+    public readonly Dictionary<int, string> PlayerLobbies = new Dictionary<int, string>();
+
+    public Dictionary<string, string> Credentials;
     private Main main;
     private ServerLogic serverLogic;
 
@@ -56,15 +61,15 @@ public class Communicator : Node
     public void CreateServer()
     {
         var peer = new WebSocketServer();
-        peer.Listen(12345, null, true);
+        peer.Listen(ConnectionPort, null, true);
         GetTree().NetworkPeer = peer;
 
         GetTree().Connect("network_peer_connected", this, nameof(PlayerConnected));
         GetTree().Connect("network_peer_disconnected", this, nameof(PlayerDisconnected));
 
-        this.PlayerNames.Clear();
+        this.ActiveLogins.Clear();
         this.Lobbies.Clear();
-        this.PlayerNames[1] = "Server";
+        this.ActiveLogins[1] = "Server";
         
         LoginSuccess();
     }
@@ -72,7 +77,7 @@ public class Communicator : Node
     public void CreateClient(string serverAddress, string login, string password)
     {
         var peer = new WebSocketClient();
-        peer.ConnectToUrl($"ws://{serverAddress}:12345", null, true);
+        peer.ConnectToUrl($"ws://{serverAddress}:{ConnectionPort}", null, true);
         GetTree().NetworkPeer = peer;
 
         GetTree().Connect("network_peer_connected", this, nameof(PlayerConnected));
@@ -94,14 +99,14 @@ public class Communicator : Node
         if (!this.Credentials.ContainsKey(login))
         {
             this.Credentials[login] = hash;
-            this.PlayerNames[clientId] = login;
+            this.ActiveLogins[clientId] = login;
             RpcId(clientId, nameof(LoginSuccess));
 
             FileStorage.SaveCredentials(this.Credentials);
         }
         else if (this.Credentials[login] == hash)
         {
-            this.PlayerNames[clientId] = login;
+            this.ActiveLogins[clientId] = login;
             RpcId(clientId, nameof(LoginSuccess));
         }
         else
@@ -140,12 +145,28 @@ public class Communicator : Node
 
     private void PlayerDisconnected(int id)
     {
-        if(!PlayerNames.ContainsKey(id))
+        if (!ActiveLogins.ContainsKey(id))
         {
             return;
         }
 
-        this.PlayerNames.Remove(id);
+        if (this.PlayerLobbies.ContainsKey(id))
+        {
+            var lobbyId = this.PlayerLobbies[id];
+            if (Lobbies.ContainsKey(lobbyId))
+            {
+                SendAllPlayerLeftLobby(id);
+            }
+
+            if (Games.ContainsKey(lobbyId)){
+                PlayerDisconnectedOnServer(id);
+            }
+
+            PlayerLobbies.Remove(id);
+        }
+
+        this.ActiveLogins.Remove(id);
+
         GD.Print("player disconnected");
     }
 
@@ -161,11 +182,13 @@ public class Communicator : Node
     [RemoteSync]
     private void CreateLobbyOnServer()
     {
-        var lobbyId = "Lobby" + Lobbies.Count;
+        var lobbyId = "Lobby" + LobbyIndex;
+        LobbyIndex++;
         var lobbyData = new LobbyData();
         Lobbies[lobbyId] = lobbyData;
         var creatorClientId = GetTree().GetRpcSenderId();
         lobbyData.Creator = creatorClientId;
+        PlayerLobbies[creatorClientId] = lobbyId;
         RpcId(creatorClientId, nameof(CreateLobbyDone), lobbyId);
     }
 
@@ -191,8 +214,8 @@ public class Communicator : Node
         }
 
         var lobbyData = Lobbies[lobbyId];
-        var playerName = this.PlayerNames[clientId];
-        SendAllNewPlayerJoinedLobby(lobbyId, clientId, playerName);
+        PlayerLobbies[clientId] = lobbyId;
+        SendAllNewPlayerJoinedLobby(clientId);
     }
 
     [RemoteSync]
@@ -201,32 +224,31 @@ public class Communicator : Node
         this.main.LobbyNotFound(lobbyId);
     }
 
-    public void AddBot(string lobbyId)
+    public void AddBot()
     {
-        RpcId(1, nameof(AddBotOnServer), lobbyId);
+        RpcId(1, nameof(AddBotOnServer));
     }
 
     [RemoteSync]
-    public void AddBotOnServer(string lobbyId)
+    public void AddBotOnServer()
     {
-        if (!Lobbies.ContainsKey(lobbyId))
-        {
-            return;
-        }
-
-        var lobbyData = Lobbies[lobbyId];
         var clientId = GetTree().GetRpcSenderId();
+        var lobbyId = PlayerLobbies[clientId];
+        var lobbyData = Lobbies[lobbyId];
         if (lobbyData.Creator != clientId)
         {
             return;
         }
 
-        SendAllNewPlayerJoinedLobby(lobbyId, BotId, BotName);
+        SendAllNewPlayerJoinedLobby(BotId);
     }
 
-    private void SendAllNewPlayerJoinedLobby(string lobbyId, int clientId, string playerName)
+    private void SendAllNewPlayerJoinedLobby(int clientId)
     {
+        var lobbyId = PlayerLobbies[(clientId == BotId) ? GetTree().GetRpcSenderId() : clientId];
         var lobbyData = Lobbies[lobbyId];
+        var playerName = clientId != BotId ? this.ActiveLogins[clientId] : BotName;
+
         if (clientId != BotId)
         {
             RpcId(clientId, nameof(YouJoinedToLobby), clientId == lobbyData.Creator, lobbyId, playerName);
@@ -248,6 +270,67 @@ public class Communicator : Node
         lobbyData.Players.Add(new LobbyData.PlayerData { ClientId = clientId, PlayerName = playerName });
     }
 
+    public void LeaveLobby()
+    {
+        RpcId(1, nameof(LeaveLobbyOnServer));
+    }
+
+    [RemoteSync]
+    private void LeaveLobbyOnServer()
+    {
+        var clientId = GetTree().GetRpcSenderId();
+        SendAllPlayerLeftLobby(clientId);
+
+        var lobbyId = PlayerLobbies[clientId];
+        var playerName = this.ActiveLogins[clientId];
+        var lobbyData = Lobbies[lobbyId];
+        if (lobbyData.Players.All(a => a.ClientId == BotId))
+        {
+            Lobbies.Remove(lobbyId);
+        }
+
+        PlayerLobbies.Remove(clientId);
+
+    }
+
+    private void SendAllPlayerLeftLobby(int clientId)
+    {
+        var lobbyId = PlayerLobbies[clientId];
+        var playerName = this.ActiveLogins[clientId];
+        var lobbyData = Lobbies[lobbyId];
+        foreach (var player in lobbyData.Players)
+        {
+            if (player.ClientId != BotId)
+            {
+                RpcId(player.ClientId, nameof(PlayerLeftLobby), playerName);
+            }
+
+            if (clientId != BotId)
+            {
+                RpcId(clientId, nameof(PlayerLeftLobby), playerName);
+            }
+        }
+
+        if (clientId != BotId)
+        {
+            RpcId(clientId, nameof(YouLeftLobby));
+        }
+
+        lobbyData.Players.RemoveAll(a => a.ClientId == clientId);
+    }
+
+    [RemoteSync]
+    private void PlayerLeftLobby(string playerName)
+    {
+        this.main.PlayerLeftLobby(playerName);
+    }
+
+    [RemoteSync]
+    private void YouLeftLobby()
+    {
+        this.main.YouLeftLobby();
+    }
+
     [RemoteSync]
     private void PlayerJoinedToLobby(string playerName)
     {
@@ -264,21 +347,17 @@ public class Communicator : Node
 
     #region Start game
 
-    public void StartGame(string lobbyId, bool fullMapVisible, bool turnTimeoutEnaled, float turnTimeoutValue)
+    public void StartGame(bool fullMapVisible, bool turnTimeoutEnaled, float turnTimeoutValue)
     {
-        RpcId(1, nameof(StartGameOnServer), lobbyId, fullMapVisible, turnTimeoutEnaled, turnTimeoutValue);
+        RpcId(1, nameof(StartGameOnServer), fullMapVisible, turnTimeoutEnaled, turnTimeoutValue);
     }
 
     [RemoteSync]
-    public void StartGameOnServer(string lobbyId, bool fullMapVisible, bool turnTimeoutEnaled, float turnTimeoutValue)
+    public void StartGameOnServer(bool fullMapVisible, bool turnTimeoutEnaled, float turnTimeoutValue)
     {
-        if (!Lobbies.ContainsKey(lobbyId))
-        {
-            return;
-        }
-
-        var lobbyData = Lobbies[lobbyId];
         var clientId = GetTree().GetRpcSenderId();
+        var lobbyId = PlayerLobbies[clientId];
+        var lobbyData = Lobbies[lobbyId];
         if (lobbyData.Creator != clientId)
         {
             return;
@@ -306,32 +385,32 @@ public class Communicator : Node
             }
             else
             {
-                RpcId(player.ClientId, nameof(GameStarted), lobbyId);
+                RpcId(player.ClientId, nameof(GameStarted));
             }
         }
     }
 
     [RemoteSync]
-    private void GameStarted(string lobbyId)
+    private void GameStarted()
     {
-        this.main.GameStarted(lobbyId);
+        this.main.GameStarted();
     }
 
     #endregion
 
     #region Game steps
 
-    public void ConnectToServer(string lobbyId, TransferConnectData data)
+    public void ConnectToServer(TransferConnectData data)
     {
-        RpcId(1, nameof(ConnectToServerOnServer), lobbyId, JsonConvert.SerializeObject(data));
+        RpcId(1, nameof(ConnectToServerOnServer), JsonConvert.SerializeObject(data));
     }
 
     [RemoteSync]
-    private void ConnectToServerOnServer(string lobbyId, string data)
+    private void ConnectToServerOnServer(string data)
     {
         TransferConnectData connectData = JsonConvert.DeserializeObject<TransferConnectData>(data);
         var clientId = GetTree().GetRpcSenderId();
-
+        var lobbyId = PlayerLobbies[clientId];
         this.serverLogic.Connect(Games[lobbyId], clientId, connectData,
             (initData) => { RpcId(clientId, nameof(Initialize), JsonConvert.SerializeObject(initData)); },
             (turnData) => { RpcId(clientId, nameof(TurnDone), JsonConvert.SerializeObject(turnData)); });
@@ -344,18 +423,27 @@ public class Communicator : Node
         this.main.Initialize(initialData);
     }
 
-    public void PlayerMoved(string lobbyId, TransferTurnDoneData data)
+    public void PlayerMoved(TransferTurnDoneData data)
     {
-        RpcId(1, nameof(PlayerMovedOnServer), lobbyId, JsonConvert.SerializeObject(data));
+        RpcId(1, nameof(PlayerMovedOnServer), JsonConvert.SerializeObject(data));
     }
 
     [RemoteSync]
-    private void PlayerMovedOnServer(string lobbyId, string data)
+    private void PlayerMovedOnServer(string data)
     {
         TransferTurnDoneData turnData = JsonConvert.DeserializeObject<TransferTurnDoneData>(data);
         var clientId = GetTree().GetRpcSenderId();
-
+        var lobbyId = PlayerLobbies[clientId];
+        
         this.serverLogic.PlayerMove(Games[lobbyId], clientId, turnData);
+
+        foreach (var playerGameOver in Games[lobbyId].PlayersGameOver)
+        {
+            if (PlayerLobbies.ContainsKey(playerGameOver.Key) && PlayerLobbies[playerGameOver.Key] == lobbyId)
+            {
+                PlayerLobbies.Remove(playerGameOver.Key);
+            }
+        }
 
         if (Games[lobbyId].Players.Count == 0)
         {
@@ -368,6 +456,13 @@ public class Communicator : Node
     {
         TransferTurnData turnData = JsonConvert.DeserializeObject<TransferTurnData>(data);
         this.main.TurnDone(turnData);
+    }
+
+    private void PlayerDisconnectedOnServer(int clientId)
+    {
+        var lobbyId = PlayerLobbies[clientId];
+
+        this.serverLogic.PlayerDisconnect(Games[lobbyId], clientId);
     }
 
     #endregion

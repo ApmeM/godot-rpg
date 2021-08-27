@@ -1,5 +1,6 @@
 using Godot;
 using IsometricGame.Logic.Models;
+using System;
 
 public class Main : Node
 {
@@ -51,12 +52,23 @@ public class Main : Node
         this.lobby.PlayerJoinedToLobby(playerName);
     }
 
-    public void GameStarted(string lobbyId)
+    public void PlayerLeftLobby(string playerName)
+    {
+        this.lobby.PlayerLeftLobby(playerName);
+    }
+
+    public void YouLeftLobby()
+    {
+        RemoveChild(this.lobby);
+        AddChild(this.menu);
+    }
+
+    public void GameStarted()
     {
         RemoveChild(this.lobby);
         AddChild(this.dungeon);
 
-        this.dungeon.NewGame(this.menu.SelectedTeam, lobbyId);
+        this.dungeon.NewGame(this.menu.SelectedTeam);
     }
 
     public async void TurnDone(TransferTurnData turnData)

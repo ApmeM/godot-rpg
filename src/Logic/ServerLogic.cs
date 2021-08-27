@@ -371,6 +371,16 @@ namespace IsometricGame.Logic
 			}
 		}
 
+		public void PlayerDisconnect(GameData gameData, int clientId)
+		{
+			foreach (var unit in gameData.Players[clientId].Units)
+            {
+				unit.Value.Hp = 0;
+            }
+
+			PlayerMove(gameData, clientId, emptyMoves);
+		}
+
 		private TransferInitialData GetInitialData(GameData gameData, int forPlayer)
 		{
 			return new TransferInitialData
@@ -459,7 +469,7 @@ namespace IsometricGame.Logic
 			};
 		}
 
-		private bool CheckGameOver(ServerPlayer player)
+        private bool CheckGameOver(ServerPlayer player)
 		{
 			return player.Units.All(unit => unit.Value.Hp <= 0);
 		}

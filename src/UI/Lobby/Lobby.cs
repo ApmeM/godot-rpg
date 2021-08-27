@@ -1,4 +1,5 @@
 using Godot;
+using System;
 
 public class Lobby : Container
 {
@@ -10,7 +11,6 @@ public class Lobby : Container
     private CheckBox fullMapCheckbox;
     private SpinBox turnTimeoutSpinBox;
     private CheckBox turnTimeoutCheckbox;
-    private string lobbyId;
 
     public override void _Ready()
     {
@@ -27,6 +27,7 @@ public class Lobby : Container
         this.turnTimeoutCheckbox.Connect("pressed", this, nameof(OnTurnTimeoutPressed));
         this.startButton.Connect("pressed", this, nameof(OnStartButtonPressed));
         this.addBotButton.Connect("pressed", this, nameof(OnAddBotButtonPressed));
+        this.GetNode<Button>("VBoxContainer/HBoxContainer/LeaveButton").Connect("pressed", this, nameof(OnLeaveButtonPressed));
     }
 
     private void OnTurnTimeoutPressed()
@@ -34,9 +35,14 @@ public class Lobby : Container
         this.turnTimeoutSpinBox.Visible = this.turnTimeoutCheckbox.Pressed;
     }
 
+    private void OnLeaveButtonPressed()
+    {
+        GetNode<Communicator>("/root/Communicator").LeaveLobby();
+    }
+    
     private void OnAddBotButtonPressed()
     {
-        GetNode<Communicator>("/root/Communicator").AddBot(lobbyId);
+        GetNode<Communicator>("/root/Communicator").AddBot();
     }
 
     public void PlayerJoinedToLobby(string playerName)
@@ -48,14 +54,30 @@ public class Lobby : Container
     {
         this.startButton.Visible = creator;
         this.addBotButton.Visible = creator;
-        this.lobbyId = lobbyId;
         this.captionLabel.Text = lobbyId;
+
+        foreach (Label child in this.playersList.GetChildren())
+        {
+            child.QueueFree();
+        }
+
         this.playersList.AddChild(new Label { Text = playerName });
+    }
+
+    public void PlayerLeftLobby(string playerName)
+    {
+        foreach (Label child in this.playersList.GetChildren())
+        {
+            if (child.Text == playerName)
+            {
+                child.QueueFree();
+            }
+        }
     }
 
     private void OnStartButtonPressed()
     {
-        GetNode<Communicator>("/root/Communicator").StartGame(this.lobbyId, 
+        GetNode<Communicator>("/root/Communicator").StartGame( 
             fullMapCheckbox.Pressed, 
             turnTimeoutCheckbox.Pressed,
             (float)turnTimeoutSpinBox.Value);

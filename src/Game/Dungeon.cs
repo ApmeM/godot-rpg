@@ -11,7 +11,6 @@ public class Dungeon : Node2D
 {
     private CurrentAction currentAction = CurrentAction.None;
     private Ability? currentAbility = null;
-    private string lobbyId;
     private float? Timeout;
     private float? MaxTimeout;
 
@@ -43,11 +42,10 @@ public class Dungeon : Node2D
         }
     }
 
-    public void NewGame(int selectedTeam, string lobbyId)
+    public void NewGame(int selectedTeam)
     {
-        this.lobbyId = lobbyId;
         var data = FileStorage.LoadTeams()[selectedTeam];
-        communicator.ConnectToServer(lobbyId, data);
+        communicator.ConnectToServer(data);
     }
 
     public void Initialize(TransferInitialData initialData)
@@ -241,9 +239,7 @@ public class Dungeon : Node2D
             })
         };
 
-
-        communicator.PlayerMoved(lobbyId, data);
-
+        communicator.PlayerMoved(data);
     }
 
     public async Task TurnDone(TransferTurnData turnData)
