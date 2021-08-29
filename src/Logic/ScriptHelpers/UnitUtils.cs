@@ -15,6 +15,7 @@ namespace IsometricGame.Logic.ScriptHelpers
         {
             { UnitType.Amazon, new AmazonUnitType() },
             { UnitType.Goatman, new GoatmanUnitType() },
+            { UnitType.Witch, new WitchUnitType() },
         };
 
         private static Dictionary<Skill, ISkill> SupportedSkills = new Dictionary<Skill, ISkill>

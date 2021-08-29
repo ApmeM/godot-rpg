@@ -3,6 +3,7 @@
     public enum UnitType
     {
         Amazon,
-        Goatman
+        Goatman,
+        Witch
     }
 }
