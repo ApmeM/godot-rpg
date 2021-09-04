@@ -89,7 +89,7 @@ public class Unit : Node2D
             }
         }
     }
-    
+
     private void UnitAnimationFinished()
     {
         var animation = GetNode<AnimatedSprite>("AnimatedSprite");
@@ -146,7 +146,7 @@ public class Unit : Node2D
             this.AnimateUnit("hit", Vector2.Up);
             return ToSignal(this, nameof(UnitAnimationDone));
         }
-        
+
         return ToSignal(GetTree().CreateTimer(0), "timeout");
     }
 
@@ -208,7 +208,7 @@ public class Unit : Node2D
                 await ToSignal(sceneTree.CreateTimer(0.5f), "timeout");
             }
         }
-        
+
         if (mpChanges != null)
         {
             foreach (var change in mpChanges)

@@ -1,5 +1,5 @@
 ﻿using IsometricGame.Logic.ScriptHelpers;
-using MazeGenerators;
+using MazeGenerators.Utils;
 using System;
 using System.Collections.Generic;
 
@@ -7,7 +7,7 @@ namespace IsometricGame.Logic.Models
 {
     public class GameData
     {
-		public RoomMazeGenerator.Result Map;
+        public GeneratorResult Map;
 		public VectorGridGraph Astar;
 		public readonly Dictionary<int, ServerPlayer> Players = new Dictionary<int, ServerPlayer>();
 		public readonly Dictionary<int, ServerPlayer> PlayersGameOver = new Dictionary<int, ServerPlayer>();

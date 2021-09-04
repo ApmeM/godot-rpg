@@ -5,9 +5,11 @@ using IsometricGame.Logic.Models;
 using IsometricGame.Logic.ScriptHelpers;
 using IsometricGame.Logic.ScriptHelpers.AppliedActions;
 using MazeGenerators;
+using MazeGenerators.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Vector2 = Godot.Vector2;
 
 namespace IsometricGame.Logic
 {
@@ -15,24 +17,39 @@ namespace IsometricGame.Logic
 	{
 		private static readonly TransferTurnDoneData emptyMoves = new TransferTurnDoneData();
 
+		public GeneratorResult Generate(GeneratorSettings settings)
+		{
+			var result = new GeneratorResult();
+			CommonAlgorithm.GenerateField(result, settings);
+            RoomGeneratorAlgorithm.AddRoom(result, settings, new Rectangle(1, 1, settings.Width - 2, settings.Height - 2));
+            RoomGeneratorAlgorithm.GenerateRooms(result, settings);
+			TreeMazeBuilderAlgorithm.GrowMaze(result, settings);
+			RegionConnectorAlgorithm.GenerateConnectors(result, settings);
+			MirroringAlgorithm.Mirror(result, settings);
+			DeadEndRemoverAlgorithm.RemoveDeadEnds(result, settings);
+			return result;
+		}
+
 		public GameData Start(ServerConfiguration configuration)
 		{
 			var result = new GameData();
-			var generator = new RoomMazeGenerator();
+
 			result.Configuration = configuration;
-			result.Map = generator.Generate(new RoomMazeGenerator.Settings
+			result.Map = Generate(new GeneratorSettings
 			{
-				Width = configuration.PlayersCount * 10 + 1,
-				Height = configuration.PlayersCount * 10 + 1,
+				Width = 17,
+				Height = 17,
 				MinRoomSize = 5,
 				MaxRoomSize = 9,
+				NumRoomTries = 1,
+				Mirror = GeneratorSettings.MirrorDirection.Rotate
 			});
 
-			result.Astar = new VectorGridGraph(result.Map.Regions.GetLength(0), result.Map.Regions.GetLength(1));
-			for (var x = 0; x < result.Map.Regions.GetLength(0); x++)
-				for (var y = 0; y < result.Map.Regions.GetLength(1); y++)
+			result.Astar = new VectorGridGraph(result.Map.Paths.GetLength(0), result.Map.Paths.GetLength(1));
+			for (var x = 0; x < result.Map.Paths.GetLength(0); x++)
+				for (var y = 0; y < result.Map.Paths.GetLength(1); y++)
 				{
-					if (result.Map.Regions[x, y].HasValue)
+					if (result.Map.Paths[x, y].HasValue)
 					{
 						result.Astar.Paths.Add(new Vector2(x, y));
 					}
@@ -200,6 +217,8 @@ namespace IsometricGame.Logic
 					{
 						continue;
 					}
+
+					GD.Print($"{actionUnit.Value.Position},{unitMove.Move.Value}");
 
 					var path = BreadthFirstPathfinder.Search(gameData.Astar, actionUnit.Value.Position, unitMove.Move.Value)
 						.Take(actionUnit.Value.MoveDistance + 1)
@@ -478,15 +497,15 @@ namespace IsometricGame.Logic
 		{
 			var player = gameData.Players[forPlayer];
 
-			var result = new MapTile[gameData.Map.Regions.GetLength(0), gameData.Map.Regions.GetLength(1)];
-			for (var x = 0; x < gameData.Map.Regions.GetLength(0); x++)
-				for (var y = 0; y < gameData.Map.Regions.GetLength(1); y++)
+			var result = new MapTile[gameData.Map.Paths.GetLength(0), gameData.Map.Paths.GetLength(1)];
+			for (var x = 0; x < gameData.Map.Paths.GetLength(0); x++)
+				for (var y = 0; y < gameData.Map.Paths.GetLength(1); y++)
 				{
 					if (!IsVisible(player, x, y) && (!gameData.Configuration.FullMapVisible || !isInitialize))
 					{
 						result[x, y] = MapTile.Unknown;
 					}
-					else if (gameData.Map.Regions[x, y].HasValue)
+					else if (gameData.Map.Paths[x, y].HasValue)
 					{
 						result[x, y] = MapTile.Path;
 					}

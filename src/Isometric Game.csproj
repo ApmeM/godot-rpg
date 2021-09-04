@@ -6,7 +6,7 @@
   <ItemGroup>
     <PackageReference Include="BrainAI" Version="2.3.0" />
     <PackageReference Include="FateRandom" Version="1.0.0" />
-    <PackageReference Include="MazeGenerators" Version="1.2.1" />
+    <PackageReference Include="MazeGenerators" Version="2.2.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 </Project>

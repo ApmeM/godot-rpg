@@ -39,7 +39,7 @@ public class Lobby : Container
     {
         GetNode<Communicator>("/root/Communicator").LeaveLobby();
     }
-    
+
     private void OnAddBotButtonPressed()
     {
         GetNode<Communicator>("/root/Communicator").AddBot();
@@ -77,8 +77,8 @@ public class Lobby : Container
 
     private void OnStartButtonPressed()
     {
-        GetNode<Communicator>("/root/Communicator").StartGame( 
-            fullMapCheckbox.Pressed, 
+        GetNode<Communicator>("/root/Communicator").StartGame(
+            fullMapCheckbox.Pressed,
             turnTimeoutCheckbox.Pressed,
             (float)turnTimeoutSpinBox.Value);
     }

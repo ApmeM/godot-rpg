@@ -75,7 +75,7 @@ playing = true
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
 scale = Vector2( 2, 2 )
 frames = ExtResource( 2 )
-animation = "moveRight"
+animation = "attackRight"
 offset = Vector2( -0.076355, -29.8558 )
 
 [node name="HpPopup" parent="." instance=ExtResource( 5 )]
