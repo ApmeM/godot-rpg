@@ -1,5 +1,6 @@
 using Godot;
 using IsometricGame.Logic;
+using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.Models;
 using IsometricGame.Logic.ScriptHelpers;
 using Newtonsoft.Json;
@@ -347,13 +348,13 @@ public class Communicator : Node
 
     #region Start game
 
-    public void StartGame(bool fullMapVisible, bool turnTimeoutEnaled, float turnTimeoutValue)
+    public void StartGame(bool fullMapVisible, bool turnTimeoutEnaled, float turnTimeoutValue, MapGeneratingType mapType)
     {
-        RpcId(1, nameof(StartGameOnServer), fullMapVisible, turnTimeoutEnaled, turnTimeoutValue);
+        RpcId(1, nameof(StartGameOnServer), fullMapVisible, turnTimeoutEnaled, turnTimeoutValue, (int)mapType);
     }
 
     [RemoteSync]
-    public void StartGameOnServer(bool fullMapVisible, bool turnTimeoutEnaled, float turnTimeoutValue)
+    public void StartGameOnServer(bool fullMapVisible, bool turnTimeoutEnaled, float turnTimeoutValue, int mapType)
     {
         var clientId = GetTree().GetRpcSenderId();
         var lobbyId = PlayerLobbies[clientId];
@@ -368,6 +369,7 @@ public class Communicator : Node
             FullMapVisible = fullMapVisible,
             TurnTimeout = turnTimeoutEnaled ? (float?)turnTimeoutValue : null,
             PlayersCount = lobbyData.Players.Count,
+            MapType = (MapGeneratingType)mapType
         });
 
         Lobbies.Remove(lobbyId);

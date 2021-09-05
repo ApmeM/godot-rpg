@@ -1,4 +1,6 @@
 using Godot;
+using IsometricGame.Logic.Enums;
+using IsometricGame.Logic.ScriptHelpers;
 using System;
 
 public class Lobby : Container
@@ -11,6 +13,7 @@ public class Lobby : Container
     private CheckBox fullMapCheckbox;
     private SpinBox turnTimeoutSpinBox;
     private CheckBox turnTimeoutCheckbox;
+    private OptionButton mapOptionButton;
 
     public override void _Ready()
     {
@@ -28,6 +31,12 @@ public class Lobby : Container
         this.startButton.Connect("pressed", this, nameof(OnStartButtonPressed));
         this.addBotButton.Connect("pressed", this, nameof(OnAddBotButtonPressed));
         this.GetNode<Button>("VBoxContainer/HBoxContainer/LeaveButton").Connect("pressed", this, nameof(OnLeaveButtonPressed));
+
+        this.mapOptionButton = GetNode<OptionButton>("VBoxContainer/HBoxContainer2/VBoxContainer2/MapOptionButton");
+        foreach (MapGeneratingType mapType in Enum.GetValues(typeof(MapGeneratingType)))
+        {
+            this.mapOptionButton.AddItem(mapType.ToString(), (int)mapType);
+        }
     }
 
     private void OnTurnTimeoutPressed()
@@ -80,6 +89,7 @@ public class Lobby : Container
         GetNode<Communicator>("/root/Communicator").StartGame(
             fullMapCheckbox.Pressed,
             turnTimeoutCheckbox.Pressed,
-            (float)turnTimeoutSpinBox.Value);
+            (float)turnTimeoutSpinBox.Value,
+            (MapGeneratingType)this.mapOptionButton.Selected);
     }
 }

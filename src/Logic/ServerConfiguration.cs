@@ -1,4 +1,6 @@
-﻿namespace IsometricGame.Logic
+﻿using IsometricGame.Logic.Enums;
+
+namespace IsometricGame.Logic
 {
     public class ServerConfiguration
     {
@@ -11,5 +13,6 @@
         public int PlayersCount = 2;
         public int MaxUnits = DefaultMaxUnits;
         public int MaxSkills = DefaultMaxSkills;
+        public MapGeneratingType MapType = MapGeneratingType.Random;
     }
 }

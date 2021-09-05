@@ -62,29 +62,54 @@ margin_right = 1014.0
 margin_bottom = 516.0
 size_flags_horizontal = 3
 
-[node name="ViewFullMapCheckbox" type="CheckBox" parent="VBoxContainer/HBoxContainer2/VBoxContainer2"]
+[node name="TurnTimeoutLabel" type="Label" parent="VBoxContainer/HBoxContainer2/VBoxContainer2"]
 margin_right = 505.0
-margin_bottom = 38.0
-pressed = true
-text = "View full map"
+margin_bottom = 63.0
+text = "
+Turn timeout"
 
 [node name="TurnTimeoutCheckbox" type="CheckBox" parent="VBoxContainer/HBoxContainer2/VBoxContainer2"]
-margin_top = 42.0
+margin_top = 67.0
 margin_right = 505.0
-margin_bottom = 80.0
+margin_bottom = 105.0
 pressed = true
-text = "With turn timeout"
+text = "Enabled"
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="TurnTimeoutLineEdit" type="SpinBox" parent="VBoxContainer/HBoxContainer2/VBoxContainer2"]
-margin_top = 84.0
+margin_top = 109.0
 margin_right = 505.0
-margin_bottom = 124.0
+margin_bottom = 149.0
 max_value = 300.0
 step = 10.0
 value = 60.0
 rounded = true
 prefix = "Turn timeout"
 suffix = "seconds"
+
+[node name="MapLabel" type="Label" parent="VBoxContainer/HBoxContainer2/VBoxContainer2"]
+margin_top = 153.0
+margin_right = 505.0
+margin_bottom = 216.0
+text = "
+Map"
+
+[node name="MapOptionButton" type="OptionButton" parent="VBoxContainer/HBoxContainer2/VBoxContainer2"]
+margin_top = 220.0
+margin_right = 505.0
+margin_bottom = 256.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ViewFullMapCheckbox" type="CheckBox" parent="VBoxContainer/HBoxContainer2/VBoxContainer2"]
+margin_top = 260.0
+margin_right = 505.0
+margin_bottom = 298.0
+pressed = true
+text = "View full map"
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
 margin_top = 554.0

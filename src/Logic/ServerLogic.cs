@@ -17,35 +17,15 @@ namespace IsometricGame.Logic
 	{
 		private static readonly TransferTurnDoneData emptyMoves = new TransferTurnDoneData();
 
-		public GeneratorResult Generate(GeneratorSettings settings)
-		{
-			var result = new GeneratorResult();
-			CommonAlgorithm.GenerateField(result, settings);
-            RoomGeneratorAlgorithm.AddRoom(result, settings, new Rectangle(1, 1, settings.Width - 2, settings.Height - 2));
-            RoomGeneratorAlgorithm.GenerateRooms(result, settings);
-			TreeMazeBuilderAlgorithm.GrowMaze(result, settings);
-			RegionConnectorAlgorithm.GenerateConnectors(result, settings);
-			MirroringAlgorithm.Mirror(result, settings);
-			DeadEndRemoverAlgorithm.RemoveDeadEnds(result, settings);
-			return result;
-		}
-
 		public GameData Start(ServerConfiguration configuration)
 		{
-			var result = new GameData();
+            var result = new GameData
+            {
+                Configuration = configuration,
+                Map = MapUtils.GetMap(configuration.MapType)
+            };
 
-			result.Configuration = configuration;
-			result.Map = Generate(new GeneratorSettings
-			{
-				Width = 17,
-				Height = 17,
-				MinRoomSize = 5,
-				MaxRoomSize = 9,
-				NumRoomTries = 1,
-				Mirror = GeneratorSettings.MirrorDirection.Rotate
-			});
-
-			result.Astar = new VectorGridGraph(result.Map.Paths.GetLength(0), result.Map.Paths.GetLength(1));
+            result.Astar = new VectorGridGraph(result.Map.Paths.GetLength(0), result.Map.Paths.GetLength(1));
 			for (var x = 0; x < result.Map.Paths.GetLength(0); x++)
 				for (var y = 0; y < result.Map.Paths.GetLength(1); y++)
 				{
