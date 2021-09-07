@@ -253,6 +253,7 @@ public class Communicator : Node
         if (clientId != BotId)
         {
             RpcId(clientId, nameof(YouJoinedToLobby), clientId == lobbyData.Creator, lobbyId, playerName);
+            RpcId(clientId, nameof(ConfigSynced), lobbyData.ServerConfiguration.FullMapVisible, lobbyData.ServerConfiguration.TurnTimeout == null, lobbyData.ServerConfiguration.TurnTimeout ?? ServerConfiguration.DefaultTurnTimeout, (int)lobbyData.ServerConfiguration.MapType);
         }
 
         foreach (var player in lobbyData.Players)
@@ -344,17 +345,14 @@ public class Communicator : Node
         this.main.YouJoinedToLobby(creator, lobbyId, playerName);
     }
 
-    #endregion
-
-    #region Start game
-
-    public void StartGame(bool fullMapVisible, bool turnTimeoutEnaled, float turnTimeoutValue, MapGeneratingType mapType)
+    public void SyncConfig(bool fullMapVisible, bool turnTimeoutEnaled, float turnTimeoutValue, MapGeneratingType mapType)
     {
-        RpcId(1, nameof(StartGameOnServer), fullMapVisible, turnTimeoutEnaled, turnTimeoutValue, (int)mapType);
+        RpcId(1, nameof(SyncConfigOnServer), fullMapVisible, turnTimeoutEnaled, turnTimeoutValue, (int)mapType);
     }
 
+
     [RemoteSync]
-    public void StartGameOnServer(bool fullMapVisible, bool turnTimeoutEnaled, float turnTimeoutValue, int mapType)
+    private void SyncConfigOnServer(bool fullMapVisible, bool turnTimeoutEnaled, float turnTimeoutValue, int mapType)
     {
         var clientId = GetTree().GetRpcSenderId();
         var lobbyId = PlayerLobbies[clientId];
@@ -364,13 +362,56 @@ public class Communicator : Node
             return;
         }
 
-        var game = this.serverLogic.Start(new ServerConfiguration
+        lobbyData.ServerConfiguration.FullMapVisible = fullMapVisible;
+        lobbyData.ServerConfiguration.TurnTimeout = turnTimeoutEnaled ? (float?)turnTimeoutValue : null;
+        lobbyData.ServerConfiguration.PlayersCount = lobbyData.Players.Count;
+        lobbyData.ServerConfiguration.MapType = (MapGeneratingType)mapType;
+
+        SendAllNewConfig(clientId);
+    }
+
+    private void SendAllNewConfig(int clientId)
+    {
+        var lobbyId = PlayerLobbies[clientId];
+        var lobbyData = Lobbies[lobbyId];
+        foreach (var player in lobbyData.Players)
         {
-            FullMapVisible = fullMapVisible,
-            TurnTimeout = turnTimeoutEnaled ? (float?)turnTimeoutValue : null,
-            PlayersCount = lobbyData.Players.Count,
-            MapType = (MapGeneratingType)mapType
-        });
+            if (player.ClientId == BotId)
+            {
+                continue;
+            }
+
+            RpcId(player.ClientId, nameof(ConfigSynced), lobbyData.ServerConfiguration.FullMapVisible, lobbyData.ServerConfiguration.TurnTimeout != null, lobbyData.ServerConfiguration.TurnTimeout ?? ServerConfiguration.DefaultTurnTimeout, (int)lobbyData.ServerConfiguration.MapType);
+        }
+    }
+
+    [RemoteSync]
+    private void ConfigSynced(bool fullMapVisible, bool turnTimeoutEnaled, float turnTimeoutValue, int mapType)
+    {
+        this.main.ConfigSynced(fullMapVisible, turnTimeoutEnaled, turnTimeoutValue, (MapGeneratingType)mapType);
+    }
+
+    #endregion
+
+    #region Start game
+
+    public void StartGame()
+    {
+        RpcId(1, nameof(StartGameOnServer));
+    }
+
+    [RemoteSync]
+    public void StartGameOnServer()
+    {
+        var clientId = GetTree().GetRpcSenderId();
+        var lobbyId = PlayerLobbies[clientId];
+        var lobbyData = Lobbies[lobbyId];
+        if (lobbyData.Creator != clientId)
+        {
+            return;
+        }
+
+        var game = this.serverLogic.Start(lobbyData.ServerConfiguration);
 
         Lobbies.Remove(lobbyId);
         Games.Add(lobbyId, game);

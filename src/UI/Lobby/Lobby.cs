@@ -1,6 +1,5 @@
 using Godot;
 using IsometricGame.Logic.Enums;
-using IsometricGame.Logic.ScriptHelpers;
 using System;
 
 public class Lobby : Container
@@ -14,6 +13,7 @@ public class Lobby : Container
     private SpinBox turnTimeoutSpinBox;
     private CheckBox turnTimeoutCheckbox;
     private OptionButton mapOptionButton;
+    private Communicator communicator;
 
     public override void _Ready()
     {
@@ -26,32 +26,57 @@ public class Lobby : Container
         this.fullMapCheckbox = settingsContainer.GetNode<CheckBox>("ViewFullMapCheckbox");
         this.turnTimeoutSpinBox = settingsContainer.GetNode<SpinBox>("TurnTimeoutLineEdit");
         this.turnTimeoutCheckbox = settingsContainer.GetNode<CheckBox>("TurnTimeoutCheckbox");
-
-        this.turnTimeoutCheckbox.Connect("pressed", this, nameof(OnTurnTimeoutPressed));
-        this.startButton.Connect("pressed", this, nameof(OnStartButtonPressed));
-        this.addBotButton.Connect("pressed", this, nameof(OnAddBotButtonPressed));
-        this.GetNode<Button>("VBoxContainer/HBoxContainer/LeaveButton").Connect("pressed", this, nameof(OnLeaveButtonPressed));
-
         this.mapOptionButton = GetNode<OptionButton>("VBoxContainer/HBoxContainer2/VBoxContainer2/MapOptionButton");
         foreach (MapGeneratingType mapType in Enum.GetValues(typeof(MapGeneratingType)))
         {
             this.mapOptionButton.AddItem(mapType.ToString(), (int)mapType);
         }
+
+        this.communicator = GetNode<Communicator>("/root/Communicator");
+
+        this.turnTimeoutCheckbox.Connect("toggled", this, nameof(OnTurnTimeoutToggled));
+        this.turnTimeoutCheckbox.Connect("toggled", this, nameof(OnSettingsChangedTurnTimeoutToggled));
+        this.fullMapCheckbox.Connect("toggled", this, nameof(OnSettingsChangedFullMapToggled));
+        this.turnTimeoutSpinBox.Connect("value_changed", this, nameof(OnSettingsChangedTurnTimeoutValueChanged));
+        this.mapOptionButton.Connect("item_selected", this, nameof(OnSettingsChangedMapItemSelected));
+        this.startButton.Connect("pressed", this, nameof(OnStartButtonPressed));
+        this.addBotButton.Connect("pressed", this, nameof(OnAddBotButtonPressed));
+        this.GetNode<Button>("VBoxContainer/HBoxContainer/LeaveButton").Connect("pressed", this, nameof(OnLeaveButtonPressed));
     }
 
-    private void OnTurnTimeoutPressed()
+    private void OnTurnTimeoutToggled(bool state)
     {
-        this.turnTimeoutSpinBox.Visible = this.turnTimeoutCheckbox.Pressed;
+        this.turnTimeoutSpinBox.Visible = state;
+    }
+
+    private void OnSettingsChangedTurnTimeoutToggled(bool state)
+    {
+        this.OnSettingsChange();
+    }
+
+    private void OnSettingsChangedFullMapToggled(bool state)
+    {
+        this.OnSettingsChange();
+    }
+
+    private void OnSettingsChangedTurnTimeoutValueChanged(float state)
+    {
+        this.OnSettingsChange();
+    }
+
+    private void OnSettingsChangedMapItemSelected(int state)
+    {
+        this.OnSettingsChange();
     }
 
     private void OnLeaveButtonPressed()
     {
-        GetNode<Communicator>("/root/Communicator").LeaveLobby();
+        this.communicator.LeaveLobby();
     }
 
     private void OnAddBotButtonPressed()
     {
-        GetNode<Communicator>("/root/Communicator").AddBot();
+        this.communicator.AddBot();
     }
 
     public void PlayerJoinedToLobby(string playerName)
@@ -64,6 +89,11 @@ public class Lobby : Container
         this.startButton.Visible = creator;
         this.addBotButton.Visible = creator;
         this.captionLabel.Text = lobbyId;
+
+        this.fullMapCheckbox.Disabled = !creator;
+        this.turnTimeoutCheckbox.Disabled = !creator;
+        this.turnTimeoutSpinBox.Editable = creator;
+        this.mapOptionButton.Disabled = !creator;
 
         foreach (Label child in this.playersList.GetChildren())
         {
@@ -86,10 +116,33 @@ public class Lobby : Container
 
     private void OnStartButtonPressed()
     {
-        GetNode<Communicator>("/root/Communicator").StartGame(
+        this.communicator.StartGame();
+    }
+
+    private void OnSettingsChange()
+    {
+        this.communicator.SyncConfig(
             fullMapCheckbox.Pressed,
             turnTimeoutCheckbox.Pressed,
             (float)turnTimeoutSpinBox.Value,
             (MapGeneratingType)this.mapOptionButton.Selected);
+    }
+
+    public void ConfigSynced(bool fullMapVisible, bool turnTimeoutEnaled, float turnTimeoutValue, MapGeneratingType mapType)
+    {
+        this.turnTimeoutCheckbox.Disconnect("toggled", this, nameof(OnSettingsChangedTurnTimeoutToggled));
+        this.fullMapCheckbox.Disconnect("toggled", this, nameof(OnSettingsChangedFullMapToggled));
+        this.turnTimeoutSpinBox.Disconnect("value_changed", this, nameof(OnSettingsChangedTurnTimeoutValueChanged));
+        this.mapOptionButton.Disconnect("item_selected", this, nameof(OnSettingsChangedMapItemSelected));
+
+        this.fullMapCheckbox.Pressed = fullMapVisible;
+        this.turnTimeoutCheckbox.Pressed = turnTimeoutEnaled;
+        this.turnTimeoutSpinBox.Value = turnTimeoutValue;
+        this.mapOptionButton.Selected = (int)mapType;
+
+        this.turnTimeoutCheckbox.Connect("toggled", this, nameof(OnSettingsChangedTurnTimeoutToggled));
+        this.fullMapCheckbox.Connect("toggled", this, nameof(OnSettingsChangedFullMapToggled));
+        this.turnTimeoutSpinBox.Connect("value_changed", this, nameof(OnSettingsChangedTurnTimeoutValueChanged));
+        this.mapOptionButton.Connect("item_selected", this, nameof(OnSettingsChangedMapItemSelected));
     }
 }

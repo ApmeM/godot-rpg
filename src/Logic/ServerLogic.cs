@@ -198,8 +198,6 @@ namespace IsometricGame.Logic
 						continue;
 					}
 
-					GD.Print($"{actionUnit.Value.Position},{unitMove.Move.Value}");
-
 					var path = BreadthFirstPathfinder.Search(gameData.Astar, actionUnit.Value.Position, unitMove.Move.Value)
 						.Take(actionUnit.Value.MoveDistance + 1)
 						.ToList();

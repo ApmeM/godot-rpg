@@ -6,7 +6,8 @@ namespace IsometricGame.Logic.Models
     {
         public List<PlayerData> Players = new List<PlayerData>();
         public int Creator;
-        
+        public ServerConfiguration ServerConfiguration = new ServerConfiguration();
+
         public class PlayerData
         {
             public int ClientId;

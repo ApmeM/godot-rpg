@@ -1,4 +1,5 @@
 using Godot;
+using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.Models;
 using System;
 
@@ -82,8 +83,13 @@ public class Main : Node
         }
     }
 
-    internal void Initialize(TransferInitialData initialData)
+    public void Initialize(TransferInitialData initialData)
     {
         this.dungeon.Initialize(initialData);
+    }
+
+    public void ConfigSynced(bool fullMapVisible, bool turnTimeoutEnaled, float turnTimeoutValue, MapGeneratingType mapType)
+    {
+        this.lobby.ConfigSynced(fullMapVisible, turnTimeoutEnaled, turnTimeoutValue, mapType);
     }
 }
