@@ -445,7 +445,7 @@ namespace IsometricGame.Logic
 					};
 				}),
 				VisibleMap = this.GetVisibleMap(gameData, forPlayer, false),
-				OtherPlayers = gameData.Players.Where(a => a.Key != forPlayer).ToDictionary(a => a.Key, a => new TransferTurnData.OtherPlayersData
+				OtherPlayers = gameData.Players.Concat(gameData.PlayersGameOver).Where(a => a.Key != forPlayer).ToDictionary(a => a.Key, a => new TransferTurnData.OtherPlayersData
 				{
 					Units = a.Value.Units.Where(b => IsVisible(player, (int)b.Value.Position.x, (int)b.Value.Position.y)).ToDictionary(b => b.Key, b =>
 					{
@@ -529,14 +529,10 @@ namespace IsometricGame.Logic
 			}
 
 			gameData.Timeout = gameData.Configuration.TurnTimeout;
-			foreach (var player in gameData.Players)
+            var forcePlayerMove = gameData.Players.Keys.Where(player => !gameData.PlayersMove.ContainsKey(player)).ToList();
+            foreach (var player in forcePlayerMove)
 			{
-				if (gameData.PlayersMove.ContainsKey(player.Key))
-				{
-					continue;
-				}
-
-				this.PlayerMove(gameData, player.Key, emptyMoves);
+				this.PlayerMove(gameData, player, emptyMoves);
 			}
 		}
 	}

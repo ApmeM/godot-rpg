@@ -84,7 +84,7 @@ public class Maze : TileMap
         var mouse = floor.GetGlobalMousePosition();
         var cell = floor.WorldToMap(mouse);
 
-        if (floor.GetCellv(cell) > 0)
+        if (floor.GetCellv(cell) >= 0)
         {
             BeginHighliting(HighliteType.HighlitedMove);
             HighlitePoint(cell);

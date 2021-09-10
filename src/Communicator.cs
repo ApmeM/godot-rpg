@@ -253,7 +253,7 @@ public class Communicator : Node
         if (clientId != BotId)
         {
             RpcId(clientId, nameof(YouJoinedToLobby), clientId == lobbyData.Creator, lobbyId, playerName);
-            RpcId(clientId, nameof(ConfigSynced), lobbyData.ServerConfiguration.FullMapVisible, lobbyData.ServerConfiguration.TurnTimeout == null, lobbyData.ServerConfiguration.TurnTimeout ?? ServerConfiguration.DefaultTurnTimeout, (int)lobbyData.ServerConfiguration.MapType);
+            RpcId(clientId, nameof(ConfigSynced), lobbyData.ServerConfiguration.FullMapVisible, lobbyData.ServerConfiguration.TurnTimeout != null, lobbyData.ServerConfiguration.TurnTimeout ?? ServerConfiguration.DefaultTurnTimeout, (int)lobbyData.ServerConfiguration.MapType);
         }
 
         foreach (var player in lobbyData.Players)
