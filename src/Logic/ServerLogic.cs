@@ -4,8 +4,6 @@ using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.Models;
 using IsometricGame.Logic.ScriptHelpers;
 using IsometricGame.Logic.ScriptHelpers.AppliedActions;
-using MazeGenerators;
-using MazeGenerators.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,19 +17,25 @@ namespace IsometricGame.Logic
 
 		public GameData Start(ServerConfiguration configuration)
 		{
-            var result = new GameData
-            {
-                Configuration = configuration,
-                Map = MapUtils.GetMap(configuration.MapType)
-            };
+			var result = new GameData
+			{
+				Configuration = configuration,
+				Map = MapUtils.GetMap(configuration.MapType)
+			};
 
-            result.Astar = new VectorGridGraph(result.Map.Paths.GetLength(0), result.Map.Paths.GetLength(1));
+			result.Astar = new VectorGridGraph(result.Map.Paths.GetLength(0), result.Map.Paths.GetLength(1));
 			for (var x = 0; x < result.Map.Paths.GetLength(0); x++)
 				for (var y = 0; y < result.Map.Paths.GetLength(1); y++)
 				{
-					if (result.Map.Paths[x, y].HasValue)
+					switch(result.Map.Paths[x, y])
 					{
-						result.Astar.Paths.Add(new Vector2(x, y));
+						case MapUtils.JunctionTileId:
+						case MapUtils.MazeTileId:
+						case MapUtils.RoomTileId:
+							{
+								result.Astar.Paths.Add(new Vector2(x, y));
+								break;
+							}
 					}
 				}
 
@@ -40,7 +44,7 @@ namespace IsometricGame.Logic
 
 		public void Connect(
 			GameData gameData,
-			int playerId, 
+			int playerId,
 			TransferConnectData connectData,
 			Action<TransferInitialData> initialize,
 			Action<TransferTurnData> turnDone)
@@ -178,7 +182,6 @@ namespace IsometricGame.Logic
 					{
 						continue;
 					}
-
 
 					var targetFullId = UnitUtils.GetFullUnitId(actionUnit.Value);
 					var targetDelta = unitsTurnDelta[targetFullId];
@@ -371,9 +374,9 @@ namespace IsometricGame.Logic
 		public void PlayerDisconnect(GameData gameData, int clientId)
 		{
 			foreach (var unit in gameData.Players[clientId].Units)
-            {
+			{
 				unit.Value.Hp = 0;
-            }
+			}
 
 			PlayerMove(gameData, clientId, emptyMoves);
 		}
@@ -466,7 +469,7 @@ namespace IsometricGame.Logic
 			};
 		}
 
-        private bool CheckGameOver(ServerPlayer player)
+		private bool CheckGameOver(ServerPlayer player)
 		{
 			return player.Units.All(unit => unit.Value.Hp <= 0);
 		}
@@ -483,13 +486,28 @@ namespace IsometricGame.Logic
 					{
 						result[x, y] = MapTile.Unknown;
 					}
-					else if (gameData.Map.Paths[x, y].HasValue)
-					{
-						result[x, y] = MapTile.Path;
-					}
 					else
 					{
-						result[x, y] = MapTile.Wall;
+						switch (gameData.Map.Paths[x, y])
+						{
+							case MapUtils.JunctionTileId:
+							case MapUtils.MazeTileId:
+							case MapUtils.RoomTileId:
+								{
+									result[x, y] = MapTile.Path;
+									break;
+								}
+							case MapUtils.WallTileId:
+								{
+									result[x, y] = MapTile.Wall;
+									break;
+								}
+							case MapUtils.EmptyTileId:
+								{
+									result[x, y] = MapTile.Unknown;
+									break;
+								}
+						}
 					}
 				}
 
@@ -529,8 +547,8 @@ namespace IsometricGame.Logic
 			}
 
 			gameData.Timeout = gameData.Configuration.TurnTimeout;
-            var forcePlayerMove = gameData.Players.Keys.Where(player => !gameData.PlayersMove.ContainsKey(player)).ToList();
-            foreach (var player in forcePlayerMove)
+			var forcePlayerMove = gameData.Players.Keys.Where(player => !gameData.PlayersMove.ContainsKey(player)).ToList();
+			foreach (var player in forcePlayerMove)
 			{
 				this.PlayerMove(gameData, player, emptyMoves);
 			}

@@ -3,6 +3,7 @@
     public enum MapGeneratingType
     {
         Arena,
-        Random
+        Random,
+        Random2
     }
 }
