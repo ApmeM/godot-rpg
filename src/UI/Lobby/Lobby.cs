@@ -76,7 +76,7 @@ public class Lobby : Container
 
     private void OnAddBotButtonPressed()
     {
-        this.communicator.AddBot();
+        this.communicator.AddBot(Bot.Easy);
     }
 
     public void PlayerJoinedToLobby(string playerName)

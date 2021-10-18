@@ -1,7 +1,8 @@
 using Godot;
 using Godot.Collections;
 using IsometricGame.Logic;
-using IsometricGame.Logic.ScriptHelpers;
+using IsometricGame.Logic.Utils;
+using IsometricGame.Repository;
 using System.Collections.Generic;
 
 public class TeamSelect : Container
@@ -19,10 +20,13 @@ public class TeamSelect : Container
     private LineEdit teamDescription;
     private TeamSelector chooseTeamOptionButton;
     private Button addNewUnitButton;
+    private TeamsRepository teamsRepository;
 
     public override void _Ready()
     {
         base._Ready();
+        this.teamsRepository = DependencyInjector.teamsRepository;
+
         this.GetNode<Button>("ContentContainer/ButtonsContainer/SaveButton").Connect("pressed", this, nameof(OnSaveButtonPressed));
         this.GetNode<Button>("ContentContainer/ButtonsContainer/ResetButton").Connect("pressed", this, nameof(OnResetButtonPressed));
         this.GetNode<Button>("ContentContainer/TeamContainer/AddNewTeamButton").Connect("pressed", this, nameof(OnAddNewTeamButtonPressed));
@@ -97,13 +101,13 @@ public class TeamSelect : Container
 
     public void OnSaveButtonPressed()
     {
-        FileStorage.SaveTeams(Teams);
+        this.teamsRepository.SaveTeams(Teams);
         EmitSignal(nameof(TeamsUpdated));
     }
 
     public void OnResetButtonPressed()
     {
-        this.Teams = FileStorage.LoadTeams();
+        this.Teams = this.teamsRepository.LoadTeams();
         chooseTeamOptionButton.Refresh(this.Teams);
 
         ItemSelected(0);

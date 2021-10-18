@@ -3,6 +3,7 @@ using IsometricGame.Logic;
 using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.Models;
 using IsometricGame.Logic.ScriptHelpers;
+using IsometricGame.Logic.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,10 +20,20 @@ public class TeamSelectUnit : VBoxContainer
     private OptionButton unitTypeCombo;
     private WindowDialog windowDialog;
     private Container availableSkillsContainer;
+    
+    private readonly UnitUtils unitUtils;
+    private readonly PluginUtils pluginUtils;
+
+    public TeamSelectUnit()
+    {
+        this.unitUtils = DependencyInjector.unitUtils;
+        this.pluginUtils = DependencyInjector.pluginUtils;
+    }
 
     public override void _Ready()
     {
         base._Ready();
+
         this.GetNode<Button>("ManageSkillsButton").Connect("pressed", this, nameof(ManageSkillButtonPressed));
 
         maxHpLabel = GetNode<Label>("MaxHP");
@@ -55,7 +66,7 @@ public class TeamSelectUnit : VBoxContainer
                 Expand = true,
                 StretchMode = TextureButton.StretchModeEnum.KeepAspect,
                 RectMinSize = Vector2.One * 50,
-                HintTooltip = UnitUtils.FindSkill((Skill)unitSkill).Description
+                HintTooltip = this.pluginUtils.FindSkill((Skill)unitSkill).Description
             };
 
             skillNode.Connect("pressed", this, nameof(AddSkillButtonPressed), new Godot.Collections.Array { unitSkill });
@@ -95,7 +106,7 @@ public class TeamSelectUnit : VBoxContainer
             Expand = true,
             StretchMode = TextureButton.StretchModeEnum.KeepAspect,
             RectMinSize = Vector2.One * 50,
-            HintTooltip = UnitUtils.FindSkill((Skill)unitSkill).Description
+            HintTooltip = this.pluginUtils.FindSkill((Skill)unitSkill).Description
         };
         skillNode.Connect("pressed", this, nameof(RemoveSkillButtonPressed), new Godot.Collections.Array { skillNode });
         skillsContainer.AddChild(skillNode);
@@ -139,7 +150,7 @@ public class TeamSelectUnit : VBoxContainer
 
     private void UpdateUnitDetails()
     {
-        var unit = UnitUtils.BuildUnit(new ServerPlayer(), this.Unit.UnitType, this.Unit.Skills);
+        var unit = this.unitUtils.BuildUnit(new ServerPlayer(), this.Unit.UnitType, this.Unit.Skills);
 
         maxHpLabel.Text = "MaxHP " + unit?.MaxHp.ToString() ?? "unknown";
         moveRangeLabel.Text = "Speed " + unit?.MoveDistance.ToString() ?? "unknown";
@@ -154,7 +165,7 @@ public class TeamSelectUnit : VBoxContainer
                 Expand = true,
                 StretchMode = TextureRect.StretchModeEnum.KeepAspect,
                 RectMinSize = Vector2.One * 50,
-                HintTooltip = UnitUtils.FindAbility(ability).Description
+                HintTooltip = this.pluginUtils.FindAbility(ability).Description
             };
 
             abilityContainer.AddChild(abilityNode);

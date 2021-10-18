@@ -7,6 +7,8 @@ namespace IsometricGame.Logic.Models
 {
     public class GameData
     {
+        public string Id { get; private set; }
+
         public GeneratorResult Map;
 		public VectorGridGraph Astar;
 		public readonly Dictionary<int, ServerPlayer> Players = new Dictionary<int, ServerPlayer>();
@@ -15,7 +17,10 @@ namespace IsometricGame.Logic.Models
 		
 		public ServerConfiguration Configuration;
 		public float? Timeout;
-		public readonly Dictionary<int, Action<TransferInitialData>> InitializeMethods = new Dictionary<int, Action<TransferInitialData>>();
-        public readonly Dictionary<int, Action<TransferTurnData>> TurnDoneMethods = new Dictionary<int, Action<TransferTurnData>>();
-	}
+
+        public GameData(string id)
+        {
+            this.Id = id;
+        }
+    }
 }

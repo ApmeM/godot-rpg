@@ -1,5 +1,6 @@
 using Godot;
-using IsometricGame.Logic.ScriptHelpers;
+using IsometricGame.Logic.Utils;
+using IsometricGame.Repository;
 
 public class Menu : Container
 {
@@ -11,6 +12,8 @@ public class Menu : Container
     private LineEdit loginText;
     private LineEdit serverText;
     private LineEdit passwordText;
+    private TeamsRepository teamsRepository;
+    private AccountRepository accountRepository;
     private Button serverButton;
     private Button clientButton;
     private Label serverLabel;
@@ -21,6 +24,8 @@ public class Menu : Container
     public override void _Ready()
     {
         base._Ready();
+        this.teamsRepository = DependencyInjector.teamsRepository;
+        this.accountRepository = DependencyInjector.accountRepository;
         this.serverButton = this.GetNode<Button>("VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/ServerButton");
         this.clientButton = this.GetNode<Button>("VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/ClientButton");
         this.serverLabel = this.GetNode<Label>("VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/ServerLabel");
@@ -50,9 +55,9 @@ public class Menu : Container
             this.serverLabel.Visible = false;
         }
 
-        this.teamSelector.Refresh(FileStorage.LoadTeams());
+        this.teamSelector.Refresh(this.teamsRepository.LoadTeams());
 
-        var login = FileStorage.LoadLogin();
+        var login = this.accountRepository.LoadLogin();
         if (string.IsNullOrWhiteSpace(login))
         {
             this.loginText.GrabFocus();
@@ -73,7 +78,7 @@ public class Menu : Container
         this.onlineTabs.CurrentTab = 1;
         if (!string.IsNullOrWhiteSpace(this.loginText.Text))
         {
-            FileStorage.SaveLogin(this.loginText.Text);
+            this.accountRepository.SaveLogin(this.loginText.Text);
         }
     }
 

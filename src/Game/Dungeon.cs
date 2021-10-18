@@ -3,6 +3,8 @@ using IsometricGame.Logic;
 using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.Models;
 using IsometricGame.Logic.ScriptHelpers;
+using IsometricGame.Logic.Utils;
+using IsometricGame.Repository;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,8 +22,15 @@ public class Dungeon : Node2D
     private Button nextTurnButton;
     private Communicator communicator;
 
+    private TeamsRepository teamsRepository;
+    private PluginUtils pluginUtils;
+
     public override void _Ready()
     {
+        base._Ready();
+        this.teamsRepository = DependencyInjector.teamsRepository;
+        this.pluginUtils = DependencyInjector.pluginUtils;
+        
         GetNode<UnitActions>("UnitActions").Connect(nameof(UnitActions.ActionSelected), this, nameof(UnitActionSelected));
 
         nextTurnButton = GetNode<Button>("CanvasLayer/NextTurnButton");
@@ -44,7 +53,7 @@ public class Dungeon : Node2D
 
     public void NewGame(int selectedTeam)
     {
-        var data = FileStorage.LoadTeams()[selectedTeam];
+        var data = this.teamsRepository.LoadTeams()[selectedTeam];
         communicator.ConnectToServer(data);
     }
 
@@ -78,7 +87,7 @@ public class Dungeon : Node2D
                 Hp = unit.MaxHp,
                 MaxMp = unit.MaxMp,
                 Mp = unit.MaxMp,
-                Abilities = unit.Abilities.ToDictionary(a => a, a => UnitUtils.FindAbility(a)),
+                Abilities = unit.Abilities.ToDictionary(a => a, a => this.pluginUtils.FindAbility(a)),
                 Skills = unit.Skills.ToHashSet()
             };
             unitSceneInstance.Position = maze.MapToWorld(unit.Position);
@@ -130,7 +139,7 @@ public class Dungeon : Node2D
                 {
                     this.currentAbility = ability;
                     var pos = currentUnit.NewPosition == null ? maze.WorldToMap(currentUnit.Position) : currentUnit.NewPosition.Value;
-                    UnitUtils.FindAbility(ability).HighliteMaze(maze, pos, currentUnit.ClientUnit);
+                    this.pluginUtils.FindAbility(ability).HighliteMaze(maze, pos, currentUnit.ClientUnit);
                     break;
                 }
         }
@@ -193,7 +202,7 @@ public class Dungeon : Node2D
                 {
                     if (moveAvailable)
                     {
-                        var ability = UnitUtils.FindAbility(currentAbility.Value);
+                        var ability = this.pluginUtils.FindAbility(currentAbility.Value);
 
                         this.currentAction = CurrentAction.None;
                         Unit target = null;

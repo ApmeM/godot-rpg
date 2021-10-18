@@ -1,12 +1,18 @@
-﻿Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Isometric Game", "Isometric Game.csproj", "{39B70584-4BA8-4E16-A291-773345B2376B}"
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31019.35
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Isometric Game", "Isometric Game.csproj", "{39B70584-4BA8-4E16-A291-773345B2376B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Isometric Game.Tests", "..\test\Isometric Game.Tests.csproj", "{434E31EC-4233-442D-9FE7-B76E9D46E1C6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-	Debug|Any CPU = Debug|Any CPU
-	ExportDebug|Any CPU = ExportDebug|Any CPU
-	ExportRelease|Any CPU = ExportRelease|Any CPU
+		Debug|Any CPU = Debug|Any CPU
+		ExportDebug|Any CPU = ExportDebug|Any CPU
+		ExportRelease|Any CPU = ExportRelease|Any CPU
+		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{39B70584-4BA8-4E16-A291-773345B2376B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -15,5 +21,21 @@ Global
 		{39B70584-4BA8-4E16-A291-773345B2376B}.ExportDebug|Any CPU.Build.0 = ExportDebug|Any CPU
 		{39B70584-4BA8-4E16-A291-773345B2376B}.ExportRelease|Any CPU.ActiveCfg = ExportRelease|Any CPU
 		{39B70584-4BA8-4E16-A291-773345B2376B}.ExportRelease|Any CPU.Build.0 = ExportRelease|Any CPU
+		{39B70584-4BA8-4E16-A291-773345B2376B}.Release|Any CPU.ActiveCfg = ExportRelease|Any CPU
+		{39B70584-4BA8-4E16-A291-773345B2376B}.Release|Any CPU.Build.0 = ExportRelease|Any CPU
+		{434E31EC-4233-442D-9FE7-B76E9D46E1C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{434E31EC-4233-442D-9FE7-B76E9D46E1C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{434E31EC-4233-442D-9FE7-B76E9D46E1C6}.ExportDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{434E31EC-4233-442D-9FE7-B76E9D46E1C6}.ExportDebug|Any CPU.Build.0 = Debug|Any CPU
+		{434E31EC-4233-442D-9FE7-B76E9D46E1C6}.ExportRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{434E31EC-4233-442D-9FE7-B76E9D46E1C6}.ExportRelease|Any CPU.Build.0 = Release|Any CPU
+		{434E31EC-4233-442D-9FE7-B76E9D46E1C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{434E31EC-4233-442D-9FE7-B76E9D46E1C6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B9BD12E0-B46D-4ECF-9167-1C999366F1BB}
 	EndGlobalSection
 EndGlobal

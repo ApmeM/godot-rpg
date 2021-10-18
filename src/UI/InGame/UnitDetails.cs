@@ -2,16 +2,23 @@ using Godot;
 using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.Models;
 using IsometricGame.Logic.ScriptHelpers;
+using IsometricGame.Logic.Utils;
 using System.Collections.Generic;
 
 public class UnitDetails : VBoxContainer
 {
+    private readonly PluginUtils pluginUtils;
     private Label maxHpLabel;
     private Label moveRangeLabel;
     private Label sightRangeLabel;
     private Container skillsContainer;
     private Container effectsContainer;
     private Container abilityContainer;
+
+    public UnitDetails()
+    {
+		this.pluginUtils = DependencyInjector.pluginUtils;
+	}
 
     public override void _Ready()
 	{
@@ -50,7 +57,7 @@ public class UnitDetails : VBoxContainer
 				Expand = true,
 				StretchMode = TextureRect.StretchModeEnum.KeepAspect,
 				RectMinSize = Vector2.One * 50,
-				HintTooltip = UnitUtils.FindSkill((Skill)unitSkill).Description
+				HintTooltip = this.pluginUtils.FindSkill((Skill)unitSkill).Description
 			};
 
 			skillsContainer.AddChild(skillNode);
@@ -70,7 +77,7 @@ public class UnitDetails : VBoxContainer
 				Expand = true,
 				StretchMode = TextureRect.StretchModeEnum.KeepAspect,
 				RectMinSize = Vector2.One * 50,
-				HintTooltip = UnitUtils.FindEffect(effect.Effect).Description
+				HintTooltip = this.pluginUtils.FindEffect(effect.Effect).Description
 			};
 			var durationNode = new Label
 			{

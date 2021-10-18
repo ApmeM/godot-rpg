@@ -1,6 +1,7 @@
 using Godot;
 using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.ScriptHelpers;
+using IsometricGame.Logic.Utils;
 using System.Collections.Generic;
 
 public class UnitActions : Control
@@ -9,6 +10,12 @@ public class UnitActions : Control
     public delegate void ActionSelected(CurrentAction action, Ability ability);
 
     private readonly List<Node> buttons = new List<Node>();
+    private readonly PluginUtils pluginUtils;
+    
+    public UnitActions()
+    {
+        this.pluginUtils = DependencyInjector.pluginUtils;
+    }
 
     public List<Ability> Abilities
     {
@@ -31,7 +38,7 @@ public class UnitActions : Control
                     Expand = true,
                     StretchMode = TextureButton.StretchModeEnum.KeepAspect,
                     RectMinSize = Vector2.One * 100,
-                    HintTooltip = UnitUtils.FindAbility(ability).Description
+                    HintTooltip = this.pluginUtils.FindAbility(ability).Description
                 };
 
                 buttons.Add(abilityNode);

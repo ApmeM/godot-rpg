@@ -1,7 +1,6 @@
 using Godot;
 using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.Models;
-using System;
 
 public class Main : Node
 {
