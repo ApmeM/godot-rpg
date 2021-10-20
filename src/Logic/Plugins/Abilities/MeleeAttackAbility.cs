@@ -20,7 +20,7 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
             maze.HighliteAvailableAttacks(pos, 1, (int)currentUnit.AOEAttackRadius);
         }
 
-        public bool IsApplicable(VectorGridGraph astar, ServerUnit actionUnit, ServerUnit targetUnit, Vector2 abilityDirection)
+        public bool IsApplicable(MapGraphData astar, ServerUnit actionUnit, ServerUnit targetUnit, Vector2 abilityDirection)
         {
             if (actionUnit.Player == targetUnit.Player)
             {

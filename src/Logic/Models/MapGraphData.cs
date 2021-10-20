@@ -5,9 +5,9 @@ using System.Collections.Generic;
 
 namespace IsometricGame.Logic.ScriptHelpers
 {
-    public class VectorGridGraph : IAstarGraph<Vector2>
+    public class MapGraphData : IAstarGraph<Vector2>
     {
-        public VectorGridGraph(int width, int height, bool allowDiagonalSearch = false)
+        public MapGraphData(int width, int height, bool allowDiagonalSearch = false)
         {
             this.Width = width;
             this.Height = height;

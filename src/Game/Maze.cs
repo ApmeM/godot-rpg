@@ -20,7 +20,7 @@ public class Maze : TileMap
     private readonly List<Vector2> lastHighlitedCells = new List<Vector2>();
     private readonly Dictionary<HighliteType, List<Vector2>> highlitedCells;
 
-    public VectorGridGraph astar;
+    public MapGraphData astar;
     private int? attackRadius;
 
     private TileMap floor;
@@ -101,7 +101,7 @@ public class Maze : TileMap
 
     public void Initialize(int mapWidth, int mapHeight)
     {
-        astar = new VectorGridGraph(mapWidth, mapHeight);
+        astar = new MapGraphData(mapWidth, mapHeight);
     }
 
     public override void _UnhandledInput(InputEvent @event)

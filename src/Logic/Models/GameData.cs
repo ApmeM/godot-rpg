@@ -10,7 +10,7 @@ namespace IsometricGame.Logic.Models
         public string Id { get; private set; }
 
         public GeneratorResult Map;
-		public VectorGridGraph Astar;
+		public MapGraphData Astar;
 		public readonly Dictionary<int, ServerPlayer> Players = new Dictionary<int, ServerPlayer>();
 		public readonly Dictionary<int, ServerPlayer> PlayersGameOver = new Dictionary<int, ServerPlayer>();
 		public readonly Dictionary<int, TransferTurnDoneData> PlayersMove = new Dictionary<int, TransferTurnDoneData>();

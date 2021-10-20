@@ -30,7 +30,7 @@ namespace IsometricGame.Logic
 			var game = new GameData(lobby.Id);
 			game.Configuration = lobby.ServerConfiguration;
 			game.Map = this.mapRepository.CreateForType(lobby.ServerConfiguration.MapType);
-			game.Astar = new VectorGridGraph(game.Map.Paths.GetLength(0), game.Map.Paths.GetLength(1));
+			game.Astar = new MapGraphData(game.Map.Paths.GetLength(0), game.Map.Paths.GetLength(1));
 			for (var x = 0; x < game.Map.Paths.GetLength(0); x++)
 				for (var y = 0; y < game.Map.Paths.GetLength(1); y++)
 				{
