@@ -26,6 +26,7 @@ public class Menu : Container
         base._Ready();
         this.teamsRepository = DependencyInjector.teamsRepository;
         this.accountRepository = DependencyInjector.accountRepository;
+
         this.serverButton = this.GetNode<Button>("VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/ServerButton");
         this.clientButton = this.GetNode<Button>("VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/ClientButton");
         this.serverLabel = this.GetNode<Label>("VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/ServerLabel");

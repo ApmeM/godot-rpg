@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=2]
 
-[ext_resource path="res://UI/MainMenu/TeamSelector.cs" type="Script" id=1]
+[ext_resource path="res://Presentation/UI/MainMenu/TeamSelector.cs" type="Script" id=1]
 
 [node name="OptionButton" type="OptionButton"]
 margin_right = 201.0

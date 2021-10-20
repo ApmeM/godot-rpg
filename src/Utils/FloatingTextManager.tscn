@@ -1,8 +1,0 @@
-[gd_scene load_steps=3 format=2]
-
-[ext_resource path="res://Utils/FloatingTextManager.cs" type="Script" id=1]
-[ext_resource path="res://Utils/FloatingText.tscn" type="PackedScene" id=2]
-
-[node name="FloatingTextManager" type="Node2D"]
-script = ExtResource( 1 )
-FloatingTextScene = ExtResource( 2 )

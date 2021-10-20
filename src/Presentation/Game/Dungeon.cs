@@ -38,7 +38,7 @@ public class Dungeon : Node2D
 
         communicator = GetNode<Communicator>("/root/Communicator");
 
-        UnitScene = ResourceLoader.Load<PackedScene>("Game/Unit.tscn");
+        //UnitScene = ResourceLoader.Load<PackedScene>("Game/Unit.tscn");
     }
 
     public override void _Process(float delta)

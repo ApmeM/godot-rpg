@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=2]
 
-[ext_resource path="res://UI/InGame/UnitDetails.cs" type="Script" id=1]
+[ext_resource path="res://Presentation/UI/InGame/UnitDetails.cs" type="Script" id=1]
 
 [node name="UnitDetails" type="VBoxContainer"]
 margin_right = 112.0

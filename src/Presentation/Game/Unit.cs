@@ -51,8 +51,8 @@ public class Unit : Node2D
         this.shadow.Visible = false;
         this.GetParent<Maze>().AddChild(this.shadow);
 
-        this.GetNode<AnimatedSprite>("AnimatedSprite").Frames = ResourceLoader.Load<SpriteFrames>($"Units/{ClientUnit.UnitType}.tres");
-        this.shadow.GetNode<AnimatedSprite>("Shadow").Frames = ResourceLoader.Load<SpriteFrames>($"Units/{ClientUnit.UnitType}.tres");
+        this.GetNode<AnimatedSprite>("AnimatedSprite").Frames = ResourceLoader.Load<SpriteFrames>($"Presentation/Units/{ClientUnit.UnitType}.tres");
+        this.shadow.GetNode<AnimatedSprite>("Shadow").Frames = ResourceLoader.Load<SpriteFrames>($"Presentation/Units/{ClientUnit.UnitType}.tres");
         this.hpBar = this.GetNode<TextureProgress>("HpBar");
         this.hpBar.MaxValue = this.ClientUnit.MaxHp;
         this.hpBar.Value = ClientUnit.Hp;

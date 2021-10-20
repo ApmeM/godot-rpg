@@ -1,10 +1,10 @@
 [gd_scene load_steps=13 format=2]
 
-[ext_resource path="res://Game/Unit.cs" type="Script" id=1]
-[ext_resource path="res://Units/Amazon.tres" type="SpriteFrames" id=2]
+[ext_resource path="res://Presentation/Game/Unit.cs" type="Script" id=1]
+[ext_resource path="res://Presentation/Units/Amazon.tres" type="SpriteFrames" id=2]
 [ext_resource path="res://assets/Hp/Green.png" type="Texture" id=3]
-[ext_resource path="res://Game/UnitShadow.tscn" type="PackedScene" id=4]
-[ext_resource path="res://Utils/FloatingTextManager.tscn" type="PackedScene" id=5]
+[ext_resource path="res://Presentation/Game/UnitShadow.tscn" type="PackedScene" id=4]
+[ext_resource path="res://Presentation/Utils/FloatingTextManager.tscn" type="PackedScene" id=5]
 [ext_resource path="res://assets/Hp/Blue.png" type="Texture" id=6]
 [ext_resource path="res://assets/Arrow.png" type="Texture" id=43]
 
@@ -69,7 +69,7 @@ visible = false
 position = Vector2( 0, -188.432 )
 scale = Vector2( 2, 2 )
 frames = SubResource( 5 )
-frame = 3
+frame = 2
 playing = true
 
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
