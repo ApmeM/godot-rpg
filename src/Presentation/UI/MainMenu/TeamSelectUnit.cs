@@ -4,23 +4,16 @@ using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.Models;
 using IsometricGame.Logic.ScriptHelpers;
 using IsometricGame.Logic.Utils;
+using IsometricGame.Presentation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-public class TeamSelectUnit : VBoxContainer
+[SceneReference("TeamSelectUnit.tscn")]
+public partial class TeamSelectUnit : VBoxContainer
 {
     private TransferConnectData.UnitData Unit;
 
-    private Label maxHpLabel;
-    private Label moveRangeLabel;
-    private Label sightRangeLabel;
-    private Container abilityContainer;
-    private Container skillsContainer;
-    private OptionButton unitTypeCombo;
-    private WindowDialog windowDialog;
-    private Container availableSkillsContainer;
-    
     private readonly UnitUtils unitUtils;
     private readonly PluginUtils pluginUtils;
 
@@ -33,19 +26,10 @@ public class TeamSelectUnit : VBoxContainer
     public override void _Ready()
     {
         base._Ready();
+        this.FillMembers();
 
-        this.GetNode<Button>("ManageSkillsButton").Connect("pressed", this, nameof(ManageSkillButtonPressed));
-
-        maxHpLabel = GetNode<Label>("MaxHP");
-        moveRangeLabel = GetNode<Label>("MoveRange");
-        sightRangeLabel = GetNode<Label>("SightRange");
-        abilityContainer = GetNode<Container>("AbilityContainer");
-        skillsContainer = this.GetNode<Container>("SkillsContainer");
-        unitTypeCombo = this.GetNode<OptionButton>("UnitTypeCombo");
-        windowDialog = this.GetNode<WindowDialog>("WindowDialog");
-        availableSkillsContainer = windowDialog.GetNode<Container>("AvailableSkillsContainer");
-
-        unitTypeCombo.Connect("item_selected", this, nameof(UnitTypeChanged));
+        this.manageSkillsButton.Connect("pressed", this, nameof(ManageSkillButtonPressed));
+        this.unitTypeCombo.Connect("item_selected", this, nameof(UnitTypeChanged));
 
         var skills = Enum.GetValues(typeof(Skill)).Cast<Skill>().ToList();
         var texture = ResourceLoader.Load<Texture>("assets/Skills.png");
@@ -152,9 +136,9 @@ public class TeamSelectUnit : VBoxContainer
     {
         var unit = this.unitUtils.BuildUnit(new ServerPlayer(), this.Unit.UnitType, this.Unit.Skills);
 
-        maxHpLabel.Text = "MaxHP " + unit?.MaxHp.ToString() ?? "unknown";
-        moveRangeLabel.Text = "Speed " + unit?.MoveDistance.ToString() ?? "unknown";
-        sightRangeLabel.Text = "Vision " + unit?.SightRange.ToString() ?? "unknown";
+        maxHP.Text = "MaxHP " + unit?.MaxHp.ToString() ?? "unknown";
+        moveRange.Text = "Speed " + unit?.MoveDistance.ToString() ?? "unknown";
+        sightRange.Text = "Vision " + unit?.SightRange.ToString() ?? "unknown";
         ClearContainer(abilityContainer);
 
         foreach (var ability in unit?.Abilities ?? new HashSet<Ability>())

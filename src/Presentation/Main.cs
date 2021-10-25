@@ -1,20 +1,15 @@
 using Godot;
 using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.Models;
+using IsometricGame.Presentation;
 
-public class Main : Node
+[SceneReference("Main.tscn")]
+public partial class Main : Node
 {
-    private Dungeon dungeon;
-    private Menu menu;
-    private Lobby lobby;
-
     public override void _Ready()
     {
         base._Ready();
-
-        this.dungeon = GetNode<Dungeon>("Dungeon");
-        this.menu = GetNode<Menu>("Menu");
-        this.lobby = GetNode<Lobby>("Lobby");
+        this.FillMembers();
 
         RemoveChild(this.dungeon);
         RemoveChild(this.lobby);

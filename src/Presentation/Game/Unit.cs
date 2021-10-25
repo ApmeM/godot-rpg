@@ -2,17 +2,19 @@ using Godot;
 using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.Models;
 using IsometricGame.Logic.ScriptHelpers;
+using IsometricGame.Presentation;
 using System.Collections.Generic;
 
-public class Unit : Node2D
+[SceneReference("Unit.tscn")]
+public partial class Unit : Node2D
 {
     private const int MOTION_SPEED = 800;
     private readonly Queue<Vector2> path = new Queue<Vector2>();
     public ClientUnit ClientUnit;
     public bool IsSelected
     {
-        get { return GetNode<AnimatedSprite>("SelectionMarker").Visible; }
-        set { GetNode<AnimatedSprite>("SelectionMarker").Visible = value; shadow.IsSelected = value; }
+        get { return this.selectionMarker.Visible; }
+        set { this.selectionMarker.Visible = value; shadow.IsSelected = value; }
     }
 
     public Vector2? NewPosition => shadow.NewPosition;
@@ -33,9 +35,6 @@ public class Unit : Node2D
     public PackedScene UnitShadowScene;
 
     private UnitShadow shadow;
-    private FloatingTextManager hpPopup;
-    private TextureProgress hpBar;
-    private TextureProgress mpBar;
 
     [Signal]
     public delegate void MoveDone();
@@ -45,41 +44,38 @@ public class Unit : Node2D
     public override void _Ready()
     {
         base._Ready();
+        this.FillMembers();
 
         this.shadow = (UnitShadow)UnitShadowScene.Instance();
         this.shadow.Position = Position;
         this.shadow.Visible = false;
         this.GetParent<Maze>().AddChild(this.shadow);
+        this.shadow.FillMembers();
 
-        this.GetNode<AnimatedSprite>("AnimatedSprite").Frames = ResourceLoader.Load<SpriteFrames>($"Presentation/Units/{ClientUnit.UnitType}.tres");
-        this.shadow.GetNode<AnimatedSprite>("Shadow").Frames = ResourceLoader.Load<SpriteFrames>($"Presentation/Units/{ClientUnit.UnitType}.tres");
-        this.hpBar = this.GetNode<TextureProgress>("HpBar");
+        this.animatedSprite.Frames = ResourceLoader.Load<SpriteFrames>($"Presentation/Units/{ClientUnit.UnitType}.tres");
+        this.shadow.ShadowSprite.Frames = ResourceLoader.Load<SpriteFrames>($"Presentation/Units/{ClientUnit.UnitType}.tres");
         this.hpBar.MaxValue = this.ClientUnit.MaxHp;
         this.hpBar.Value = ClientUnit.Hp;
 
-        this.mpBar = this.GetNode<TextureProgress>("MpBar");
         this.mpBar.MaxValue = this.ClientUnit.MaxMp;
         this.mpBar.Value = ClientUnit.Mp;
-
-        this.hpPopup = this.GetNode<FloatingTextManager>("HpPopup");
     }
 
     public override void _Process(float delta)
     {
         base._Process(delta);
 
-        var animation = GetNode<AnimatedSprite>("AnimatedSprite");
         if (path.Count > 0)
         {
             var motion = IsometricMove.GetMotion(path, Position, delta, MOTION_SPEED);
-            animation.Playing = motion.HasValue;
+            this.animatedSprite.Playing = motion.HasValue;
             if (motion.HasValue)
             {
                 Position += motion ?? Vector2.Zero;
                 var direction = IsometricMove.Animate(motion.Value);
                 if (!string.IsNullOrWhiteSpace(direction))
                 {
-                    animation.Animation = $"move{direction}";
+                    this.animatedSprite.Animation = $"move{direction}";
                 }
             }
 
@@ -92,17 +88,15 @@ public class Unit : Node2D
 
     private void UnitAnimationFinished()
     {
-        var animation = GetNode<AnimatedSprite>("AnimatedSprite");
-        animation.Disconnect("animation_finished", this, nameof(UnitAnimationFinished));
-        animation.Stop();
+        this.animatedSprite.Disconnect("animation_finished", this, nameof(UnitAnimationFinished));
+        this.animatedSprite.Stop();
         EmitSignal(nameof(UnitAnimationDone));
     }
 
     private void AnimateUnit(string animationPrefix, Vector2 animationDirection)
     {
-        var animation = GetNode<AnimatedSprite>("AnimatedSprite");
-        animation.Connect("animation_finished", this, nameof(UnitAnimationFinished));
-        animation.Play($"{animationPrefix}{IsometricMove.Animate(animationDirection)}");
+        this.animatedSprite.Connect("animation_finished", this, nameof(UnitAnimationFinished));
+        this.animatedSprite.Play($"{animationPrefix}{IsometricMove.Animate(animationDirection)}");
     }
 
     public SignalAwaiter UnitHit(Vector2? attackFrom, int newHp)
@@ -204,7 +198,7 @@ public class Unit : Node2D
         {
             foreach (var change in hpChanges)
             {
-                this.hpPopup.ShowValue(change.ToString(), change > 0 ? new Color(0, 1, 0) : new Color(1, 0, 0));
+                this.floatingTextManager.ShowValue(change.ToString(), change > 0 ? new Color(0, 1, 0) : new Color(1, 0, 0));
                 await ToSignal(sceneTree.CreateTimer(0.5f), "timeout");
             }
         }
@@ -213,7 +207,7 @@ public class Unit : Node2D
         {
             foreach (var change in mpChanges)
             {
-                this.hpPopup.ShowValue(change.ToString(), new Color(0, 0, 1));
+                this.floatingTextManager.ShowValue(change.ToString(), new Color(0, 0, 1));
                 await ToSignal(sceneTree.CreateTimer(0.5f), "timeout");
             }
         }

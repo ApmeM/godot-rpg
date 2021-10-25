@@ -9,7 +9,10 @@
     <PackageReference Include="MazeGenerators" Version="2.3.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Presentation\" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\generator\GodotFieldsGenerator.csproj">
+            <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+            <OutputItemType>Analyzer</OutputItemType>
+        </ProjectReference>
+    </ItemGroup>
 </Project>

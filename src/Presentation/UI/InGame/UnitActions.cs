@@ -2,9 +2,11 @@ using Godot;
 using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.ScriptHelpers;
 using IsometricGame.Logic.Utils;
+using IsometricGame.Presentation;
 using System.Collections.Generic;
 
-public class UnitActions : Control
+[SceneReference("UnitActions.tscn")]
+public partial class UnitActions : Control
 {
     [Signal]
     public delegate void ActionSelected(CurrentAction action, Ability ability);
@@ -26,8 +28,6 @@ public class UnitActions : Control
                 b.QueueFree();
             }
             buttons.Clear();
-
-            var abilityContainer = this.GetNode<Container>("AbilityContainer");
 
             for (var i = 0; i < value.Count; i++)
             {
@@ -53,7 +53,8 @@ public class UnitActions : Control
 
     public override void _Ready()
     {
-        var abilityContainer = this.GetNode<Container>("AbilityContainer");
+        base._Ready();
+        this.FillMembers();
         var abilityNode = new TextureButton
         {
             TextureNormal = ResourceLoader.Load<Texture>($"assets/Abilities/Move.png"),
@@ -64,7 +65,7 @@ public class UnitActions : Control
         };
 
         abilityNode.Connect("pressed", this, nameof(MoveButtonPressed));
-        abilityContainer.AddChild(abilityNode);
+        this.abilityContainer.AddChild(abilityNode);
     }
 
     private void MoveButtonPressed()

@@ -5,9 +5,6 @@
 [ext_resource path="res://assets/Arrow.png" type="Texture" id=43]
 [ext_resource path="res://Presentation/Shaders/Grayscale.tres" type="Material" id=63]
 
-
-
-
 [sub_resource type="AtlasTexture" id=1]
 flags = 4
 atlas = ExtResource( 43 )

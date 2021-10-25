@@ -1,13 +1,15 @@
 using Godot;
 using IsometricGame.Logic;
-using System;
+using IsometricGame.Presentation;
 using System.Collections.Generic;
 
-public class TeamSelector : OptionButton
+[SceneReference("TeamSelector.tscn")]
+public partial class TeamSelector : OptionButton
 {
     public override void _Ready()
     {
-        
+        base._Ready();
+        this.FillMembers();
     }
 
     public void Refresh(List<TransferConnectData> teams)

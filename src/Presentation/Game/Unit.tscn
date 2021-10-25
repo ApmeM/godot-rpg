@@ -69,7 +69,6 @@ visible = false
 position = Vector2( 0, -188.432 )
 scale = Vector2( 2, 2 )
 frames = SubResource( 5 )
-frame = 2
 playing = true
 
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
@@ -78,5 +77,5 @@ frames = ExtResource( 2 )
 animation = "attackRight"
 offset = Vector2( -0.076355, -29.8558 )
 
-[node name="HpPopup" parent="." instance=ExtResource( 5 )]
+[node name="FloatingTextManager" parent="." instance=ExtResource( 5 )]
 position = Vector2( 0, -140 )

@@ -3,9 +3,6 @@
 [ext_resource path="res://assets/Fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://Presentation/UI/Lobby/Lobby.cs" type="Script" id=2]
 
-
-
-
 [sub_resource type="DynamicFont" id=1]
 size = 24
 font_data = ExtResource( 1 )
@@ -32,13 +29,13 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
+[node name="ContentContainer" type="VBoxContainer" parent="."]
 margin_left = 5.0
 margin_top = 5.0
 margin_right = 1019.0
 margin_bottom = 595.0
 
-[node name="CaptionLabel" type="Label" parent="VBoxContainer"]
+[node name="CaptionLabel" type="Label" parent="ContentContainer"]
 margin_right = 1014.0
 margin_bottom = 30.0
 text = "Lobby"
@@ -48,30 +45,30 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer"]
+[node name="LobbyContainer" type="HBoxContainer" parent="ContentContainer"]
 margin_top = 34.0
 margin_right = 1014.0
 margin_bottom = 550.0
 size_flags_vertical = 3
 
-[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/HBoxContainer2"]
+[node name="PlayersListContainer" type="VBoxContainer" parent="ContentContainer/LobbyContainer"]
 margin_right = 505.0
 margin_bottom = 516.0
 size_flags_horizontal = 3
 
-[node name="VBoxContainer2" type="VBoxContainer" parent="VBoxContainer/HBoxContainer2"]
+[node name="SettingsContainer" type="VBoxContainer" parent="ContentContainer/LobbyContainer"]
 margin_left = 509.0
 margin_right = 1014.0
 margin_bottom = 516.0
 size_flags_horizontal = 3
 
-[node name="TurnTimeoutLabel" type="Label" parent="VBoxContainer/HBoxContainer2/VBoxContainer2"]
+[node name="TurnTimeoutLabel" type="Label" parent="ContentContainer/LobbyContainer/SettingsContainer"]
 margin_right = 505.0
 margin_bottom = 63.0
 text = "
 Turn timeout"
 
-[node name="TurnTimeoutCheckbox" type="CheckBox" parent="VBoxContainer/HBoxContainer2/VBoxContainer2"]
+[node name="TurnTimeoutCheckbox" type="CheckBox" parent="ContentContainer/LobbyContainer/SettingsContainer"]
 margin_top = 67.0
 margin_right = 505.0
 margin_bottom = 105.0
@@ -81,7 +78,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="TurnTimeoutLineEdit" type="SpinBox" parent="VBoxContainer/HBoxContainer2/VBoxContainer2"]
+[node name="TurnTimeoutLineEdit" type="SpinBox" parent="ContentContainer/LobbyContainer/SettingsContainer"]
 margin_top = 109.0
 margin_right = 505.0
 margin_bottom = 149.0
@@ -92,14 +89,14 @@ rounded = true
 prefix = "Turn timeout"
 suffix = "seconds"
 
-[node name="MapLabel" type="Label" parent="VBoxContainer/HBoxContainer2/VBoxContainer2"]
+[node name="MapLabel" type="Label" parent="ContentContainer/LobbyContainer/SettingsContainer"]
 margin_top = 153.0
 margin_right = 505.0
 margin_bottom = 216.0
 text = "
 Map"
 
-[node name="MapOptionButton" type="OptionButton" parent="VBoxContainer/HBoxContainer2/VBoxContainer2"]
+[node name="MapOptionButton" type="OptionButton" parent="ContentContainer/LobbyContainer/SettingsContainer"]
 margin_top = 220.0
 margin_right = 505.0
 margin_bottom = 256.0
@@ -107,32 +104,34 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="ViewFullMapCheckbox" type="CheckBox" parent="VBoxContainer/HBoxContainer2/VBoxContainer2"]
+[node name="ViewFullMapCheckbox" type="CheckBox" parent="ContentContainer/LobbyContainer/SettingsContainer"]
 margin_top = 260.0
 margin_right = 505.0
 margin_bottom = 298.0
 pressed = true
 text = "View full map"
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+[node name="ButtonsContainer" type="HBoxContainer" parent="ContentContainer"]
 margin_top = 554.0
 margin_right = 1014.0
 margin_bottom = 590.0
 alignment = 2
 
-[node name="AddBotButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+[node name="AddBotButton" type="Button" parent="ContentContainer/ButtonsContainer"]
 margin_right = 117.0
 margin_bottom = 36.0
 text = "Add bot"
 
-[node name="SpaceLabel" type="Label" parent="VBoxContainer/HBoxContainer"]
+[node name="SpaceLabel" type="Label" parent="ContentContainer/ButtonsContainer"]
 margin_left = 121.0
 margin_top = 3.0
 margin_right = 477.0
 margin_bottom = 33.0
 size_flags_horizontal = 3
 
-[node name="LeaveButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+[node name="LeaveButton" type="Button" parent="ContentContainer/ButtonsContainer"]
+anchor_top = -0.111111
+anchor_bottom = -0.111111
 margin_left = 481.0
 margin_right = 573.0
 margin_bottom = 36.0
@@ -142,14 +141,14 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="SpaceLabel2" type="Label" parent="VBoxContainer/HBoxContainer"]
+[node name="SpaceLabel2" type="Label" parent="ContentContainer/ButtonsContainer"]
 margin_left = 577.0
 margin_top = 3.0
 margin_right = 933.0
 margin_bottom = 33.0
 size_flags_horizontal = 3
 
-[node name="StartButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+[node name="StartButton" type="Button" parent="ContentContainer/ButtonsContainer"]
 margin_left = 937.0
 margin_right = 1014.0
 margin_bottom = 36.0

@@ -2,10 +2,12 @@ using Godot;
 using Godot.Collections;
 using IsometricGame.Logic;
 using IsometricGame.Logic.Utils;
+using IsometricGame.Presentation;
 using IsometricGame.Repository;
 using System.Collections.Generic;
 
-public class TeamSelect : Container
+[SceneReference("TeamSelect.tscn")]
+public partial class TeamSelect : Container
 {
     [Export]
     public PackedScene UnitConfigurationScene;
@@ -16,29 +18,24 @@ public class TeamSelect : Container
     private List<TransferConnectData> Teams;
     private int CurrentTeam;
 
-    private Container unitsContainer;
-    private LineEdit teamDescription;
-    private TeamSelector chooseTeamOptionButton;
-    private Button addNewUnitButton;
     private TeamsRepository teamsRepository;
+
+    public TeamSelect()
+    {
+        this.teamsRepository = DependencyInjector.teamsRepository;
+    }
 
     public override void _Ready()
     {
         base._Ready();
-        this.teamsRepository = DependencyInjector.teamsRepository;
+        this.FillMembers();
 
-        this.GetNode<Button>("ContentContainer/ButtonsContainer/SaveButton").Connect("pressed", this, nameof(OnSaveButtonPressed));
-        this.GetNode<Button>("ContentContainer/ButtonsContainer/ResetButton").Connect("pressed", this, nameof(OnResetButtonPressed));
-        this.GetNode<Button>("ContentContainer/TeamContainer/AddNewTeamButton").Connect("pressed", this, nameof(OnAddNewTeamButtonPressed));
-
-        this.unitsContainer = GetNode<Container>("ContentContainer/ScrollUnitContainer/UnitManagerContainer/UnitsContainer");
-        this.teamDescription = GetNode<LineEdit>("ContentContainer/TeamDescriptionLineEdit");
-        this.chooseTeamOptionButton = GetNode<TeamSelector>("ContentContainer/TeamContainer/ChooseTeamOptionButton");
-        this.addNewUnitButton = this.GetNode<Button>("ContentContainer/ScrollUnitContainer/UnitManagerContainer/AddNewUnitButtonContainer/AddNewUnitButton");
-        addNewUnitButton.Connect("pressed", this, nameof(OnAddNewUnitButtonPressed));
-        chooseTeamOptionButton.Connect("item_selected", this, nameof(ItemSelected));
-        
-        teamDescription.Editable = false;
+        this.saveButton.Connect("pressed", this, nameof(OnSaveButtonPressed));
+        this.resetButton.Connect("pressed", this, nameof(OnResetButtonPressed));
+        this.addNewTeamButton.Connect("pressed", this, nameof(OnAddNewTeamButtonPressed));
+        this.addNewUnitButton.Connect("pressed", this, nameof(OnAddNewUnitButtonPressed));
+        this.teamSelector.Connect("item_selected", this, nameof(ItemSelected));
+        this.teamDescriptionLineEdit.Editable = false;
         this.OnResetButtonPressed();
     }
 
@@ -51,8 +48,8 @@ public class TeamSelect : Container
         };
         this.Teams.Add(team);
         
-        chooseTeamOptionButton.AddItem(team.TeamName);
-        chooseTeamOptionButton.Selected = Teams.Count - 1;
+        teamSelector.AddItem(team.TeamName);
+        teamSelector.Selected = Teams.Count - 1;
         ItemSelected(Teams.Count - 1);
     }
 
@@ -68,7 +65,7 @@ public class TeamSelect : Container
         this.CurrentTeam = index;
         var team = Teams[index];
         
-        this.teamDescription.Text = team.TeamName;
+        this.teamDescriptionLineEdit.Text = team.TeamName;
 
         foreach (Node item in unitsContainer.GetChildren())
         {
@@ -108,7 +105,7 @@ public class TeamSelect : Container
     public void OnResetButtonPressed()
     {
         this.Teams = this.teamsRepository.LoadTeams();
-        chooseTeamOptionButton.Refresh(this.Teams);
+        teamSelector.Refresh(this.Teams);
 
         ItemSelected(0);
     }

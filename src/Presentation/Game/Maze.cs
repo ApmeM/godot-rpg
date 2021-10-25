@@ -3,11 +3,13 @@ using FateRandom;
 using Godot;
 using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.ScriptHelpers;
+using IsometricGame.Presentation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-public class Maze : TileMap
+[SceneReference("Maze.tscn")]
+public partial class Maze : TileMap
 {
     public enum HighliteType
     {
@@ -23,9 +25,6 @@ public class Maze : TileMap
     public MapGraphData astar;
     private int? attackRadius;
 
-    private TileMap floor;
-    private TileMap fog;
-
     [Signal]
     public delegate void CellSelected(Vector2 cell, Vector2 cellPosition, bool moveAvailable);
 
@@ -36,8 +35,8 @@ public class Maze : TileMap
 
     public override void _Ready()
     {
-        floor = GetNode<TileMap>("Floor");
-        fog = GetNode<TileMap>("Fog");
+        base._Ready();
+        this.FillMembers();
         this.Clear();
         floor.Clear();
         fog.Clear();

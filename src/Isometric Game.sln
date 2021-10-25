@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Isometric Game", "Isometric
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Isometric Game.Tests", "..\test\Isometric Game.Tests.csproj", "{434E31EC-4233-442D-9FE7-B76E9D46E1C6}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GodotFieldsGenerator", "..\generator\GodotFieldsGenerator.csproj", "{0CBA6AEC-CDAC-442B-B47E-2392CC7AF537}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,14 @@ Global
 		{434E31EC-4233-442D-9FE7-B76E9D46E1C6}.ExportRelease|Any CPU.Build.0 = Release|Any CPU
 		{434E31EC-4233-442D-9FE7-B76E9D46E1C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{434E31EC-4233-442D-9FE7-B76E9D46E1C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0CBA6AEC-CDAC-442B-B47E-2392CC7AF537}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CBA6AEC-CDAC-442B-B47E-2392CC7AF537}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CBA6AEC-CDAC-442B-B47E-2392CC7AF537}.ExportDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CBA6AEC-CDAC-442B-B47E-2392CC7AF537}.ExportDebug|Any CPU.Build.0 = Debug|Any CPU
+		{0CBA6AEC-CDAC-442B-B47E-2392CC7AF537}.ExportRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{0CBA6AEC-CDAC-442B-B47E-2392CC7AF537}.ExportRelease|Any CPU.Build.0 = Release|Any CPU
+		{0CBA6AEC-CDAC-442B-B47E-2392CC7AF537}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CBA6AEC-CDAC-442B-B47E-2392CC7AF537}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

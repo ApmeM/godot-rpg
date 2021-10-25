@@ -1,22 +1,13 @@
 using Godot;
 using IsometricGame.Logic.Utils;
+using IsometricGame.Presentation;
 using IsometricGame.Repository;
 
-public class Menu : Container
+[SceneReference("Menu.tscn")]
+public partial class Menu : Container
 {
-    private LineEdit lobbyId;
-    private TeamSelector teamSelector;
-    private TabContainer onlineTabs;
-    private Label incorrectLoginLabel;
-    private Label joinLobbyLabel;
-    private LineEdit loginText;
-    private LineEdit serverText;
-    private LineEdit passwordText;
     private TeamsRepository teamsRepository;
     private AccountRepository accountRepository;
-    private Button serverButton;
-    private Button clientButton;
-    private Label serverLabel;
     private Communicator communicator;
 
     public int SelectedTeam => this.teamSelector.Selected;
@@ -24,31 +15,16 @@ public class Menu : Container
     public override void _Ready()
     {
         base._Ready();
+        this.FillMembers();
+        this.communicator = GetNode<Communicator>("/root/Communicator");
+
         this.teamsRepository = DependencyInjector.teamsRepository;
         this.accountRepository = DependencyInjector.accountRepository;
 
-        this.serverButton = this.GetNode<Button>("VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/ServerButton");
-        this.clientButton = this.GetNode<Button>("VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/ClientButton");
-        this.serverLabel = this.GetNode<Label>("VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/ServerLabel");
-
-        this.GetNode<Button>("VBoxContainer/TabContainer/Online/TabContainer/LobbyContentContainer/ActionContainer/CustomContainer/GridContainer/CreateButton").Connect("pressed", this, nameof(OnCreateButtonPressed));
-        this.GetNode<Button>("VBoxContainer/TabContainer/Online/TabContainer/LobbyContentContainer/ActionContainer/CustomContainer/GridContainer/JoinButton").Connect("pressed", this, nameof(OnJoinButtonPressed));
-
-        this.incorrectLoginLabel = this.GetNode<Label>("VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/IncorrectLoginLabel");
-        this.joinLobbyLabel = this.GetNode<Label>("VBoxContainer/TabContainer/Online/TabContainer/LobbyContentContainer/ActionContainer/CustomContainer/GridContainer/JoinLabel");
-
-        this.loginText = this.GetNode<LineEdit>("VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/CredentialsContainer/LoginLineEdit");
-        this.serverText = this.GetNode<LineEdit>("VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/CredentialsContainer/ServerLineEdit");
-        this.passwordText = this.GetNode<LineEdit>("VBoxContainer/TabContainer/Online/TabContainer/LoginContentContainer/CredentialsContainer/PasswordLineEdit");
-
-        this.lobbyId = this.GetNode<LineEdit>("VBoxContainer/TabContainer/Online/TabContainer/LobbyContentContainer/ActionContainer/CustomContainer/GridContainer/lobbyIdLineEdit");
-        this.teamSelector = this.GetNode<TeamSelector>("VBoxContainer/TabContainer/Online/TabContainer/LobbyContentContainer/TeamSelector");
-        this.onlineTabs = this.GetNode<TabContainer>("VBoxContainer/TabContainer/Online/TabContainer");
-
+        this.createButton.Connect("pressed", this, nameof(OnCreateButtonPressed));
+        this.joinButton.Connect("pressed", this, nameof(OnJoinButtonPressed));
         this.serverButton.Connect("pressed", this, nameof(OnServerButtonPressed));
         this.clientButton.Connect("pressed", this, nameof(OnClientButtonPressed));
-
-        this.communicator = GetNode<Communicator>("/root/Communicator");
 
         if (OS.GetName() == "HTML5")
         {
@@ -61,12 +37,12 @@ public class Menu : Container
         var login = this.accountRepository.LoadLogin();
         if (string.IsNullOrWhiteSpace(login))
         {
-            this.loginText.GrabFocus();
+            this.loginLineEdit.GrabFocus();
         }
         else
         {
-            this.loginText.Text = login;
-            this.passwordText.GrabFocus();
+            this.loginLineEdit.Text = login;
+            this.passwordLineEdit.GrabFocus();
         }
     }
 
@@ -77,9 +53,9 @@ public class Menu : Container
     public void LoginSuccess()
     {
         this.onlineTabs.CurrentTab = 1;
-        if (!string.IsNullOrWhiteSpace(this.loginText.Text))
+        if (!string.IsNullOrWhiteSpace(this.loginLineEdit.Text))
         {
-            this.accountRepository.SaveLogin(this.loginText.Text);
+            this.accountRepository.SaveLogin(this.loginLineEdit.Text);
         }
     }
 
@@ -97,7 +73,7 @@ public class Menu : Container
 
     private void OnClientButtonPressed()
     {
-        this.communicator.CreateClient(this.serverText.Text, this.loginText.Text, this.passwordText.Text);
+        this.communicator.CreateClient(this.serverLineEdit.Text, this.loginLineEdit.Text, this.passwordLineEdit.Text);
     }
 
     private void OnCreateButtonPressed()
@@ -112,15 +88,15 @@ public class Menu : Container
 
     private void OnJoinButtonPressed()
     {
-        this.communicator.JoinLobby(this.lobbyId.Text);
+        this.communicator.JoinLobby(this.lobbyIdLineEdit.Text);
     }
 
     public async void LobbyNotFound()
     {
-        joinLobbyLabel.AddColorOverride("font_color", new Color(1, 0, 0));
-        joinLobbyLabel.Text = "Lobby not found.";
+        joinLabel.AddColorOverride("font_color", new Color(1, 0, 0));
+        joinLabel.Text = "Lobby not found.";
         await ToSignal(GetTree().CreateTimer(3), "timeout");
-        joinLobbyLabel.AddColorOverride("font_color", new Color(1, 1, 1));
-        joinLobbyLabel.Text = "And join existing lobby";
+        joinLabel.AddColorOverride("font_color", new Color(1, 1, 1));
+        joinLabel.Text = "And join existing lobby";
     }
 }
