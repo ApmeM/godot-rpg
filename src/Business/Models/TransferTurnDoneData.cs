@@ -6,14 +6,13 @@ namespace IsometricGame.Logic
 {
     public class TransferTurnDoneData
     {
-        public Dictionary<int, UnitActionData> UnitActions = new Dictionary<int, UnitActionData>();
+        public Dictionary<int, List<UnitActionData>> UnitActions = new Dictionary<int, List<UnitActionData>>();
         
         public class UnitActionData
         {
-            public Vector2? Move;
             public Vector2? AbilityDirection;
             public Ability Ability;
-            public long AbilityFullUnitId;
+            public long? AbilityFullUnitId;
         }
     }
 }

@@ -10,6 +10,7 @@ namespace IsometricGame.Logic.ScriptHelpers.Skills
         public void Apply(ServerUnit unit)
         {
             unit.MaxHp = 20;
+            unit.Abilities.Add(Ability.Move);
             unit.Abilities.Add(Ability.MeleeAttack);
         }
 

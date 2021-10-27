@@ -10,6 +10,7 @@ namespace IsometricGame.Logic.ScriptHelpers.Skills
         public void Apply(ServerUnit unit)
         {
             unit.SightRange = 7;
+            unit.Abilities.Add(Ability.Move);
             unit.Abilities.Add(Ability.RangedAttack);
         }
 

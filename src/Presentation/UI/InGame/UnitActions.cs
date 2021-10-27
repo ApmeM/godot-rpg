@@ -55,22 +55,6 @@ public partial class UnitActions : Control
     {
         base._Ready();
         this.FillMembers();
-        var abilityNode = new TextureButton
-        {
-            TextureNormal = ResourceLoader.Load<Texture>($"assets/Abilities/Move.png"),
-            Expand = true,
-            StretchMode = TextureButton.StretchModeEnum.KeepAspect,
-            RectMinSize = Vector2.One * 100,
-            HintTooltip = "Move"
-        };
-
-        abilityNode.Connect("pressed", this, nameof(MoveButtonPressed));
-        this.abilityContainer.AddChild(abilityNode);
-    }
-
-    private void MoveButtonPressed()
-    {
-        EmitSignal(nameof(ActionSelected), CurrentAction.Move, Ability.None);
     }
 
     private void AttackButtonPressed(Ability ability)

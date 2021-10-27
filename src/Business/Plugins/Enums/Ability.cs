@@ -2,11 +2,11 @@
 {
     public enum Ability
     {
-        None,
         RangedAttack, 
         MeleeAttack, 
         Heal,
         Fireball,
-        Haste
+        Haste,
+        Move
     };
 }

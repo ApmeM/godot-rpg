@@ -184,26 +184,11 @@ namespace IsometricGame.Logic
 				{
 					var fullId = UnitUtils.GetFullUnitId(actionUnit.Value);
 					unitsTurnDelta[fullId] = new ServerTurnDelta();
-					game.PlayersMove[actionPlayer.Key].UnitActions = game.PlayersMove[actionPlayer.Key].UnitActions ?? new Dictionary<int, TransferTurnDoneData.UnitActionData>();
+					game.PlayersMove[actionPlayer.Key].UnitActions = game.PlayersMove[actionPlayer.Key].UnitActions ?? new Dictionary<int, List<TransferTurnDoneData.UnitActionData>>();
 					if (!game.PlayersMove[actionPlayer.Key].UnitActions.ContainsKey(actionUnit.Key))
 					{
-						game.PlayersMove[actionPlayer.Key].UnitActions[actionUnit.Key] = new TransferTurnDoneData.UnitActionData();
+						game.PlayersMove[actionPlayer.Key].UnitActions[actionUnit.Key] = new List<TransferTurnDoneData.UnitActionData>();
 					}
-				}
-			}
-
-			/* Calculate move blockers */
-			foreach (var actionPlayer in game.Players)
-			{
-				foreach (var actionUnit in actionPlayer.Value.Units)
-				{
-					var unitMove = game.PlayersMove[actionPlayer.Key].UnitActions[actionUnit.Key];
-					if (actionUnit.Value.Hp > 0 && unitMove.Move.HasValue)
-					{
-						continue;
-					}
-
-					occupiedCells.Add(actionUnit.Value.Position);
 				}
 			}
 
@@ -213,7 +198,7 @@ namespace IsometricGame.Logic
 				foreach (var actionUnit in actionPlayer.Value.Units)
 				{
 					var unitMove = game.PlayersMove[actionPlayer.Key].UnitActions[actionUnit.Key];
-					if (unitMove.Move.HasValue || actionUnit.Value.Hp <= 0 || unitMove.Ability != Ability.None)
+					if (unitMove.Any() || actionUnit.Value.Hp <= 0)
 					{
 						continue;
 					}
@@ -225,35 +210,6 @@ namespace IsometricGame.Logic
 				}
 			}
 
-			/* Move units */
-			foreach (var actionPlayer in game.Players)
-			{
-				foreach (var actionUnit in actionPlayer.Value.Units)
-				{
-					var unitMove = game.PlayersMove[actionPlayer.Key].UnitActions[actionUnit.Key];
-					if (!unitMove.Move.HasValue || actionUnit.Value.Hp <= 0)
-					{
-						continue;
-					}
-
-					var path = BreadthFirstPathfinder.Search(game.Astar, actionUnit.Value.Position, unitMove.Move.Value)
-						.Take(actionUnit.Value.MoveDistance + 1)
-						.ToList();
-
-					for (var i = path.Count; i > 0; i--)
-					{
-						if (occupiedCells.Contains(path[i - 1]))
-						{
-							continue;
-						}
-
-						actionUnit.Value.Position = path[i - 1];
-						occupiedCells.Add(actionUnit.Value.Position);
-						break;
-					}
-				}
-			}
-
 			/* Execute abilities */
 			foreach (var actionPlayer in game.Players)
 			{
@@ -262,30 +218,38 @@ namespace IsometricGame.Logic
 					var unitMove = game.PlayersMove[actionPlayer.Key].UnitActions[actionUnit.Key];
 					var actionFullId = UnitUtils.GetFullUnitId(actionUnit.Value);
 					var actionDelta = unitsTurnDelta[actionFullId];
-					if (
-						!unitMove.AbilityDirection.HasValue ||
-						actionUnit.Value.Hp <= 0 ||
-						!actionUnit.Value.Abilities.Contains(unitMove.Ability))
+					foreach (var move in unitMove)
 					{
-						continue;
-					}
+						if (
+							!move.AbilityDirection.HasValue ||
+							actionUnit.Value.Hp <= 0 ||
+							!actionUnit.Value.Abilities.Contains(move.Ability))
+						{
+							continue;
+						}
 
-					var ability = pluginUtils.FindAbility(unitMove.Ability);
-					if (ability.TargetUnit)
-					{
-						var targetPlayerId = UnitUtils.GetPlayerId(unitMove.AbilityFullUnitId);
-						var targetUnitId = UnitUtils.GetUnitId(unitMove.AbilityFullUnitId);
-						var targetPlayer = game.Players[targetPlayerId];
-						var targetUnit = targetPlayer.Units[targetUnitId];
+						var ability = pluginUtils.FindAbility(move.Ability);
+						if (ability.TargetUnit)
+						{
+                            if (!move.AbilityFullUnitId.HasValue)
+                            {
+								continue;
+                            }
 
-						actionDelta.AbilityDirection = targetUnit.Position - actionUnit.Value.Position;
-					}
-					else
-					{
-						actionDelta.AbilityDirection = unitMove.AbilityDirection.Value;
-					}
+							var targetPlayerId = UnitUtils.GetPlayerId(move.AbilityFullUnitId.Value);
+							var targetUnitId = UnitUtils.GetUnitId(move.AbilityFullUnitId.Value);
+							var targetPlayer = game.Players[targetPlayerId];
+							var targetUnit = targetPlayer.Units[targetUnitId];
 
-					appliedActions.AddRange(ability.Apply(actionUnit.Value, game, actionDelta.AbilityDirection.Value));
+							actionDelta.AbilityDirection = targetUnit.Position - actionUnit.Value.Position;
+						}
+						else
+						{
+							actionDelta.AbilityDirection = move.AbilityDirection.Value;
+						}
+
+						appliedActions.AddRange(ability.Apply(actionUnit.Value, game, actionDelta.AbilityDirection.Value));
+					}
 				}
 			}
 

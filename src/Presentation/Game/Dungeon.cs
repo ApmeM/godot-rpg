@@ -128,17 +128,21 @@ public partial class Dungeon : Node2D
 
         switch (this.currentAction)
         {
-            case CurrentAction.Move:
-                {
-                    this.maze.HighliteAvailableMoves(this.maze.WorldToMap(currentUnit.Position), currentUnit.ClientUnit.MoveDistance);
-                    break;
-                }
             case CurrentAction.UseAbility:
                 {
-                    this.currentAbility = ability;
-                    var pos = currentUnit.NewPosition == null ? this.maze.WorldToMap(currentUnit.Position) : currentUnit.NewPosition.Value;
-                    this.pluginUtils.FindAbility(ability).HighliteMaze(this.maze, pos, currentUnit.ClientUnit);
-                    break;
+                    if (ability == Ability.Move)
+                    {
+                        this.currentAbility = ability;
+                        this.maze.HighliteAvailableMoves(this.maze.WorldToMap(currentUnit.Position), currentUnit.ClientUnit.MoveDistance);
+                        break;
+                    }
+                    else
+                    {
+                        this.currentAbility = ability;
+                        var pos = currentUnit.NewPosition == null ? this.maze.WorldToMap(currentUnit.Position) : currentUnit.NewPosition.Value;
+                        this.pluginUtils.FindAbility(ability).HighliteMaze(this.maze, pos, currentUnit.ClientUnit);
+                        break;
+                    }
                 }
         }
     }
@@ -182,34 +186,30 @@ public partial class Dungeon : Node2D
                     }
                     break;
                 }
-            case CurrentAction.Move:
-                {
-                    if (moveAvailable)
-                    {
-                        this.currentAction = CurrentAction.None;
-                        currentUnit.MoveShadowTo(cell);
-                        this.unitActions.RectPosition = this.GetViewport().CanvasTransform.AffineInverse().Xform(GetViewport().GetMousePosition());
-                        this.unitActions.Visible = true;
-                        this.maze.RemoveHighliting();
-                    }
-                    break;
-                }
             case CurrentAction.UseAbility:
                 {
                     if (moveAvailable)
                     {
                         var ability = this.pluginUtils.FindAbility(currentAbility.Value);
-
                         this.currentAction = CurrentAction.None;
-                        Unit target = null;
-                        if (ability.TargetUnit)
+
+                        if (this.currentAbility == Ability.Move)
                         {
-                            target = myUnits
-                                .Union(otherUnits)
-                                .Where(unit => (unit.NewPosition == null ? this.maze.WorldToMap(unit.Position) : unit.NewPosition.Value) == cell)
-                                .FirstOrDefault();
+                            currentUnit.MoveShadowTo(cell);
                         }
-                        currentUnit.AbilityShadowTo(currentAbility.Value, cell, target);
+                        else
+                        {
+                            Unit target = null;
+                            if (ability.TargetUnit)
+                            {
+                                target = myUnits
+                                    .Union(otherUnits)
+                                    .Where(unit => (unit.NewPosition == null ? this.maze.WorldToMap(unit.Position) : unit.NewPosition.Value) == cell)
+                                    .FirstOrDefault();
+                            }
+                            currentUnit.AbilityShadowTo(currentAbility.Value, cell, target);
+                        }   
+                        
                         this.unitActions.RectPosition = this.GetViewport().CanvasTransform.AffineInverse().Xform(GetViewport().GetMousePosition());
                         this.unitActions.Visible = true;
                         this.maze.RemoveHighliting();
@@ -234,12 +234,31 @@ public partial class Dungeon : Node2D
 
         var data = new TransferTurnDoneData
         {
-            UnitActions = myUnits.ToDictionary(a => a.ClientUnit.UnitId, a => new TransferTurnDoneData.UnitActionData
+            UnitActions = myUnits.ToDictionary(a => a.ClientUnit.UnitId, a =>
             {
-                Move = a.NewPosition,
-                Ability = a.Ability ?? Ability.None,
-                AbilityDirection = a.AbilityDirection,
-                AbilityFullUnitId = a.AbilityUnitTarget == null ? -1 : UnitUtils.GetFullUnitId(a.AbilityUnitTarget.ClientUnit.PlayerId, a.AbilityUnitTarget.ClientUnit.UnitId)
+                var lists = new List<TransferTurnDoneData.UnitActionData>();
+                if (!a.Ability.HasValue && !a.NewPosition.HasValue)
+                {
+                    return lists;
+                }
+
+                lists.Add(new TransferTurnDoneData.UnitActionData
+                {
+                    Ability = Ability.Move,
+                    AbilityDirection = a.NewPosition - this.maze.WorldToMap(a.Position)
+                });
+
+                if (a.Ability.HasValue)
+                {
+                    lists.Add(new TransferTurnDoneData.UnitActionData
+                    {
+                        Ability = a.Ability.Value,
+                        AbilityDirection = a.AbilityDirection,
+                        AbilityFullUnitId = a.AbilityUnitTarget == null ? -1 : UnitUtils.GetFullUnitId(a.AbilityUnitTarget.ClientUnit.PlayerId, a.AbilityUnitTarget.ClientUnit.UnitId)
+                    });
+                }
+
+                return lists;
             })
         };
 
