@@ -20,34 +20,36 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
             maze.HighliteAvailableAttacks(pos, (int)(currentUnit.RangedAttackDistance * 5), (int)(currentUnit.AOEAttackRadius * 2));
         }
 
-        public bool IsApplicable(MapGraphData astar, ServerUnit actionUnit, ServerUnit targetUnit, Vector2 abilityDirection)
+        public List<IAppliedAction> Apply(ServerUnit actionUnit, GameData game, Vector2 abilityDirection)
         {
-            if (actionUnit.Player == targetUnit.Player)
-            {
-                return false;
-            }
-            
-            BreadthFirstPathfinder.Search(astar, actionUnit.Position, (int)(actionUnit.RangedAttackDistance * 5), out var visited);
+            var result = new List<IAppliedAction>();
+            BreadthFirstPathfinder.Search(game.Astar, actionUnit.Position, (int)(actionUnit.RangedAttackDistance * 5), out var visited);
             if (!visited.ContainsKey(actionUnit.Position + abilityDirection))
             {
-                return false;
+                return result;
             }
 
-            BreadthFirstPathfinder.Search(astar, actionUnit.Position + abilityDirection, (int)(actionUnit.AOEAttackRadius * 2), out visited);
-            return visited.ContainsKey(targetUnit.Position);
-        }
-
-        public List<IAppliedAction> ApplyCost(ServerUnit actionUnit)
-        {
-            return new List<IAppliedAction>();
-        }
-
-        public List<IAppliedAction> Apply(ServerUnit actionUnit, ServerUnit targetUnit)
-        {
-            return new List<IAppliedAction>
+            BreadthFirstPathfinder.Search(game.Astar, actionUnit.Position + abilityDirection, (int)(actionUnit.AOEAttackRadius * 2), out visited);
+            foreach (var targetPlayer in game.Players)
             {
-                new ChangeHpAppliedAction(-(int)(actionUnit.AttackPower * 5), targetUnit),
-            };
+                if (actionUnit.Player == targetPlayer.Value)
+                {
+                    continue;
+                }
+
+                foreach (var targetUnit in targetPlayer.Value.Units)
+                {
+                    if (!visited.ContainsKey(targetUnit.Value.Position))
+                    {
+                        continue;
+                    }
+
+                    result.Add(new ChangeHpAppliedAction(-(int)(actionUnit.AttackPower * 5), targetUnit.Value));
+                    result.Add(new ApplyAbilityDirectionAction(actionUnit, targetUnit.Value));
+                }
+            }
+
+            return result;
         }
     }
 }

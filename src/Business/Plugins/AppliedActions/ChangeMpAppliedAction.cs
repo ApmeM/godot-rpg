@@ -1,24 +1,23 @@
 ﻿using IsometricGame.Logic.Models;
+using System.Collections.Generic;
 
 namespace IsometricGame.Logic.ScriptHelpers.AppliedActions
 {
     public class ChangeMpAppliedAction : IAppliedAction
     {
         private readonly ServerUnit unit;
-
-        public long FullUnitId { get; private set; }
-        public int Value { get; private set; }
+        private readonly int value;
 
         public ChangeMpAppliedAction(int value, ServerUnit unit)
         {
-            this.Value = value;
+            this.value = value;
             this.unit = unit;
-            this.FullUnitId = UnitUtils.GetFullUnitId(unit);
         }
 
-        public void Apply()
+        public void Apply(Dictionary<long, ServerTurnDelta> unitsTurnDelta)
         {
-            this.unit.Mp += Value;
+            this.unit.Mp += value;
+            unitsTurnDelta[UnitUtils.GetFullUnitId(this.unit)].MpChanges.Add(value);
         }
     }
 }

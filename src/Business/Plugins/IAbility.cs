@@ -10,10 +10,9 @@ namespace IsometricGame.Logic.ScriptHelpers
         Ability Ability { get; }
         string Description { get; }
         bool TargetUnit { get; }
+        
         void HighliteMaze(Maze maze, Vector2 pos, ClientUnit currentUnit);
 
-        bool IsApplicable(MapGraphData astar, ServerUnit actionUnit, ServerUnit targetUnit, Vector2 abilityDirection);
-        List<IAppliedAction> Apply(ServerUnit actionUnit, ServerUnit targetUnit);
-        List<IAppliedAction> ApplyCost(ServerUnit actionUnit);
+        List<IAppliedAction> Apply(ServerUnit value, GameData game, Vector2 abilityDirection);
     }
 }

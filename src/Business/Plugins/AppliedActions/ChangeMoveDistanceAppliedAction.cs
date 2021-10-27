@@ -1,4 +1,5 @@
 ﻿using IsometricGame.Logic.Models;
+using System.Collections.Generic;
 
 namespace IsometricGame.Logic.ScriptHelpers.AppliedActions
 {
@@ -13,7 +14,7 @@ namespace IsometricGame.Logic.ScriptHelpers.AppliedActions
             this.unit = unit;
         }
 
-        public void Apply()
+        public void Apply(Dictionary<long, ServerTurnDelta> unitsTurnDelta)
         {
             this.unit.MoveDistance += value;
         }

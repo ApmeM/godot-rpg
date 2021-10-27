@@ -14,16 +14,16 @@ namespace IsometricGame.Logic
 	public class GameLogic
 	{
 		private static readonly TransferTurnDoneData emptyMoves = new TransferTurnDoneData();
-        private readonly MapRepository mapRepository;
-        private readonly PluginUtils pluginUtils;
-        private readonly UnitUtils unitUtils;
+		private readonly MapRepository mapRepository;
+		private readonly PluginUtils pluginUtils;
+		private readonly UnitUtils unitUtils;
 
-        public GameLogic(MapRepository mapRepository, PluginUtils pluginUtils, UnitUtils unitUtils)
-        {
-            this.mapRepository = mapRepository;
-            this.pluginUtils = pluginUtils;
-            this.unitUtils = unitUtils;
-        }
+		public GameLogic(MapRepository mapRepository, PluginUtils pluginUtils, UnitUtils unitUtils)
+		{
+			this.mapRepository = mapRepository;
+			this.pluginUtils = pluginUtils;
+			this.unitUtils = unitUtils;
+		}
 
 		public GameData StartForLobby(LobbyData lobby)
 		{
@@ -34,7 +34,7 @@ namespace IsometricGame.Logic
 			for (var x = 0; x < game.Map.Paths.GetLength(0); x++)
 				for (var y = 0; y < game.Map.Paths.GetLength(1); y++)
 				{
-					switch(game.Map.Paths[x, y])
+					switch (game.Map.Paths[x, y])
 					{
 						case MapRepository.JunctionTileId:
 						case MapRepository.MazeTileId:
@@ -49,10 +49,10 @@ namespace IsometricGame.Logic
 			List<Tuple<IBot, int>> bots = new List<Tuple<IBot, int>>();
 			var botNumber = 1;
 			for (var i = 0; i < lobby.Players.Count; i++)
-            {
-                var player = lobby.Players[i];
-                var playerId = player.ClientId;
-                if (playerId < 0)
+			{
+				var player = lobby.Players[i];
+				var playerId = player.ClientId;
+				if (playerId < 0)
 				{
 					var bot = pluginUtils.FindBot((Bot)player.ClientId);
 					bots.Add(new Tuple<IBot, int>(bot, -botNumber));
@@ -60,18 +60,18 @@ namespace IsometricGame.Logic
 					botNumber++;
 				}
 
-                game.Players.Add(playerId, new ServerPlayer
-                {
+				game.Players.Add(playerId, new ServerPlayer
+				{
 					PlayerId = playerId,
 					PlayerName = lobby.Players[i].PlayerName
 				});
 			}
-			
+
 			for (var i = 0; i < bots.Count; i++)
-            {
+			{
 				var bot = bots[i];
 				bot.Item1.StartGame(game, bot.Item2);
-            }
+			}
 
 			return game;
 		}
@@ -270,8 +270,6 @@ namespace IsometricGame.Logic
 						continue;
 					}
 
-					var wasApplied = false;
-
 					var ability = pluginUtils.FindAbility(unitMove.Ability);
 					if (ability.TargetUnit)
 					{
@@ -285,50 +283,15 @@ namespace IsometricGame.Logic
 					else
 					{
 						actionDelta.AbilityDirection = unitMove.AbilityDirection.Value;
-						wasApplied = true;
-
 					}
 
-					foreach (var targetPlayer in game.Players)
-					{
-						foreach (var targetUnit in targetPlayer.Value.Units)
-						{
-							var isApplicable = ability.IsApplicable(game.Astar, actionUnit.Value, targetUnit.Value, actionDelta.AbilityDirection.Value);
-							if (!isApplicable)
-							{
-								continue;
-							}
-
-							var targetFullId = UnitUtils.GetFullUnitId(targetUnit.Value);
-							var targetDelta = unitsTurnDelta[targetFullId];
-							targetDelta.AbilityFrom = actionUnit.Value.Position - targetUnit.Value.Position;
-
-							wasApplied = true;
-
-							var actions = ability.Apply(actionUnit.Value, targetUnit.Value);
-							appliedActions.AddRange(actions);
-						}
-					}
-
-					if (wasApplied)
-					{
-						var costs = ability.ApplyCost(actionUnit.Value);
-						appliedActions.AddRange(costs);
-					}
+					appliedActions.AddRange(ability.Apply(actionUnit.Value, game, actionDelta.AbilityDirection.Value));
 				}
 			}
 
 			foreach (var action in appliedActions)
 			{
-				action.Apply();
-				if (action is ChangeHpAppliedAction hpAction)
-				{
-					unitsTurnDelta[hpAction.FullUnitId].HpChanges.Add(hpAction.Value);
-				}
-				if (action is ChangeMpAppliedAction mpAction)
-				{
-					unitsTurnDelta[mpAction.FullUnitId].MpChanges.Add(mpAction.Value);
-				}
+				action.Apply(unitsTurnDelta);
 			}
 			appliedActions.Clear();
 
@@ -362,15 +325,7 @@ namespace IsometricGame.Logic
 
 			foreach (var action in appliedActions)
 			{
-				action.Apply();
-				if (action is ChangeHpAppliedAction hpAction)
-				{
-					unitsTurnDelta[hpAction.FullUnitId].HpChanges.Add(hpAction.Value);
-				}
-				if (action is ChangeMpAppliedAction mpAction)
-				{
-					unitsTurnDelta[mpAction.FullUnitId].MpChanges.Add(mpAction.Value);
-				}
+				action.Apply(unitsTurnDelta);
 			}
 			appliedActions.Clear();
 

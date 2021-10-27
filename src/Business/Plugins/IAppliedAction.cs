@@ -2,6 +2,6 @@
 {
     public interface IAppliedAction
     {
-        void Apply();
+        void Apply(System.Collections.Generic.Dictionary<long, Models.ServerTurnDelta> unitsTurnDelta);
     }
 }

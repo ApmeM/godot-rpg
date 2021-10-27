@@ -1,6 +1,4 @@
 ﻿using IsometricGame.Logic.Enums;
-using IsometricGame.Logic.ScriptHelpers.Skills;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 

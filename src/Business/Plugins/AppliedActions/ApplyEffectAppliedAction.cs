@@ -1,5 +1,6 @@
 ﻿using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.Models;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace IsometricGame.Logic.ScriptHelpers.AppliedActions
@@ -17,7 +18,7 @@ namespace IsometricGame.Logic.ScriptHelpers.AppliedActions
             this.unit = unit;
         }
 
-        public void Apply()
+        public void Apply(Dictionary<long, ServerTurnDelta> unitsTurnDelta)
         {
             var existingEffect = this.unit.Effects.FirstOrDefault(a => a.Effect == effect);
             if (existingEffect == null)
