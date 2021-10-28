@@ -39,7 +39,8 @@ namespace IsometricGame.Logic.Utils
                     new HealAbility(),
                     new FireballAbility(pluginUtils),
                     new HasteAbility(pluginUtils),
-                    new MoveAbility()
+                    new MoveAbility(),
+                    new SkipTurnAbility()
                 },
                 new List<ISkill>
                 {

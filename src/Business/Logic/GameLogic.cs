@@ -158,7 +158,7 @@ namespace IsometricGame.Logic
 				return;
 			}
 
-			// Put player move into dictionary
+			/* Put player move into dictionary */
 			if (!game.Players.ContainsKey(forPlayer))
 			{
 				return;
@@ -171,13 +171,11 @@ namespace IsometricGame.Logic
 				return;
 			}
 
-			// When all players send their turns - apply all.
+			/* When all players send their turns - apply all.*/
 			game.Timeout = game.Configuration.TurnTimeout;
-			var unitsTurnDelta = new Dictionary<long, ServerTurnDelta>();
-			var occupiedCells = new HashSet<Vector2>();
-			var appliedActions = new List<IAppliedAction>();
 
 			/* Initialize turn delta. */
+			var unitsTurnDelta = new Dictionary<long, ServerTurnDelta>();
 			foreach (var actionPlayer in game.Players)
 			{
 				foreach (var actionUnit in actionPlayer.Value.Units)
@@ -192,25 +190,8 @@ namespace IsometricGame.Logic
 				}
 			}
 
-			/* Increase Hp for units that do not have any commands */
-			foreach (var actionPlayer in game.Players)
-			{
-				foreach (var actionUnit in actionPlayer.Value.Units)
-				{
-					var unitMove = game.PlayersMove[actionPlayer.Key].UnitActions[actionUnit.Key];
-					if (unitMove.Any() || actionUnit.Value.Hp <= 0)
-					{
-						continue;
-					}
-
-					var targetFullId = UnitUtils.GetFullUnitId(actionUnit.Value);
-					var targetDelta = unitsTurnDelta[targetFullId];
-					appliedActions.Add(new ChangeHpAppliedAction(actionUnit.Value.MaxHp / 10, actionUnit.Value));
-					appliedActions.Add(new ChangeMpAppliedAction(actionUnit.Value.MaxMp / 10, actionUnit.Value));
-				}
-			}
-
 			/* Execute abilities */
+			var appliedActions = new List<IAppliedAction>();
 			foreach (var actionPlayer in game.Players)
 			{
 				foreach (var actionUnit in actionPlayer.Value.Units)
@@ -305,6 +286,7 @@ namespace IsometricGame.Logic
 				actionPlayer.Value.IsGameOver = actionPlayer.Value.IsGameOver || CheckGameOver(actionPlayer.Value);
 			}
 
+			/* Turn calculation done */
 			game.PlayersMove.Clear();
 
 			foreach (var p in game.Players)
@@ -312,12 +294,8 @@ namespace IsometricGame.Logic
 				p.Value.TurnDoneMethod(GetTurnData(game, p.Key, unitsTurnDelta));
 			}
 
-			foreach (var actionPlayer in game.Players.ToList())
+			foreach (var actionPlayer in game.Players.Where(a => a.Value.IsGameOver).ToList())
 			{
-				if (!actionPlayer.Value.IsGameOver)
-				{
-					continue;
-				}
 				game.Players.Remove(actionPlayer.Key);
 				game.PlayersGameOver[actionPlayer.Key] = actionPlayer.Value;
 			}

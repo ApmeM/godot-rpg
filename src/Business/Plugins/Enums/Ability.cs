@@ -7,6 +7,7 @@
         Heal,
         Fireball,
         Haste,
-        Move
+        Move,
+        SkipTurn
     };
 }

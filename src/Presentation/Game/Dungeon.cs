@@ -237,8 +237,13 @@ public partial class Dungeon : Node2D
             UnitActions = myUnits.ToDictionary(a => a.ClientUnit.UnitId, a =>
             {
                 var lists = new List<TransferTurnDoneData.UnitActionData>();
-                if (!a.Ability.HasValue && !a.NewPosition.HasValue)
+                if (!a.NewPosition.HasValue && (!a.Ability.HasValue || a.Ability.HasValue && a.Ability == Ability.SkipTurn))
                 {
+                    lists.Add(new TransferTurnDoneData.UnitActionData
+                    {
+                        Ability = Ability.SkipTurn,
+                        AbilityDirection = Vector2.Zero
+                    });
                     return lists;
                 }
 
