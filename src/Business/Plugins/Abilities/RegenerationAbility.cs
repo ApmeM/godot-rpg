@@ -6,13 +6,13 @@ using System.Collections.Generic;
 
 namespace IsometricGame.Logic.ScriptHelpers.Abilities
 {
-    public class SkipTurnAbility : IAbility
+    public class RegenerationAbility : IAbility
     {
-        public bool TargetUnit => false;
+        public AbilityType AbilityType => AbilityType.Automatic;
 
-        public string Description => "Skip turn: \n Increse Hp and Mp by 10%. Used automatically if unit not moved and no other abilities selected this turn.";
+        public string Description => "Regeneration (Autoability): \n Increse Hp and Mp by 10% if unit not moved and no abilities selected this turn.";
 
-        public Ability Ability => Ability.SkipTurn;
+        public Ability Ability => Ability.Regeneration;
 
         public void HighliteMaze(Maze maze, Vector2 pos, ClientUnit currentUnit)
         {
@@ -22,17 +22,11 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
         public List<IAppliedAction> Apply(ServerUnit actionUnit, GameData game, Vector2 abilityDirection)
         {
             var result = new List<IAppliedAction>();
-            if (abilityDirection != Vector2.Zero)
-            {
-                GD.Print("HERE1", abilityDirection);
-                return result;
-            }
-
+            
             var unitMove = game.PlayersMove[actionUnit.Player.PlayerId].UnitActions[actionUnit.UnitId];
 
             if (unitMove.Count > 1)
             {
-                GD.Print("HERE2");
                 return result;
             }
 

@@ -10,7 +10,7 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
 {
     public class HealAbility : IAbility
     {
-        public bool TargetUnit => true;
+        public AbilityType AbilityType => AbilityType.TargetUnit;
 
         public string Description => "Heal: \n Hp increase: 10.\n Cost: 2";
 
@@ -58,12 +58,13 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
                     }
 
                     result.Add(new ChangeHpAppliedAction(+(int)(actionUnit.MagicPower * 10), targetUnit.Value));
-                    result.Add(new ApplyAbilityDirectionAction(actionUnit, targetUnit.Value));
+                    result.Add(new ApplyAbilityFromDirectionAction(actionUnit, targetUnit.Value));
                 }
             }
 
             if (result.Count > 0)
             {
+                result.Add(new ApplyAbilityToDirectionAction(actionUnit, abilityDirection));
                 result.Add(new ChangeMpAppliedAction(-2, actionUnit));
             }
 

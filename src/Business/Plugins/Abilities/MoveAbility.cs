@@ -9,7 +9,7 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
 {
     public class MoveAbility : IAbility
     {
-        public bool TargetUnit => false;
+        public AbilityType AbilityType => AbilityType.AreaOfEffect;
 
         public string Description => "Move: \n Distance: 10.";
 

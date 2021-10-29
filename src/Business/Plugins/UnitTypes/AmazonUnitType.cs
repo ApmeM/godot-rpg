@@ -11,7 +11,7 @@ namespace IsometricGame.Logic.ScriptHelpers.Skills
         {
             unit.SightRange = 7;
             unit.Abilities.Add(Ability.Move);
-            unit.Abilities.Add(Ability.SkipTurn);
+            unit.Abilities.Add(Ability.Regeneration);
             unit.Abilities.Add(Ability.RangedAttack);
         }
 

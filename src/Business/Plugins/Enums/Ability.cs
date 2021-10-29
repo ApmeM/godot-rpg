@@ -8,6 +8,6 @@
         Fireball,
         Haste,
         Move,
-        SkipTurn
+        Regeneration
     };
 }

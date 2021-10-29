@@ -9,7 +9,7 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
 {
     public class RangedAttackAbility : IAbility
     {
-        public bool TargetUnit => false;
+        public AbilityType AbilityType => AbilityType.AreaOfEffect;
 
         public string Description => "Ranged attack: \n Damage: 5.";
 
@@ -45,9 +45,11 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
                     }
 
                     result.Add(new ChangeHpAppliedAction(-(int)(actionUnit.AttackPower * 5), targetUnit.Value));
-                    result.Add(new ApplyAbilityDirectionAction(actionUnit, targetUnit.Value));
+                    result.Add(new ApplyAbilityFromDirectionAction(actionUnit, targetUnit.Value));
                 }
             }
+
+            result.Add(new ApplyAbilityToDirectionAction(actionUnit, abilityDirection));
 
             return result;
         }

@@ -1,14 +1,15 @@
-﻿using IsometricGame.Logic.Models;
+﻿using Godot;
+using IsometricGame.Logic.Models;
 using System.Collections.Generic;
 
 namespace IsometricGame.Logic.ScriptHelpers.AppliedActions
 {
-    public class ApplyAbilityDirectionAction : IAppliedAction
+    public class ApplyAbilityFromDirectionAction : IAppliedAction
     {
         private readonly ServerUnit actionUnit;
         private readonly ServerUnit targetUnit;
 
-        public ApplyAbilityDirectionAction(ServerUnit actionUnit, ServerUnit targetUnit)
+        public ApplyAbilityFromDirectionAction(ServerUnit actionUnit, ServerUnit targetUnit)
         {
             this.actionUnit = actionUnit;
             this.targetUnit = targetUnit;

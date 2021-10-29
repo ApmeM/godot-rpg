@@ -200,7 +200,7 @@ public partial class Dungeon : Node2D
                         else
                         {
                             Unit target = null;
-                            if (ability.TargetUnit)
+                            if (ability.AbilityType == AbilityType.TargetUnit)
                             {
                                 target = myUnits
                                     .Union(otherUnits)
@@ -237,21 +237,15 @@ public partial class Dungeon : Node2D
             UnitActions = myUnits.ToDictionary(a => a.ClientUnit.UnitId, a =>
             {
                 var lists = new List<TransferTurnDoneData.UnitActionData>();
-                if (!a.NewPosition.HasValue && (!a.Ability.HasValue || a.Ability.HasValue && a.Ability == Ability.SkipTurn))
+
+                if (a.Ability.HasValue || a.NewPosition.HasValue)
                 {
                     lists.Add(new TransferTurnDoneData.UnitActionData
                     {
-                        Ability = Ability.SkipTurn,
-                        AbilityDirection = Vector2.Zero
+                        Ability = Ability.Move,
+                        AbilityDirection = a.NewPosition - this.maze.WorldToMap(a.Position)
                     });
-                    return lists;
                 }
-
-                lists.Add(new TransferTurnDoneData.UnitActionData
-                {
-                    Ability = Ability.Move,
-                    AbilityDirection = a.NewPosition - this.maze.WorldToMap(a.Position)
-                });
 
                 if (a.Ability.HasValue)
                 {

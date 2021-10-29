@@ -9,7 +9,7 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
 {
     public class MeleeAttackAbility : IAbility
     {
-        public bool TargetUnit => false;
+        public AbilityType AbilityType => AbilityType.AreaOfEffect;
 
         public string Description => "Melee attack: \n Damage: 10.";
 
@@ -23,6 +23,7 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
         public List<IAppliedAction> Apply(ServerUnit actionUnit, GameData game, Vector2 abilityDirection)
         {
             var result = new List<IAppliedAction>();
+
             BreadthFirstPathfinder.Search(game.Astar, actionUnit.Position, 1, out var visited);
             if (!visited.ContainsKey(actionUnit.Position + abilityDirection))
             {
@@ -46,9 +47,11 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
                     }
 
                     result.Add(new ChangeHpAppliedAction(-(int)(actionUnit.AttackPower * 10), targetUnit.Value));
-                    result.Add(new ApplyAbilityDirectionAction(actionUnit, targetUnit.Value));
+                    result.Add(new ApplyAbilityFromDirectionAction(actionUnit, targetUnit.Value));
                 }
             }
+
+            result.Add(new ApplyAbilityToDirectionAction(actionUnit, abilityDirection));
 
             return result;
         }

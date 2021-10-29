@@ -17,7 +17,7 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
             this.pluginUtils = pluginUtils;
         }
 
-        public bool TargetUnit => true;
+        public AbilityType AbilityType => AbilityType.TargetUnit;
 
         public string Description => $"Haste: \n Apply effect: {this.pluginUtils.FindEffect(Effect.Haste).Description}\n  Duration: 10.\n Cost: 5";
 
@@ -66,12 +66,13 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
                     }
 
                     result.Add(new ApplyEffectAppliedAction(Effect.Haste, 10, targetUnit.Value));
-                    result.Add(new ApplyAbilityDirectionAction(actionUnit, targetUnit.Value));
+                    result.Add(new ApplyAbilityFromDirectionAction(actionUnit, targetUnit.Value));
                 }
             }
 
             if (result.Count > 0)
             {
+                result.Add(new ApplyAbilityToDirectionAction(actionUnit, abilityDirection));
                 result.Add(new ChangeMpAppliedAction(-5, actionUnit));
             }
 

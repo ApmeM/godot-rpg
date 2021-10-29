@@ -16,7 +16,7 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
             this.pluginUtils = pluginUtils;
         }
 
-        public bool TargetUnit => false;
+        public AbilityType AbilityType => AbilityType.AreaOfEffect;
 
         public string Description => $"Fireball: \n Direct Damage: 2. \n Apply effect: { this.pluginUtils.FindEffect(Effect.Burn).Description } \n  Duration: 5\n Cost: 5";
 
@@ -60,10 +60,11 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
 
                     result.Add(new ChangeHpAppliedAction(-(int)(actionUnit.MagicPower * 2), targetUnit.Value));
                     result.Add(new ApplyEffectAppliedAction(Effect.Burn, 5, targetUnit.Value));
-                    result.Add(new ApplyAbilityDirectionAction(actionUnit, targetUnit.Value));
+                    result.Add(new ApplyAbilityFromDirectionAction(actionUnit, targetUnit.Value));
                 }
             }
 
+            result.Add(new ApplyAbilityToDirectionAction(actionUnit, abilityDirection));
             result.Add(new ChangeMpAppliedAction(-5, actionUnit));
      
             return result;
