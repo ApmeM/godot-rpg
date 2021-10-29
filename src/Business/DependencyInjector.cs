@@ -40,6 +40,7 @@ namespace IsometricGame.Logic.Utils
                     new FireballAbility(pluginUtils),
                     new HasteAbility(pluginUtils),
                     new MoveAbility(),
+                    new FlyAbility(),
                     new RegenerationAbility()
                 },
                 new List<ISkill>

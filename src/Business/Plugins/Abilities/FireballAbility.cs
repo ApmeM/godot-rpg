@@ -22,9 +22,9 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
 
         public Ability Ability => Ability.Fireball;
 
-        public void HighliteMaze(Maze maze, Vector2 pos, ClientUnit currentUnit)
+        public void HighliteMaze(Maze maze, Vector2 oldPos, Vector2 newPos, ClientUnit currentUnit)
         {
-            maze.HighliteAvailableAttacks(pos, (int)(currentUnit.RangedAttackDistance * 5), (int)(currentUnit.AOEAttackRadius * 2));
+            maze.HighliteAvailableAttacks(newPos, (int)(currentUnit.RangedAttackDistance * 5), (int)(currentUnit.AOEAttackRadius * 2));
         }
 
         public List<IAppliedAction> Apply(ServerUnit actionUnit, GameData game, Vector2 abilityDirection)

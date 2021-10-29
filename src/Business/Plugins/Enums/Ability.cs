@@ -8,6 +8,7 @@
         Fireball,
         Haste,
         Move,
+        Fly,
         Regeneration
     };
 }

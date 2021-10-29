@@ -15,9 +15,9 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
 
         public Ability Ability => Ability.MeleeAttack;
 
-        public void HighliteMaze(Maze maze, Vector2 pos, ClientUnit currentUnit)
+        public void HighliteMaze(Maze maze, Vector2 oldPos, Vector2 newPos, ClientUnit currentUnit)
         {
-            maze.HighliteAvailableAttacks(pos, 1, (int)currentUnit.AOEAttackRadius);
+            maze.HighliteAvailableAttacks(newPos, 1, (int)currentUnit.AOEAttackRadius);
         }
 
         public List<IAppliedAction> Apply(ServerUnit actionUnit, GameData game, Vector2 abilityDirection)

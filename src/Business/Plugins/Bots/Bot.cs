@@ -45,7 +45,7 @@ public class EasyBot: IBot
 				new TransferTurnDoneData.UnitActionData
 				{
 					AbilityDirection = Fate.GlobalFate.Choose(Vector2.Up, Vector2.Down, Vector2.Left, Vector2.Right),
-					Ability = Ability.Move
+					Ability = (u.UnitType == UnitType.Witch) ? Ability.Fly : Ability.Move
 				},
 
 				new TransferTurnDoneData.UnitActionData

@@ -7,13 +7,13 @@ using System.Linq;
 
 namespace IsometricGame.Logic.ScriptHelpers.Abilities
 {
-    public class MoveAbility : IAbility
+    public class FlyAbility : IAbility
     {
         public AbilityType AbilityType => AbilityType.AreaOfEffect;
 
-        public string Description => "Move: \n Distance: 10.";
+        public string Description => "Fly: \n Distance: 10.";
 
-        public Ability Ability => Ability.Move;
+        public Ability Ability => Ability.Fly;
 
         public void HighliteMaze(Maze maze, Vector2 oldPos, Vector2 newPos, ClientUnit currentUnit)
         {

@@ -130,19 +130,11 @@ public partial class Dungeon : Node2D
         {
             case CurrentAction.UseAbility:
                 {
-                    if (ability == Ability.Move)
-                    {
-                        this.currentAbility = ability;
-                        this.maze.HighliteAvailableMoves(this.maze.WorldToMap(currentUnit.Position), currentUnit.ClientUnit.MoveDistance);
-                        break;
-                    }
-                    else
-                    {
-                        this.currentAbility = ability;
-                        var pos = currentUnit.NewPosition == null ? this.maze.WorldToMap(currentUnit.Position) : currentUnit.NewPosition.Value;
-                        this.pluginUtils.FindAbility(ability).HighliteMaze(this.maze, pos, currentUnit.ClientUnit);
-                        break;
-                    }
+                    this.currentAbility = ability;
+                    var oldPosition = this.maze.WorldToMap(currentUnit.Position);
+                    var newPosition = currentUnit.NewPosition == null ? oldPosition : currentUnit.NewPosition.Value;
+                    this.pluginUtils.FindAbility(ability).HighliteMaze(this.maze, oldPosition, newPosition, currentUnit.ClientUnit);
+                    break;
                 }
         }
     }
@@ -193,7 +185,7 @@ public partial class Dungeon : Node2D
                         var ability = this.pluginUtils.FindAbility(currentAbility.Value);
                         this.currentAction = CurrentAction.None;
 
-                        if (this.currentAbility == Ability.Move)
+                        if (this.currentAbility == Ability.Move || this.currentAbility == Ability.Fly)
                         {
                             currentUnit.MoveShadowTo(cell);
                         }
@@ -242,7 +234,7 @@ public partial class Dungeon : Node2D
                 {
                     lists.Add(new TransferTurnDoneData.UnitActionData
                     {
-                        Ability = Ability.Move,
+                        Ability = (a.ClientUnit.UnitType == UnitType.Witch) ? Ability.Fly : Ability.Move,
                         AbilityDirection = a.NewPosition - this.maze.WorldToMap(a.Position)
                     });
                 }

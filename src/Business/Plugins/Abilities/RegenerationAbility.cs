@@ -14,9 +14,8 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
 
         public Ability Ability => Ability.Regeneration;
 
-        public void HighliteMaze(Maze maze, Vector2 pos, ClientUnit currentUnit)
+        public void HighliteMaze(Maze maze, Vector2 oldPos, Vector2 newPos, ClientUnit currentUnit)
         {
-            maze.HighliteAvailableAttacks(pos, 0, 0);
         }
 
         public List<IAppliedAction> Apply(ServerUnit actionUnit, GameData game, Vector2 abilityDirection)

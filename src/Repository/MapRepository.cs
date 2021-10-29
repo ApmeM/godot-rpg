@@ -35,8 +35,16 @@ namespace IsometricGame.Logic.ScriptHelpers
 
                         CommonAlgorithm.GenerateField(result, settings);
                         RoomGeneratorAlgorithm.AddRoom(result, settings, new Rectangle(1, 1, settings.Width - 2, settings.Height - 2));
+
                         MirroringAlgorithm.Mirror(result, settings);
                         WallSurroundingAlgorithm.BuildWalls(result, settings);
+
+                        for (var x = 12; x < 18; x++)
+                            for (var y = 12; y < 18; y++)
+                            {
+                                result.Paths[x, y] = EmptyTileId;
+                            }
+
                         break;
                     }
                 case MapGeneratingType.Random:

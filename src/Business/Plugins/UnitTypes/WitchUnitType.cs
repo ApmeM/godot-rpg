@@ -10,7 +10,7 @@ namespace IsometricGame.Logic.ScriptHelpers.Skills
         public void Apply(ServerUnit unit)
         {
             unit.MoveDistance *= 2;
-            unit.Abilities.Add(Ability.Move);
+            unit.Abilities.Add(Ability.Fly);
             unit.Abilities.Add(Ability.Regeneration);
         }
 

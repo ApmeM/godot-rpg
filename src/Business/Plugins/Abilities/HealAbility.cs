@@ -16,10 +16,10 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
 
         public Ability Ability => Ability.Heal;
 
-        public void HighliteMaze(Maze maze, Vector2 pos, ClientUnit currentUnit)
+        public void HighliteMaze(Maze maze, Vector2 oldPos, Vector2 newPos, ClientUnit currentUnit)
         {
             var myUnits = maze.GetTree().GetNodesInGroup(Groups.MyUnits).Cast<Unit>();
-            BreadthFirstPathfinder.Search(maze.astar, pos, (int)(currentUnit.RangedAttackDistance * 5), out var visited);
+            BreadthFirstPathfinder.Search(maze.astar, newPos, (int)(currentUnit.RangedAttackDistance * 5), out var visited);
             var targetCells = myUnits
                 .Select(unit => unit.NewPosition == null ? maze.WorldToMap(unit.Position) : unit.NewPosition.Value)
                 .Where(visited.ContainsKey)

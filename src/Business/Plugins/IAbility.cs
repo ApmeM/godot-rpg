@@ -11,7 +11,7 @@ namespace IsometricGame.Logic.ScriptHelpers
         AbilityType AbilityType { get; }
         string Description { get; }
 
-        void HighliteMaze(Maze maze, Vector2 pos, ClientUnit currentUnit);
+        void HighliteMaze(Maze maze, Vector2 oldPos, Vector2 newPos, ClientUnit currentUnit);
 
         List<IAppliedAction> Apply(ServerUnit value, GameData game, Vector2 abilityDirection);
     }
