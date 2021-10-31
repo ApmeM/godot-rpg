@@ -28,12 +28,13 @@ public partial class UnitShadow : Node2D
 
         if (path.Count > 0)
         {
-            var motion = IsometricMove.GetMotion(path, Position, delta, MOTION_SPEED);
+            var maze = GetParent<Maze>();
+            var motion = maze.GetMotion(path, Position, delta, MOTION_SPEED);
             this.shadow.Playing = motion.HasValue;
             if (motion.HasValue)
             {
                 Position += motion ?? Vector2.Zero;
-                var direction = IsometricMove.Animate(motion.Value);
+                var direction = UnitUtils.Animate(motion.Value);
                 if (!string.IsNullOrWhiteSpace(direction))
                 {
                     this.shadow.Animation = $"move{direction}";
@@ -44,7 +45,8 @@ public partial class UnitShadow : Node2D
 
     public void MoveShadowTo(Vector2 newTarget)
     {
-        IsometricMove.MoveBy(this.path, Position, newTarget, GetParent<Maze>());
+        var maze = GetParent<Maze>();
+        maze.MoveBy(this.path, Position, newTarget, true);
         Ability = null;
         AbilityDirection = null;
         AbilityUnitTarget = null;
@@ -68,7 +70,7 @@ public partial class UnitShadow : Node2D
         this.AbilityUnitTarget = abilityUnitTarget;
 
         this.shadow.Playing = true;
-        var direction = IsometricMove.Animate(AbilityDirection.Value);
+        var direction = UnitUtils.Animate(AbilityDirection.Value);
 
         if (!string.IsNullOrWhiteSpace(direction))
         {

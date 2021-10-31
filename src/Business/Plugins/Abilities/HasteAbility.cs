@@ -26,12 +26,10 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
         public void HighliteMaze(Maze maze, Vector2 oldPos, Vector2 newPos, ClientUnit currentUnit)
         {
             var myUnits = maze.GetTree().GetNodesInGroup(Groups.MyUnits).Cast<Unit>();
-            BreadthFirstPathfinder.Search(maze.astar, newPos, (int)(currentUnit.RangedAttackDistance * 5), out var visited);
             var targetCells = myUnits
                 .Select(unit => unit.NewPosition == null ? maze.WorldToMap(unit.Position) : unit.NewPosition.Value)
-                .Where(visited.ContainsKey)
                 .ToList();
-            maze.HighliteAvailableAttacks(targetCells, (int)(currentUnit.AOEAttackRadius * 0));
+            maze.HighliteAvailableAttacks(newPos, targetCells, (int)(currentUnit.RangedAttackDistance * 5), (int)(currentUnit.AOEAttackRadius * 0));
         }
 
         public List<IAppliedAction> Apply(ServerUnit actionUnit, GameData game, Vector2 abilityDirection)
@@ -43,13 +41,13 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
                 return result;
             }
 
-            BreadthFirstPathfinder.Search(game.Astar, actionUnit.Position, (int)(actionUnit.RangedAttackDistance * 5), out var visited);
+            BreadthFirstPathfinder.Search(game.AstarFly, actionUnit.Position, (int)(actionUnit.RangedAttackDistance * 5), out var visited);
             if (!visited.ContainsKey(actionUnit.Position + abilityDirection))
             {
                 return result;
             }
 
-            BreadthFirstPathfinder.Search(game.Astar, actionUnit.Position + abilityDirection, (int)(actionUnit.AOEAttackRadius * 0), out visited);
+            BreadthFirstPathfinder.Search(game.AstarFly, actionUnit.Position + abilityDirection, (int)(actionUnit.AOEAttackRadius * 0), out visited);
 
             foreach (var targetPlayer in game.Players)
             {

@@ -28,13 +28,13 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
                 return result;
             }
 
-            BreadthFirstPathfinder.Search(game.Astar, actionUnit.Position, actionUnit.MoveDistance, out var visited);
+            BreadthFirstPathfinder.Search(game.AstarMove, actionUnit.Position, actionUnit.MoveDistance, out var visited);
             if (!visited.ContainsKey(actionUnit.Position + abilityDirection))
             {
                 return result;
             }
 
-            var moveCells = BreadthFirstPathfinder.Search(game.Astar, actionUnit.Position, actionUnit.Position + abilityDirection)
+            var moveCells = BreadthFirstPathfinder.Search(game.AstarMove, actionUnit.Position, actionUnit.Position + abilityDirection)
                 .Take(actionUnit.MoveDistance + 1)
                 .Select((a, b) => new { a, b })
                 .ToDictionary(a => a.a, a => a.b);

@@ -24,13 +24,13 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
         {
             var result = new List<IAppliedAction>();
 
-            BreadthFirstPathfinder.Search(game.Astar, actionUnit.Position, 1, out var visited);
+            BreadthFirstPathfinder.Search(game.AstarFly, actionUnit.Position, 1, out var visited);
             if (!visited.ContainsKey(actionUnit.Position + abilityDirection))
             {
                 return result;
             }
 
-            BreadthFirstPathfinder.Search(game.Astar, actionUnit.Position + abilityDirection, (int)(actionUnit.AOEAttackRadius), out visited);
+            BreadthFirstPathfinder.Search(game.AstarFly, actionUnit.Position + abilityDirection, (int)(actionUnit.AOEAttackRadius), out visited);
 
             foreach (var targetPlayer in game.Players)
             {

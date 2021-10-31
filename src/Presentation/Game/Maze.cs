@@ -1,3 +1,4 @@
+using BrainAI.Pathfinding.AStar;
 using BrainAI.Pathfinding.BreadthFirst;
 using FateRandom;
 using Godot;
@@ -22,7 +23,8 @@ public partial class Maze : TileMap
     private readonly List<Vector2> lastHighlitedCells = new List<Vector2>();
     private readonly Dictionary<HighliteType, List<Vector2>> highlitedCells;
 
-    public MapGraphData astar;
+    public MapGraphData astarMove;
+    public MapGraphData astarFly;
     private int? attackRadius;
 
     [Signal]
@@ -52,7 +54,8 @@ public partial class Maze : TileMap
                 {
                     case MapTile.Path:
                         {
-                            astar.Paths.Add(position);
+                            astarMove.Paths.Add(position);
+                            astarFly.Paths.Add(position);
                             if (floor.GetCellv(position) == -1)
                             {
                                 floor.SetCellv(position, Fate.GlobalFate.Chance(90) ? 1 : 0);
@@ -64,6 +67,12 @@ public partial class Maze : TileMap
                     case MapTile.Wall:
                         {
                             this.SetCellv(position, 2);
+                            fog.SetCellv(position, -1);
+                            break;
+                        }
+                    case MapTile.Pit:
+                        {
+                            astarFly.Paths.Add(position);
                             fog.SetCellv(position, -1);
                             break;
                         }
@@ -83,24 +92,22 @@ public partial class Maze : TileMap
         var mouse = floor.GetGlobalMousePosition();
         var cell = floor.WorldToMap(mouse);
 
-        if (floor.GetCellv(cell) >= 0)
-        {
-            BeginHighliting(HighliteType.HighlitedMove);
-            HighlitePoint(cell);
-            EndHighliting();
-        }
+        BeginHighliting(HighliteType.HighlitedMove);
+        HighlitePoint(cell);
+        EndHighliting();
 
         BeginHighliting(HighliteType.AttackRadius);
         if (attackRadius != null && highlitedCells[HighliteType.AttackDistance].Contains(cell))
         {
-            HighliteRadius(cell, attackRadius.Value);
+            HighliteRadius(cell, attackRadius.Value, true);
         }
         EndHighliting();
     }
 
     public void Initialize(int mapWidth, int mapHeight)
     {
-        astar = new MapGraphData(mapWidth, mapHeight);
+        astarMove = new MapGraphData(mapWidth, mapHeight);
+        astarFly = new MapGraphData(mapWidth, mapHeight);
     }
 
     public override void _UnhandledInput(InputEvent @event)
@@ -122,26 +129,6 @@ public partial class Maze : TileMap
         }
     }
 
-    private void RehighliteCells()
-    {
-        foreach (var cell in lastHighlitedCells)
-        {
-            floor.SetCellv(cell, Fate.GlobalFate.Chance(90) ? 1 : 0);
-        }
-        
-        lastHighlitedCells.Clear();
-        
-        foreach (var highlitedCell in highlitedCells)
-        {
-            foreach (var cell in highlitedCell.Value)
-            {
-                floor.SetCellv(cell, (int)highlitedCell.Key);
-            }
-            lastHighlitedCells.AddRange(highlitedCell.Value);
-
-        }
-    }
-
     public void RemoveHighliting()
     {
         foreach(var cells in highlitedCells.Values)
@@ -155,24 +142,25 @@ public partial class Maze : TileMap
     {
         this.attackRadius = attackRadius;
         BeginHighliting(HighliteType.AttackDistance);
-        HighliteRadius(shadowCell, attackDistance.Value);
+        HighliteRadius(shadowCell, attackDistance.Value, true);
         EndHighliting();
-        RehighliteCells();
     }
 
-    public void HighliteAvailableAttacks(List<Vector2> targetCells, int? attackRadius)
+    public void HighliteAvailableAttacks(Vector2 shadowCell, List<Vector2> targetCells, int? attackDistance, int? attackRadius)
     {
         this.attackRadius = attackRadius;
+
+        BreadthFirstPathfinder.Search(this.astarFly, shadowCell, attackDistance.Value, out var visited);
+
         BeginHighliting(HighliteType.AttackDistance);
-        foreach (var cell in targetCells)
+        foreach (var cell in targetCells.Where(visited.ContainsKey))
         {
             HighlitePoint(cell);
         }
         EndHighliting();
-        RehighliteCells();
     }
 
-    public void HighliteAvailableMoves(Vector2 unitCell, int? moveDistance)
+    public void HighliteAvailableMoves(Vector2 unitCell, int? moveDistance, bool isFly = false)
     {
         if (moveDistance == null)
         {
@@ -181,7 +169,7 @@ public partial class Maze : TileMap
         
         this.attackRadius = null;
         BeginHighliting(HighliteType.Move);
-        HighliteRadius(unitCell, moveDistance.Value);
+        HighliteRadius(unitCell, moveDistance.Value, isFly);
         EndHighliting();
     }
 
@@ -200,10 +188,10 @@ public partial class Maze : TileMap
         highlitedCells[highliteType].Clear();
     }
 
-    private void HighliteRadius(Vector2 fromPoint, int highliteRadius)
+    private void HighliteRadius(Vector2 fromPoint, int highliteRadius, bool isFly)
     {
         EnsureHighliting();
-        BreadthFirstPathfinder.Search(this.astar, fromPoint, highliteRadius, out var visited);
+        BreadthFirstPathfinder.Search(isFly ? this.astarFly : this.astarMove, fromPoint, highliteRadius, out var visited);
         foreach (var cell in visited.Keys)
         {
             highlitedCells[this.currentHighliteType.Value].Add(cell);
@@ -231,5 +219,87 @@ public partial class Maze : TileMap
         }
     }
 
+    private void RehighliteCells()
+    {
+        foreach (var cell in lastHighlitedCells)
+        {
+            if (astarMove.Paths.Contains(cell))
+            {
+                floor.SetCellv(cell, Fate.GlobalFate.Chance(90) ? 1 : 0);
+            }
+            else
+            {
+                floor.SetCellv(cell, -1);
+            }
+        }
+
+        lastHighlitedCells.Clear();
+
+        foreach (var highlitedCell in highlitedCells)
+        {
+            foreach (var cell in highlitedCell.Value)
+            {
+                floor.SetCellv(cell, (int)highlitedCell.Key);
+            }
+            lastHighlitedCells.AddRange(highlitedCell.Value);
+
+        }
+    }
+
     #endregion
+
+
+    public Vector2? GetMotion(Queue<Vector2> currentPath, Vector2 currentPosition, float delta, int motionSpeed)
+    {
+        if (currentPath.Count == 0)
+        {
+            return null;
+        }
+
+        var current = currentPath.Peek();
+        if (Distance(current, currentPosition) < 1)
+        {
+            currentPath.Dequeue();
+            return null;
+        }
+
+        var motion = (current - currentPosition) / delta;
+        if (motion.Length() > motionSpeed)
+        {
+            motion = motion.Normalized() * motionSpeed;
+        }
+
+        return motion * delta;
+    }
+
+    public void MoveBy(Queue<Vector2> currentPath, Vector2 currentPosition, Vector2 newTarget, bool isFly = false)
+    {
+        var playerPosition = this.WorldToMap(currentPosition);
+        var newPath = AStarPathfinder.Search(isFly ? this.astarFly : this.astarMove, playerPosition, newTarget);
+        if (newPath == null)
+        {
+            return;
+        }
+
+        if (currentPath.Count > 0)
+        {
+            var current = currentPath.Peek();
+            currentPath.Clear();
+            currentPath.Enqueue(current);
+        }
+
+        for (var i = 0; i < newPath.Count; i++)
+        {
+            var worldPos = this.MapToWorld(newPath[i]);
+            worldPos += Vector2.Down * this.CellSize.y / 2;
+            currentPath.Enqueue(worldPos);
+        }
+    }
+
+    private int Distance(Vector2 from, Vector2 to)
+    {
+        var vector = from - to;
+        return (int)(Math.Abs(vector.x) + Math.Abs(vector.y));
+    }
+
 }

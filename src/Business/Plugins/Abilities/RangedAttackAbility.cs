@@ -23,13 +23,13 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
         public List<IAppliedAction> Apply(ServerUnit actionUnit, GameData game, Vector2 abilityDirection)
         {
             var result = new List<IAppliedAction>();
-            BreadthFirstPathfinder.Search(game.Astar, actionUnit.Position, (int)(actionUnit.RangedAttackDistance * 5), out var visited);
+            BreadthFirstPathfinder.Search(game.AstarFly, actionUnit.Position, (int)(actionUnit.RangedAttackDistance * 5), out var visited);
             if (!visited.ContainsKey(actionUnit.Position + abilityDirection))
             {
                 return result;
             }
 
-            BreadthFirstPathfinder.Search(game.Astar, actionUnit.Position + abilityDirection, (int)(actionUnit.AOEAttackRadius * 2), out visited);
+            BreadthFirstPathfinder.Search(game.AstarFly, actionUnit.Position + abilityDirection, (int)(actionUnit.AOEAttackRadius * 2), out visited);
             foreach (var targetPlayer in game.Players)
             {
                 if (actionUnit.Player == targetPlayer.Value)

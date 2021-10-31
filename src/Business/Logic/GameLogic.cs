@@ -30,7 +30,8 @@ namespace IsometricGame.Logic
             var game = new GameData(lobby.Id);
             game.Configuration = lobby.ServerConfiguration;
             game.Map = this.mapRepository.CreateForType(lobby.ServerConfiguration.MapType);
-            game.Astar = new MapGraphData(game.Map.Paths.GetLength(0), game.Map.Paths.GetLength(1));
+            game.AstarMove = new MapGraphData(game.Map.Paths.GetLength(0), game.Map.Paths.GetLength(1));
+            game.AstarFly = new MapGraphData(game.Map.Paths.GetLength(0), game.Map.Paths.GetLength(1));
             for (var x = 0; x < game.Map.Paths.GetLength(0); x++)
                 for (var y = 0; y < game.Map.Paths.GetLength(1); y++)
                 {
@@ -40,7 +41,14 @@ namespace IsometricGame.Logic
                         case MapRepository.MazeTileId:
                         case MapRepository.RoomTileId:
                             {
-                                game.Astar.Paths.Add(new Vector2(x, y));
+                                game.AstarMove.Paths.Add(new Vector2(x, y));
+                                game.AstarFly.Paths.Add(new Vector2(x, y));
+                                break;
+                            }
+                        case MapRepository.EmptyTileId:
+                            {
+
+                                game.AstarFly.Paths.Add(new Vector2(x, y));
                                 break;
                             }
                     }
@@ -449,7 +457,7 @@ namespace IsometricGame.Logic
                                 }
                             case MapRepository.EmptyTileId:
                                 {
-                                    result[x, y] = MapTile.Unknown;
+                                    result[x, y] = MapTile.Pit;
                                     break;
                                 }
                         }

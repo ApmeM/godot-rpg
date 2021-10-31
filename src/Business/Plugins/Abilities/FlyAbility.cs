@@ -17,7 +17,7 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
 
         public void HighliteMaze(Maze maze, Vector2 oldPos, Vector2 newPos, ClientUnit currentUnit)
         {
-            maze.HighliteAvailableMoves(oldPos, currentUnit.MoveDistance);
+            maze.HighliteAvailableMoves(oldPos, currentUnit.MoveDistance, true);
         }
 
         public List<IAppliedAction> Apply(ServerUnit actionUnit, GameData game, Vector2 abilityDirection)
@@ -28,13 +28,13 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
                 return result;
             }
 
-            BreadthFirstPathfinder.Search(game.Astar, actionUnit.Position, actionUnit.MoveDistance, out var visited);
+            BreadthFirstPathfinder.Search(game.AstarFly, actionUnit.Position, actionUnit.MoveDistance, out var visited);
             if (!visited.ContainsKey(actionUnit.Position + abilityDirection))
             {
                 return result;
             }
 
-            var moveCells = BreadthFirstPathfinder.Search(game.Astar, actionUnit.Position, actionUnit.Position + abilityDirection)
+            var moveCells = BreadthFirstPathfinder.Search(game.AstarFly, actionUnit.Position, actionUnit.Position + abilityDirection)
                 .Take(actionUnit.MoveDistance + 1)
                 .Select((a, b) => new { a, b })
                 .ToDictionary(a => a.a, a => a.b);

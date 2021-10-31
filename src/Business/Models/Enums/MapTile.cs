@@ -4,6 +4,7 @@
     {
         Unknown,
         Wall,
-        Path
+        Path,
+        Pit
     }
 }

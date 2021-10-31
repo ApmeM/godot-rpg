@@ -67,12 +67,13 @@ public partial class Unit : Node2D
 
         if (path.Count > 0)
         {
-            var motion = IsometricMove.GetMotion(path, Position, delta, MOTION_SPEED);
+            var maze = GetParent<Maze>();
+            var motion = maze.GetMotion(path, Position, delta, MOTION_SPEED);
             this.animatedSprite.Playing = motion.HasValue;
             if (motion.HasValue)
             {
                 Position += motion ?? Vector2.Zero;
-                var direction = IsometricMove.Animate(motion.Value);
+                var direction = UnitUtils.Animate(motion.Value);
                 if (!string.IsNullOrWhiteSpace(direction))
                 {
                     this.animatedSprite.Animation = $"move{direction}";
@@ -96,7 +97,7 @@ public partial class Unit : Node2D
     private void AnimateUnit(string animationPrefix, Vector2 animationDirection)
     {
         this.animatedSprite.Connect("animation_finished", this, nameof(UnitAnimationFinished));
-        this.animatedSprite.Play($"{animationPrefix}{IsometricMove.Animate(animationDirection)}");
+        this.animatedSprite.Play($"{animationPrefix}{UnitUtils.Animate(animationDirection)}");
     }
 
     public SignalAwaiter UnitHit(Vector2? attackFrom, int newHp)
@@ -165,7 +166,7 @@ public partial class Unit : Node2D
             return ToSignal(GetTree().CreateTimer(0), "timeout");
         }
         shadow.HideShadow();
-        IsometricMove.MoveBy(this.path, Position, newTarget, maze);
+        maze.MoveBy(this.path, Position, newTarget, true);
         return ToSignal(this, nameof(MoveDone));
     }
 

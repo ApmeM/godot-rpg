@@ -1,4 +1,5 @@
-﻿using IsometricGame.Logic.Enums;
+﻿using Godot;
+using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.Models;
 using System.Collections.Generic;
 
@@ -71,6 +72,47 @@ namespace IsometricGame.Logic.ScriptHelpers
         public static int GetUnitId(long abilityFullUnitId)
         {
             return (int)abilityFullUnitId;
+        }
+
+        public static string Animate(Vector2 motion, string left = "Left", string right = "Right", string up = "Up", string down = "Down")
+        {
+            if (motion.x > 0)
+            {
+                if (motion.y < 0)
+                {
+                    return up;
+                }
+                else
+                {
+                    return right;
+                }
+            }
+            else if (motion.x < 0)
+            {
+                if (motion.y > 0)
+                {
+                    return down;
+                }
+                else
+                {
+                    return left;
+                }
+            }
+            else
+            {
+                if (motion.y > 0)
+                {
+                    return down;
+                }
+                else if (motion.y < 0)
+                {
+                    return up;
+                }
+                else
+                {
+                    return null;
+                }
+            }
         }
     }
 }
