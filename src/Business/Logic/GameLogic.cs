@@ -1,9 +1,7 @@
-using BrainAI.Pathfinding.BreadthFirst;
 using Godot;
 using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.Models;
 using IsometricGame.Logic.ScriptHelpers;
-using IsometricGame.Logic.ScriptHelpers.AppliedActions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -148,11 +146,7 @@ namespace IsometricGame.Logic
                 foreach (var p in game.Players)
                 {
                     p.Value.InitializeMethod(GetInitialData(game, p.Key));
-                }
-
-                foreach (var p in game.Players)
-                {
-                    p.Value.TurnDoneMethod(GetTurnData(game, p.Key, new Dictionary<long, ServerTurnDelta>()));
+                    PlayerMove(game, p.Key, emptyMoves);
                 }
             }
 
@@ -186,11 +180,11 @@ namespace IsometricGame.Logic
             var unitsTurnDelta = new Dictionary<long, ServerTurnDelta>();
             foreach (var actionPlayer in game.Players)
             {
+                game.PlayersMove[actionPlayer.Key].UnitActions = game.PlayersMove[actionPlayer.Key].UnitActions ?? new Dictionary<int, List<TransferTurnDoneData.UnitActionData>>();
                 foreach (var actionUnit in actionPlayer.Value.Units)
                 {
                     var fullId = UnitUtils.GetFullUnitId(actionUnit.Value);
                     unitsTurnDelta[fullId] = new ServerTurnDelta();
-                    game.PlayersMove[actionPlayer.Key].UnitActions = game.PlayersMove[actionPlayer.Key].UnitActions ?? new Dictionary<int, List<TransferTurnDoneData.UnitActionData>>();
                     if (!game.PlayersMove[actionPlayer.Key].UnitActions.ContainsKey(actionUnit.Key))
                     {
                         game.PlayersMove[actionPlayer.Key].UnitActions[actionUnit.Key] = new List<TransferTurnDoneData.UnitActionData>();
@@ -280,6 +274,8 @@ namespace IsometricGame.Logic
                     var targetFullId = UnitUtils.GetFullUnitId(actionUnit.Value);
                     var targetDelta = unitsTurnDelta[targetFullId];
 
+                    actionUnit.Value.Effects.RemoveAll(a => a.Duration <= 0);
+
                     foreach (var effect in actionUnit.Value.Effects)
                     {
                         var actions = pluginUtils.FindEffect(effect.Effect).Apply(actionUnit.Value);
@@ -287,7 +283,6 @@ namespace IsometricGame.Logic
                         effect.Duration--;
                     }
 
-                    actionUnit.Value.Effects.RemoveAll(a => a.Duration <= 0);
                 }
             }
 

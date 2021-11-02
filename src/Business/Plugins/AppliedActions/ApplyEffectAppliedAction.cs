@@ -1,5 +1,6 @@
 ﻿using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -27,7 +28,7 @@ namespace IsometricGame.Logic.ScriptHelpers.AppliedActions
                 this.unit.Effects.Add(existingEffect);
             }
 
-            existingEffect.Duration = duration;
+            existingEffect.Duration = Math.Max(existingEffect.Duration, duration);
         }
     }
 }

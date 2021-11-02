@@ -67,14 +67,21 @@ public partial class UnitDetails : VBoxContainer
                 Expand = true,
                 StretchMode = TextureRect.StretchModeEnum.KeepAspect,
                 RectMinSize = Vector2.One * 50,
-                HintTooltip = this.pluginUtils.FindEffect(effect.Effect).Description
-            };
-            var durationNode = new Label
-            {
-                Text = effect.Duration.ToString()
+                HintTooltip = this.pluginUtils.FindEffect(effect.Effect).Description,
             };
             container.AddChild(effectNode);
-            container.AddChild(durationNode);
+            if (effect.Duration > 0)
+            {
+                var durationNode = new Label
+                {
+                    Text = effect.Duration.ToString()
+                };
+                container.AddChild(durationNode);
+            }
+            else
+            {
+                effectNode.Material = ResourceLoader.Load<Material>($"Presentation/Shaders/Grayscale.tres");
+            }
 
             effectsContainer.AddChild(container);
         }

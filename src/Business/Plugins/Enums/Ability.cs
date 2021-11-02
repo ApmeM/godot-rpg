@@ -7,6 +7,7 @@
         Heal,
         Fireball,
         Haste,
+        HasteAura,
         Move,
         Fly,
         Regeneration
