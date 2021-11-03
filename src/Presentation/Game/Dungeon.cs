@@ -185,9 +185,9 @@ public partial class Dungeon : Node2D
                         var ability = this.pluginUtils.FindAbility(currentAbility.Value);
                         this.currentAction = CurrentAction.None;
 
-                        if (this.currentAbility == Ability.Move || this.currentAbility == Ability.Fly)
+                        if (this.pluginUtils.IsMoveAbility(this.currentAbility.Value))
                         {
-                            currentUnit.MoveShadowTo(cell);
+                            currentUnit.MoveShadowTo(cell, this.currentAbility.Value == Ability.Fly);
                         }
                         else
                         {
@@ -230,7 +230,7 @@ public partial class Dungeon : Node2D
             {
                 var lists = new List<TransferTurnDoneData.UnitActionData>();
 
-                if (a.Ability.HasValue || a.NewPosition.HasValue)
+                if (a.NewPosition.HasValue)
                 {
                     lists.Add(new TransferTurnDoneData.UnitActionData
                     {

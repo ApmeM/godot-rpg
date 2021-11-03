@@ -43,10 +43,10 @@ public partial class UnitShadow : Node2D
         }
     }
 
-    public void MoveShadowTo(Vector2 newTarget)
+    public void MoveShadowTo(Vector2 newTarget, bool isFly)
     {
         var maze = GetParent<Maze>();
-        maze.MoveBy(this.path, Position, newTarget, true);
+        maze.MoveBy(this.path, Position, newTarget, isFly);
         Ability = null;
         AbilityDirection = null;
         AbilityUnitTarget = null;

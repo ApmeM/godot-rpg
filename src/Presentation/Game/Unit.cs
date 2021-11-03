@@ -170,7 +170,7 @@ public partial class Unit : Node2D
         return ToSignal(this, nameof(MoveDone));
     }
 
-    public void MoveShadowTo(Vector2 newTarget)
+    public void MoveShadowTo(Vector2 newTarget, bool isFly)
     {
         if (!shadow.Visible)
         {
@@ -178,7 +178,7 @@ public partial class Unit : Node2D
             shadow.Visible = true;
         }
 
-        shadow.MoveShadowTo(newTarget);
+        shadow.MoveShadowTo(newTarget, isFly);
     }
 
     public void AbilityShadowTo(Ability ability, Vector2 cell, Unit target = null)

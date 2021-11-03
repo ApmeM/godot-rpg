@@ -24,7 +24,7 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
             
             var unitMove = game.PlayersMove[actionUnit.Player.PlayerId].UnitActions[actionUnit.UnitId];
 
-            if (unitMove.Count > 1)
+            if (unitMove.Count > 0)
             {
                 return result;
             }

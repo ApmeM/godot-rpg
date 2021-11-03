@@ -1,4 +1,6 @@
+using FateRandom;
 using Godot;
+using IsometricGame.Business.Models;
 using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.Models;
 using IsometricGame.Logic.ScriptHelpers;
@@ -193,62 +195,72 @@ namespace IsometricGame.Logic
             }
 
             /* Execute abilities */
+            var autoAbilities = game.Players.Select(a => new ServerAction { PlayerId = a.Key })
+                .SelectMany(a => game.Players[a.PlayerId].Units.Select(b => new ServerAction(a) { UnitId = b.Key }))
+                .SelectMany(a => game.Players[a.PlayerId].Units[a.UnitId].Abilities.Select(b => new ServerAction(a) { Ability = b, AbilityDirection = null, AbilityFullUnitId = null }))
+                .Where(a => this.pluginUtils.FindAbility(a.Ability).AbilityType == AbilityType.Automatic)
+                .Select(a => new ServerAction(a) { ExecuteOrder = 2 });
+
+            var turnAbilities = game.PlayersMove.Select(a => new ServerAction { PlayerId = a.Key })
+                .SelectMany(a => game.PlayersMove[a.PlayerId].UnitActions.Select(b => new ServerAction(a) { UnitId = b.Key }))
+                .SelectMany(a => game.PlayersMove[a.PlayerId].UnitActions[a.UnitId].Select(b => new ServerAction(a) { Ability = b.Ability, AbilityDirection = b.AbilityDirection, AbilityFullUnitId = b.AbilityFullUnitId }))
+                .Where(a => game.Players[a.PlayerId].Units[a.UnitId].Abilities.Contains(a.Ability));
+
+            var moveAbilities = turnAbilities
+                .Where(a => this.pluginUtils.IsMoveAbility(a.Ability))
+                .Select(a => new ServerAction(a) { ExecuteOrder = 1 });
+
+            var skillAbilities = turnAbilities
+                .Where(a => !this.pluginUtils.IsMoveAbility(a.Ability))
+                .GroupBy( a => UnitUtils.GetFullUnitId(a.PlayerId, a.UnitId))
+                .Select(a => new ServerAction(a.First()) { ExecuteOrder = 2 });
+
+            var actionAbilities = autoAbilities.Union(moveAbilities).Union(skillAbilities).ToList();
+            Fate.GlobalFate.Shuffle(actionAbilities);
+            actionAbilities.Sort((a, b) => a.ExecuteOrder - b.ExecuteOrder);
+
             var appliedActions = new List<IAppliedAction>();
-            foreach (var actionPlayer in game.Players)
+            foreach (var action in actionAbilities)
             {
-                foreach (var actionUnit in actionPlayer.Value.Units)
+                var actionUnit = game.Players[action.PlayerId].Units[action.UnitId];
+                if (actionUnit.Hp <= 0)
                 {
-                    var unitMove = game.PlayersMove[actionPlayer.Key].UnitActions[actionUnit.Key];
+                    continue;
+                }
 
-                    unitMove.AddRange(
-                        actionUnit.Value.Abilities
-                        .Where(a => this.pluginUtils.FindAbility(a).AbilityType == AbilityType.Automatic)
-                        .Select(a => new TransferTurnDoneData.UnitActionData
-                        {
-                            Ability = a
-                        }));
+                var actionFullId = UnitUtils.GetFullUnitId(actionUnit);
+                var actionDelta = unitsTurnDelta[actionFullId];
 
-                    var actionFullId = UnitUtils.GetFullUnitId(actionUnit.Value);
-                    var actionDelta = unitsTurnDelta[actionFullId];
-                    foreach (var move in unitMove)
-                    {
-                        if (actionUnit.Value.Hp <= 0 || !actionUnit.Value.Abilities.Contains(move.Ability))
+                var ability = pluginUtils.FindAbility(action.Ability);
+                Vector2 abilityDirection;
+                switch (ability.AbilityType)
+                {
+                    case AbilityType.TargetUnit:
+                        if (!action.AbilityFullUnitId.HasValue)
                         {
                             continue;
                         }
 
-                        var ability = pluginUtils.FindAbility(move.Ability);
-                        Vector2 abilityDirection;
-                        switch (ability.AbilityType)
+                        var targetPlayerId = UnitUtils.GetPlayerId(action.AbilityFullUnitId.Value);
+                        var targetUnitId = UnitUtils.GetUnitId(action.AbilityFullUnitId.Value);
+                        var targetPlayer = game.Players[targetPlayerId];
+                        var targetUnit = targetPlayer.Units[targetUnitId];
+
+                        abilityDirection = targetUnit.Position - actionUnit.Position;
+                        break;
+                    case AbilityType.AreaOfEffect:
+                        if (!action.AbilityDirection.HasValue)
                         {
-                            case AbilityType.TargetUnit:
-                                if (!move.AbilityFullUnitId.HasValue)
-                                {
-                                    continue;
-                                }
-
-                                var targetPlayerId = UnitUtils.GetPlayerId(move.AbilityFullUnitId.Value);
-                                var targetUnitId = UnitUtils.GetUnitId(move.AbilityFullUnitId.Value);
-                                var targetPlayer = game.Players[targetPlayerId];
-                                var targetUnit = targetPlayer.Units[targetUnitId];
-
-                                abilityDirection = targetUnit.Position - actionUnit.Value.Position;
-                                break;
-                            case AbilityType.AreaOfEffect:
-                                if(!move.AbilityDirection.HasValue)
-                                {
-                                    continue;
-                                }
-
-                                abilityDirection = move.AbilityDirection.Value;
-                                break;
-                            default:
-                                abilityDirection = Vector2.Zero;
-                                break;
+                            continue;
                         }
-                        appliedActions.AddRange(ability.Apply(actionUnit.Value, game, abilityDirection));
-                    }
+
+                        abilityDirection = action.AbilityDirection.Value;
+                        break;
+                    default:
+                        abilityDirection = Vector2.Zero;
+                        break;
                 }
+                appliedActions.AddRange(ability.Apply(actionUnit, game, abilityDirection));
             }
 
             foreach (var action in appliedActions)
@@ -282,7 +294,6 @@ namespace IsometricGame.Logic
                         appliedActions.AddRange(actions);
                         effect.Duration--;
                     }
-
                 }
             }
 
