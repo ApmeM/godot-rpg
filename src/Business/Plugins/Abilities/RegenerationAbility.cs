@@ -10,7 +10,7 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
     {
         public AbilityType AbilityType => AbilityType.Automatic;
 
-        public string Description => "Regeneration (Autoability): \n Increse Hp and Mp by 10% if unit not moved and no abilities selected this turn.";
+        public string Description => "Regeneration (Passive): \n Increse Hp and Mp by 10% if unit not moved and no abilities selected this turn.";
 
         public Ability Ability => Ability.Regeneration;
 

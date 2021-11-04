@@ -18,7 +18,7 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
 
         public AbilityType AbilityType => AbilityType.Automatic;
 
-        public string Description => $"Haste Aura: \n Apply effect: {this.pluginUtils.FindEffect(Effect.Haste).Description}\n  for all near units. Distance: 1";
+        public string Description => $"Haste Aura (Passive): \n Apply effect: {this.pluginUtils.FindEffect(Effect.Haste).Description}\n  for all near units. Distance: 1";
 
         public Ability Ability => Ability.HasteAura;
 
@@ -46,7 +46,8 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
                         continue;
                     }
 
-                    result.Add(new ApplyEffectAppliedAction(Effect.Haste, 1, targetUnit.Value));
+                    result.Add(new ApplyEffectAppliedAction(Effect.Haste, 0, targetUnit.Value));
+                    result.Add(new ChangeMoveDistanceAppliedAction((int)(targetUnit.Value.MoveDistance * 0.5f), targetUnit.Value));
                 }
             }
 

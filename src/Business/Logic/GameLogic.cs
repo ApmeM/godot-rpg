@@ -208,7 +208,8 @@ namespace IsometricGame.Logic
 
             var moveAbilities = turnAbilities
                 .Where(a => this.pluginUtils.IsMoveAbility(a.Ability))
-                .Select(a => new ServerAction(a) { ExecuteOrder = 1 });
+                .GroupBy(a => UnitUtils.GetFullUnitId(a.PlayerId, a.UnitId))
+                .Select(a => new ServerAction(a.First()) { ExecuteOrder = 1 });
 
             var skillAbilities = turnAbilities
                 .Where(a => !this.pluginUtils.IsMoveAbility(a.Ability))
@@ -263,21 +264,6 @@ namespace IsometricGame.Logic
                 appliedActions.AddRange(ability.Apply(actionUnit, game, abilityDirection));
             }
 
-            foreach (var action in appliedActions)
-            {
-                action.Apply(unitsTurnDelta);
-            }
-            appliedActions.Clear();
-
-            /* Refresh unit values. */
-            foreach (var actionPlayer in game.Players)
-            {
-                foreach (var actionUnit in actionPlayer.Value.Units)
-                {
-                    this.unitUtils.RefreshUnit(actionPlayer.Value, actionUnit.Value);
-                }
-            }
-
             /* Calculate all effects */
             foreach (var actionPlayer in game.Players)
             {
@@ -294,6 +280,17 @@ namespace IsometricGame.Logic
                         appliedActions.AddRange(actions);
                         effect.Duration--;
                     }
+
+                    actionUnit.Value.Effects.RemoveAll(a => a.Duration <= 0);
+                }
+            }
+
+            /* Refresh unit values. */
+            foreach (var actionPlayer in game.Players)
+            {
+                foreach (var actionUnit in actionPlayer.Value.Units)
+                {
+                    this.unitUtils.RefreshUnit(actionPlayer.Value, actionUnit.Value);
                 }
             }
 
