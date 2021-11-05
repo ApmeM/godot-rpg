@@ -1,0 +1,139 @@
+[gd_scene load_steps=9 format=2]
+
+[ext_resource path="res://assets/Fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=1]
+[ext_resource path="res://Presentation/UI/MainMenu/TeamSelect.cs" type="Script" id=2]
+[ext_resource path="res://Presentation/UI/MainMenu/TeamSelectUnit.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Presentation/UI/MainMenu/TeamSelector.tscn" type="PackedScene" id=4]
+
+[sub_resource type="DynamicFont" id=1]
+size = 24
+font_data = ExtResource( 1 )
+
+[sub_resource type="Theme" id=2]
+default_font = SubResource( 1 )
+
+[sub_resource type="InputEventAction" id=3]
+action = "ui_select"
+
+[sub_resource type="ShortCut" id=4]
+shortcut = SubResource( 3 )
+
+[node name="TeamSelect" type="MarginContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme = SubResource( 2 )
+custom_constants/margin_right = 5
+custom_constants/margin_top = 5
+custom_constants/margin_left = 5
+custom_constants/margin_bottom = 5
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+UnitConfigurationScene = ExtResource( 3 )
+
+[node name="ContentContainer" type="VBoxContainer" parent="."]
+margin_left = 5.0
+margin_top = 5.0
+margin_right = 1019.0
+margin_bottom = 595.0
+
+[node name="CaptionLabel" type="Label" parent="ContentContainer"]
+margin_right = 1014.0
+margin_bottom = 30.0
+text = "TeamSelect"
+align = 1
+autowrap = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TeamContainer" type="HBoxContainer" parent="ContentContainer"]
+margin_top = 34.0
+margin_right = 1014.0
+margin_bottom = 70.0
+
+[node name="TeamSelector" parent="ContentContainer/TeamContainer" instance=ExtResource( 4 )]
+
+[node name="OrLabel" type="Label" parent="ContentContainer/TeamContainer"]
+margin_left = 205.0
+margin_top = 3.0
+margin_right = 243.0
+margin_bottom = 33.0
+text = "OR"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="AddNewTeamButton" type="Button" parent="ContentContainer/TeamContainer"]
+margin_left = 247.0
+margin_right = 374.0
+margin_bottom = 36.0
+shortcut = SubResource( 4 )
+text = "Add new"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TeamDescriptionLineEdit" type="LineEdit" parent="ContentContainer"]
+margin_top = 74.0
+margin_right = 1014.0
+margin_bottom = 114.0
+
+[node name="ScrollUnitContainer" type="ScrollContainer" parent="ContentContainer"]
+margin_top = 118.0
+margin_right = 1014.0
+margin_bottom = 550.0
+size_flags_vertical = 3
+scroll_vertical_enabled = false
+
+[node name="UnitManagerContainer" type="HBoxContainer" parent="ContentContainer/ScrollUnitContainer"]
+margin_right = 221.0
+margin_bottom = 186.0
+
+[node name="UnitsContainer" type="HBoxContainer" parent="ContentContainer/ScrollUnitContainer/UnitManagerContainer"]
+margin_right = 188.0
+margin_bottom = 186.0
+size_flags_vertical = 3
+custom_constants/separation = 40
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TeamSelectUnit" parent="ContentContainer/ScrollUnitContainer/UnitManagerContainer/UnitsContainer" instance=ExtResource( 3 )]
+margin_right = 188.0
+margin_bottom = 186.0
+
+[node name="AddNewUnitButtonContainer" type="CenterContainer" parent="ContentContainer/ScrollUnitContainer/UnitManagerContainer"]
+margin_left = 192.0
+margin_right = 221.0
+margin_bottom = 186.0
+
+[node name="AddNewUnitButton" type="Button" parent="ContentContainer/ScrollUnitContainer/UnitManagerContainer/AddNewUnitButtonContainer"]
+margin_top = 75.0
+margin_right = 29.0
+margin_bottom = 111.0
+text = "+"
+
+[node name="ButtonsContainer" type="HBoxContainer" parent="ContentContainer"]
+margin_top = 554.0
+margin_right = 1014.0
+margin_bottom = 590.0
+custom_constants/separation = 20
+alignment = 2
+
+[node name="ResetButton" type="Button" parent="ContentContainer/ButtonsContainer"]
+margin_left = 828.0
+margin_right = 916.0
+margin_bottom = 36.0
+text = "Reset"
+
+[node name="SaveButton" type="Button" parent="ContentContainer/ButtonsContainer"]
+margin_left = 936.0
+margin_right = 1014.0
+margin_bottom = 36.0
+shortcut = SubResource( 4 )
+text = "Save"
+__meta__ = {
+"_edit_use_anchors_": false
+}

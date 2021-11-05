@@ -1,0 +1,355 @@
+[gd_scene load_steps=9 format=2]
+
+[ext_resource path="res://assets/Fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=1]
+[ext_resource path="res://Presentation/UI/MainMenu/Menu.cs" type="Script" id=2]
+[ext_resource path="res://Presentation/UI/MainMenu/TeamSelect.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Presentation/UI/MainMenu/TeamSelector.tscn" type="PackedScene" id=4]
+
+[sub_resource type="DynamicFont" id=1]
+size = 24
+font_data = ExtResource( 1 )
+
+[sub_resource type="Theme" id=2]
+default_font = SubResource( 1 )
+
+[sub_resource type="InputEventAction" id=3]
+action = "ui_select"
+
+[sub_resource type="ShortCut" id=4]
+shortcut = SubResource( 3 )
+
+[node name="Menu" type="MarginContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme = SubResource( 2 )
+custom_constants/margin_right = 5
+custom_constants/margin_top = 5
+custom_constants/margin_left = 5
+custom_constants/margin_bottom = 5
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+margin_left = 5.0
+margin_top = 5.0
+margin_right = 1019.0
+margin_bottom = 595.0
+
+[node name="CaptionLabel" type="Label" parent="VBoxContainer"]
+margin_right = 1014.0
+margin_bottom = 30.0
+text = "Welcome to Godot-RPG"
+align = 1
+autowrap = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TabContainer" type="TabContainer" parent="VBoxContainer"]
+margin_top = 34.0
+margin_right = 1014.0
+margin_bottom = 590.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+tab_align = 0
+
+[node name="Online" type="MarginContainer" parent="VBoxContainer/TabContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 4.0
+margin_top = 48.0
+margin_right = -4.0
+margin_bottom = -4.0
+custom_constants/margin_right = 5
+custom_constants/margin_top = 10
+custom_constants/margin_left = 5
+custom_constants/margin_bottom = 5
+
+[node name="OnlineTabs" type="TabContainer" parent="VBoxContainer/TabContainer/Online"]
+margin_left = 5.0
+margin_top = 10.0
+margin_right = 1001.0
+margin_bottom = 499.0
+tabs_visible = false
+
+[node name="LoginContentContainer" type="VBoxContainer" parent="VBoxContainer/TabContainer/Online/OnlineTabs"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 4.0
+margin_top = 8.0
+margin_right = -4.0
+margin_bottom = -4.0
+
+[node name="ClientLabel" type="Label" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LoginContentContainer"]
+margin_right = 988.0
+margin_bottom = 30.0
+size_flags_horizontal = 3
+text = "Join server"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CredentialsContainer" type="GridContainer" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LoginContentContainer"]
+margin_top = 34.0
+margin_right = 988.0
+margin_bottom = 162.0
+columns = 2
+
+[node name="ServerLabel" type="Label" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LoginContentContainer/CredentialsContainer"]
+margin_top = 5.0
+margin_right = 130.0
+margin_bottom = 35.0
+text = "Server"
+
+[node name="ServerLineEdit" type="LineEdit" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LoginContentContainer/CredentialsContainer"]
+margin_left = 134.0
+margin_right = 988.0
+margin_bottom = 40.0
+size_flags_horizontal = 3
+text = "91.146.57.100"
+
+[node name="LoginLabel" type="Label" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LoginContentContainer/CredentialsContainer"]
+margin_top = 49.0
+margin_right = 130.0
+margin_bottom = 79.0
+text = "Login"
+
+[node name="LoginLineEdit" type="LineEdit" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LoginContentContainer/CredentialsContainer"]
+margin_left = 134.0
+margin_top = 44.0
+margin_right = 988.0
+margin_bottom = 84.0
+size_flags_horizontal = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PasswordLabel" type="Label" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LoginContentContainer/CredentialsContainer"]
+margin_top = 93.0
+margin_right = 130.0
+margin_bottom = 123.0
+text = "Password"
+
+[node name="PasswordLineEdit" type="LineEdit" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LoginContentContainer/CredentialsContainer"]
+margin_left = 134.0
+margin_top = 88.0
+margin_right = 988.0
+margin_bottom = 128.0
+size_flags_horizontal = 3
+secret = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="IncorrectLoginLabel" type="Label" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LoginContentContainer"]
+visible = false
+margin_top = 166.0
+margin_right = 988.0
+margin_bottom = 196.0
+size_flags_horizontal = 3
+custom_colors/font_color = Color( 1, 0, 0, 1 )
+text = "Incorrect login"
+align = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ClientButton" type="Button" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LoginContentContainer"]
+margin_top = 166.0
+margin_right = 988.0
+margin_bottom = 202.0
+shortcut = SubResource( 4 )
+text = "Connect"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="OrLabel" type="Label" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LoginContentContainer"]
+margin_top = 206.0
+margin_right = 988.0
+margin_bottom = 236.0
+size_flags_horizontal = 3
+text = "Or"
+align = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ServerButton" type="Button" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LoginContentContainer"]
+margin_top = 240.0
+margin_right = 988.0
+margin_bottom = 276.0
+shortcut = SubResource( 4 )
+text = "Start as Server"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="LobbyContentContainer" type="VBoxContainer" parent="VBoxContainer/TabContainer/Online/OnlineTabs"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 4.0
+margin_top = 8.0
+margin_right = -4.0
+margin_bottom = -4.0
+custom_constants/separation = 20
+
+[node name="TeamSelector" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LobbyContentContainer" instance=ExtResource( 4 )]
+margin_right = 988.0
+
+[node name="ActionContainer" type="HBoxContainer" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LobbyContentContainer"]
+margin_top = 56.0
+margin_right = 988.0
+margin_bottom = 262.0
+size_flags_horizontal = 3
+custom_constants/separation = 30
+
+[node name="LadderContainer" type="VBoxContainer" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LobbyContentContainer/ActionContainer"]
+margin_right = 479.0
+margin_bottom = 206.0
+size_flags_horizontal = 3
+
+[node name="LadderLabel" type="Label" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LobbyContentContainer/ActionContainer/LadderContainer"]
+margin_right = 479.0
+margin_bottom = 30.0
+text = "Ladder"
+
+[node name="LadderGridContainer" type="GridContainer" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LobbyContentContainer/ActionContainer/LadderContainer"]
+margin_top = 34.0
+margin_right = 479.0
+margin_bottom = 70.0
+custom_constants/vseparation = 30
+custom_constants/hseparation = 30
+columns = 2
+
+[node name="SearchButton" type="Button" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LobbyContentContainer/ActionContainer/LadderContainer/LadderGridContainer"]
+margin_right = 105.0
+margin_bottom = 36.0
+shortcut = SubResource( 4 )
+text = "Search"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="SearchLabel" type="Label" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LobbyContentContainer/ActionContainer/LadderContainer/LadderGridContainer"]
+margin_left = 135.0
+margin_top = 3.0
+margin_right = 364.0
+margin_bottom = 33.0
+text = "Search opponent"
+
+[node name="CustomContainer" type="VBoxContainer" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LobbyContentContainer/ActionContainer"]
+margin_left = 509.0
+margin_right = 988.0
+margin_bottom = 206.0
+size_flags_horizontal = 3
+
+[node name="CustomLabel" type="Label" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LobbyContentContainer/ActionContainer/CustomContainer"]
+margin_right = 479.0
+margin_bottom = 30.0
+text = "Custom"
+
+[node name="CustomGridContainer" type="GridContainer" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LobbyContentContainer/ActionContainer/CustomContainer"]
+margin_top = 34.0
+margin_right = 479.0
+margin_bottom = 206.0
+custom_constants/vseparation = 30
+custom_constants/hseparation = 30
+columns = 2
+
+[node name="CreateButton" type="Button" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LobbyContentContainer/ActionContainer/CustomContainer/CustomGridContainer"]
+margin_right = 106.0
+margin_bottom = 36.0
+shortcut = SubResource( 4 )
+text = "Create"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CreateLabel" type="Label" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LobbyContentContainer/ActionContainer/CustomContainer/CustomGridContainer"]
+margin_left = 136.0
+margin_top = 3.0
+margin_right = 438.0
+margin_bottom = 33.0
+text = "Create new lobby"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="lobbyIdLineEdit" type="LineEdit" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LobbyContentContainer/ActionContainer/CustomContainer/CustomGridContainer"]
+margin_top = 66.0
+margin_right = 106.0
+margin_bottom = 106.0
+
+[node name="lobbyIdLabel" type="Label" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LobbyContentContainer/ActionContainer/CustomContainer/CustomGridContainer"]
+margin_left = 136.0
+margin_top = 71.0
+margin_right = 438.0
+margin_bottom = 101.0
+text = "Or specify lobby id"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="JoinButton" type="Button" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LobbyContentContainer/ActionContainer/CustomContainer/CustomGridContainer"]
+margin_top = 136.0
+margin_right = 106.0
+margin_bottom = 172.0
+shortcut = SubResource( 4 )
+text = "Join"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="JoinLabel" type="Label" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LobbyContentContainer/ActionContainer/CustomContainer/CustomGridContainer"]
+margin_left = 136.0
+margin_top = 139.0
+margin_right = 438.0
+margin_bottom = 169.0
+text = "And join existing lobby"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Campaign" type="MarginContainer" parent="VBoxContainer/TabContainer"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 4.0
+margin_top = 48.0
+margin_right = -4.0
+margin_bottom = -4.0
+custom_constants/margin_right = 5
+custom_constants/margin_top = 10
+custom_constants/margin_left = 5
+custom_constants/margin_bottom = 5
+
+[node name="ContentContainer" type="VBoxContainer" parent="VBoxContainer/TabContainer/Campaign"]
+margin_left = 5.0
+margin_top = 10.0
+margin_right = 1001.0
+margin_bottom = 499.0
+
+[node name="LoadButton" type="Button" parent="VBoxContainer/TabContainer/Campaign/ContentContainer"]
+margin_top = 40.0
+margin_right = 996.0
+margin_bottom = 76.0
+text = "Load"
+
+[node name="Teams" type="MarginContainer" parent="VBoxContainer/TabContainer"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 4.0
+margin_top = 48.0
+margin_right = -4.0
+margin_bottom = -4.0
+
+[node name="TeamSelect" parent="VBoxContainer/TabContainer/Teams" instance=ExtResource( 3 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_right = 1006.0
+margin_bottom = 504.0

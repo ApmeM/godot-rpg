@@ -1,0 +1,54 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://Presentation/UI/InGame/UnitDetails.cs" type="Script" id=1]
+
+[node name="UnitDetails" type="VBoxContainer"]
+margin_right = 112.0
+margin_bottom = 138.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="EffectsContainer" type="GridContainer" parent="."]
+margin_right = 112.0
+columns = 4
+
+[node name="MaxHP" type="Label" parent="."]
+margin_top = 4.0
+margin_right = 112.0
+margin_bottom = 18.0
+text = "MaxHP: 100"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MoveRange" type="Label" parent="."]
+margin_top = 22.0
+margin_right = 112.0
+margin_bottom = 36.0
+text = "Speed: 50"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="SightRange" type="Label" parent="."]
+margin_top = 40.0
+margin_right = 112.0
+margin_bottom = 54.0
+text = "Vision: 70"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="SkillsContainer" type="GridContainer" parent="."]
+margin_top = 58.0
+margin_right = 112.0
+margin_bottom = 58.0
+columns = 4
+
+[node name="AbilityContainer" type="GridContainer" parent="."]
+margin_top = 62.0
+margin_right = 112.0
+margin_bottom = 62.0
+columns = 4

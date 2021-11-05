@@ -6,7 +6,13 @@
   <ItemGroup>
     <PackageReference Include="BrainAI" Version="2.3.0" />
     <PackageReference Include="FateRandom" Version="1.0.0" />
-    <PackageReference Include="MazeGenerators" Version="1.2.0" />
+    <PackageReference Include="MazeGenerators" Version="2.3.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\generator\GodotFieldsGenerator.csproj">
+            <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+            <OutputItemType>Analyzer</OutputItemType>
+        </ProjectReference>
+    </ItemGroup>
 </Project>
