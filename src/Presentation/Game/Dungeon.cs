@@ -187,7 +187,7 @@ public partial class Dungeon : Node2D
 
                         if (this.pluginUtils.IsMoveAbility(this.currentAbility.Value))
                         {
-                            currentUnit.MoveShadowTo(cell, this.currentAbility.Value == Ability.Fly);
+                            currentUnit.MoveShadowTo(cell, this.currentAbility.Value);
                         }
                         else
                         {
@@ -297,20 +297,20 @@ public partial class Dungeon : Node2D
         foreach (var unit in visibleUnits)
         {
             var player = turnData.OtherPlayers[unit.ClientUnit.PlayerId];
-            await unit.MoveUnitTo(player.Units[unit.ClientUnit.UnitId].Position);
+            await unit.MoveUnitTo(player.Units[unit.ClientUnit.UnitId].Position, player.Units[unit.ClientUnit.UnitId].MoveAbility);
         }
 
         var signals = new List<SignalAwaiter>();
 
         foreach (var unit in myUnits)
         {
-            await unit.MoveUnitTo(turnData.YourUnits[unit.ClientUnit.UnitId].Position);
+            await unit.MoveUnitTo(turnData.YourUnits[unit.ClientUnit.UnitId].Position, turnData.YourUnits[unit.ClientUnit.UnitId].MoveAbility);
         }
 
         foreach (var unit in visibleUnits)
         {
             var player = turnData.OtherPlayers[unit.ClientUnit.PlayerId];
-            await unit.MoveUnitTo(player.Units[unit.ClientUnit.UnitId].Position);
+            await unit.MoveUnitTo(player.Units[unit.ClientUnit.UnitId].Position, player.Units[unit.ClientUnit.UnitId].MoveAbility);
         }
 
         foreach (var signal in signals)

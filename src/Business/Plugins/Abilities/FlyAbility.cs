@@ -2,6 +2,7 @@
 using Godot;
 using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.Models;
+using IsometricGame.Logic.ScriptHelpers.AppliedActions;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -54,6 +55,7 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
             }
 
             actionUnit.Position = moveCells.OrderByDescending(a => a.Value).First().Key;
+            result.Add(new MoveAction(actionUnit, actionUnit.Position, this.Ability));
 
             return result;
         }

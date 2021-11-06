@@ -229,9 +229,6 @@ namespace IsometricGame.Logic
                     continue;
                 }
 
-                var actionFullId = UnitUtils.GetFullUnitId(actionUnit);
-                var actionDelta = unitsTurnDelta[actionFullId];
-
                 var ability = pluginUtils.FindAbility(action.Ability);
                 Vector2 abilityDirection;
                 switch (ability.AbilityType)
@@ -269,12 +266,7 @@ namespace IsometricGame.Logic
             {
                 foreach (var actionUnit in actionPlayer.Value.Units)
                 {
-                    var targetFullId = UnitUtils.GetFullUnitId(actionUnit.Value);
-                    var targetDelta = unitsTurnDelta[targetFullId];
-
-                    actionUnit.Value.Effects.RemoveAll(a => a.Duration <= 0);
-
-                    foreach (var effect in actionUnit.Value.Effects)
+                    foreach (var effect in actionUnit.Value.Effects.Where(a => a.Duration > 0))
                     {
                         var actions = pluginUtils.FindEffect(effect.Effect).Apply(actionUnit.Value);
                         appliedActions.AddRange(actions);
@@ -388,6 +380,7 @@ namespace IsometricGame.Logic
                     return new TransferTurnData.YourUnitsData
                     {
                         Position = a.Value.Position,
+                        MoveAbility = delta?.MoveAbilityUsed,
                         AbilityDirection = a.Value.Hp <= 0 ? null : delta?.AbilityDirection,
                         Hp = a.Value.Hp,
                         Mp = a.Value.Mp,
@@ -414,6 +407,7 @@ namespace IsometricGame.Logic
                         return new TransferTurnData.OtherUnitsData
                         {
                             Position = b.Value.Position,
+                            MoveAbility = delta?.MoveAbilityUsed,
                             AttackDirection = b.Value.Hp <= 0 ? null : delta?.AbilityDirection,
                             Hp = b.Value.Hp,
                             AttackFrom = b.Value.Hp <= 0 ? null : delta?.AbilityFrom,

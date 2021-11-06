@@ -15,6 +15,7 @@ namespace IsometricGame.Logic.Models
         public class YourUnitsData
         {
             public Vector2 Position;
+            public Ability? MoveAbility;
             public Vector2? AbilityDirection;
             public int Hp;
             public int Mp;
@@ -37,6 +38,7 @@ namespace IsometricGame.Logic.Models
         public class OtherUnitsData
         {
             public Vector2 Position;
+            public Ability? MoveAbility;
             public Vector2? AttackDirection;
             public int Hp;
             public Vector2? AttackFrom;

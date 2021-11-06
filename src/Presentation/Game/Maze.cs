@@ -272,10 +272,10 @@ public partial class Maze : TileMap
         return motion * delta;
     }
 
-    public void MoveBy(Queue<Vector2> currentPath, Vector2 currentPosition, Vector2 newTarget, bool isFly = false)
+    public void MoveBy(Queue<Vector2> currentPath, Vector2 currentPosition, Vector2 newTarget, Ability moveAbility)
     {
         var playerPosition = this.WorldToMap(currentPosition);
-        var newPath = AStarPathfinder.Search(isFly ? this.astarFly : this.astarMove, playerPosition, newTarget);
+        var newPath = AStarPathfinder.Search(moveAbility == Ability.Fly ? this.astarFly : this.astarMove, playerPosition, newTarget);
         if (newPath == null)
         {
             return;

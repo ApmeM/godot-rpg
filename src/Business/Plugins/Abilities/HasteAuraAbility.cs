@@ -47,7 +47,7 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
                     }
 
                     result.Add(new ApplyEffectAppliedAction(Effect.Haste, 0, targetUnit.Value));
-                    result.Add(new ChangeMoveDistanceAppliedAction((int)(targetUnit.Value.MoveDistance * 0.5f), targetUnit.Value));
+                    result.Add(new ChangeMoveDistanceAppliedAction(3, targetUnit.Value));
                 }
             }
 

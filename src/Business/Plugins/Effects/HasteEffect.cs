@@ -7,7 +7,7 @@ namespace IsometricGame.Logic.ScriptHelpers.Effects
 {
     public class HasteEffect : IEffect
     {
-        public string Description => "Haste effect: \n  Speed: x1.5 times.";
+        public string Description => "Haste effect: \n  Speed: 3.";
 
         public Effect Effect => Effect.Haste;
 
@@ -15,7 +15,7 @@ namespace IsometricGame.Logic.ScriptHelpers.Effects
         {
             return new List<IAppliedAction>
             {
-                new ChangeMoveDistanceAppliedAction((int)(unit.MoveDistance * 0.5f), unit)
+                new ChangeMoveDistanceAppliedAction(3, unit)
             };
         }
     }

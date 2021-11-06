@@ -157,7 +157,7 @@ public partial class Unit : Node2D
         return ToSignal(this, nameof(UnitAnimationDone));
     }
 
-    public SignalAwaiter MoveUnitTo(Vector2 newTarget)
+    public SignalAwaiter MoveUnitTo(Vector2 newTarget, Ability? moveAbility)
     {
         var maze = GetParent<Maze>();
         var playerPosition = maze.WorldToMap(Position);
@@ -166,11 +166,11 @@ public partial class Unit : Node2D
             return ToSignal(GetTree().CreateTimer(0), "timeout");
         }
         shadow.HideShadow();
-        maze.MoveBy(this.path, Position, newTarget, true);
+        maze.MoveBy(this.path, Position, newTarget, moveAbility.Value);
         return ToSignal(this, nameof(MoveDone));
     }
 
-    public void MoveShadowTo(Vector2 newTarget, bool isFly)
+    public void MoveShadowTo(Vector2 newTarget, Ability moveAbility)
     {
         if (!shadow.Visible)
         {
@@ -178,7 +178,7 @@ public partial class Unit : Node2D
             shadow.Visible = true;
         }
 
-        shadow.MoveShadowTo(newTarget, isFly);
+        shadow.MoveShadowTo(newTarget, moveAbility);
     }
 
     public void AbilityShadowTo(Ability ability, Vector2 cell, Unit target = null)

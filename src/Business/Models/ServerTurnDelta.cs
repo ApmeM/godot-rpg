@@ -1,4 +1,5 @@
 ﻿using Godot;
+using IsometricGame.Logic.Enums;
 using System.Collections.Generic;
 
 namespace IsometricGame.Logic.Models
@@ -9,5 +10,6 @@ namespace IsometricGame.Logic.Models
         public Vector2? AbilityFrom;
         public List<int> HpChanges = new List<int>();
         public List<int> MpChanges = new List<int>();
+        public Ability? MoveAbilityUsed;
     }
 }
