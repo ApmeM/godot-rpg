@@ -25,12 +25,13 @@ namespace IsometricGame.Logic.Utils
                 {
                     new AmazonUnitType(),
                     new GoatmanUnitType(),
-                    new WitchUnitType()
+                    new WitchUnitType(),
+                    new WraithUnitType(),
                 },
                 new List<IEffect>
                 {
                     new BurnEffect(),
-                    new HasteEffect()
+                    new HasteEffect(),
                 },
                 new List<IAbility>
                 {
@@ -43,7 +44,8 @@ namespace IsometricGame.Logic.Utils
                     new MoveAbility(),
                     new FlyAbility(),
                     new TeleportAbility(),
-                    new RegenerationAbility()
+                    new ImmaterialMoveAbility(),
+                    new RegenerationAbility(),
                 },
                 new List<ISkill>
                 {
@@ -60,7 +62,7 @@ namespace IsometricGame.Logic.Utils
                 },
                 new List<IBot>
                 {
-                    new EasyBot(gameLogic)
+                    new EasyBot(gameLogic),
                 });
         }
 

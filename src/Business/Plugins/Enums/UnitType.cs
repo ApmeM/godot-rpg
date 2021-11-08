@@ -4,6 +4,7 @@
     {
         Amazon,
         Goatman,
-        Witch
+        Witch,
+        Wraith
     }
 }

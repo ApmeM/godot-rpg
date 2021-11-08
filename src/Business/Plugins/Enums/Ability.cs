@@ -10,6 +10,7 @@
         HasteAura,
         Move,
         Fly,
+        ImmaterialMove,
         Teleport,
         Regeneration
     };
