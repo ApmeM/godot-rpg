@@ -12,13 +12,14 @@ namespace IsometricGame.Logic.ScriptHelpers.Skills
             this.pluginUtils = pluginUtils;
         }
 
-        public string Description => $"Air magic: Add Ability: \n{this.pluginUtils.FindAbility(Ability.Haste).Description}";
+        public string Description => $"Air magic: Add Ability: \n{this.pluginUtils.FindAbility(Ability.Haste).Description}\n{this.pluginUtils.FindAbility(Ability.Teleport).Description}";
 
         public Skill Skill => Skill.AirMagic;
 
         public void Apply(ServerPlayer player, ServerUnit unit)
         {
             unit.Abilities.Add(Ability.Haste);
+            unit.Abilities.Add(Ability.Teleport);
         }
     }
 }

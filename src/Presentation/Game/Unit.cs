@@ -2,6 +2,7 @@ using Godot;
 using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.Models;
 using IsometricGame.Logic.ScriptHelpers;
+using IsometricGame.Logic.Utils;
 using IsometricGame.Presentation;
 using System.Collections.Generic;
 
@@ -17,6 +18,7 @@ public partial class Unit : Node2D
         set { this.selectionMarker.Visible = value; shadow.IsSelected = value; }
     }
 
+    public Ability? NewPositionAbility => shadow.NewPositionAbility;
     public Vector2? NewPosition => shadow.NewPosition;
     public Ability? Ability => shadow.Ability;
     public Vector2? AbilityDirection => shadow.AbilityDirection;
@@ -35,11 +37,17 @@ public partial class Unit : Node2D
     public PackedScene UnitShadowScene;
 
     private UnitShadow shadow;
+    private readonly PluginUtils pluginUtils;
 
     [Signal]
     public delegate void MoveDone();
     [Signal]
     public delegate void UnitAnimationDone();
+
+    public Unit()
+    {
+        this.pluginUtils = DependencyInjector.pluginUtils;
+    }
 
     public override void _Ready()
     {
@@ -157,7 +165,7 @@ public partial class Unit : Node2D
         return ToSignal(this, nameof(UnitAnimationDone));
     }
 
-    public SignalAwaiter MoveUnitTo(Vector2 newTarget, Ability? moveAbility)
+    public SignalAwaiter MoveUnitTo(Vector2 newTarget, IMoveAbility moveAbility)
     {
         var maze = GetParent<Maze>();
         var playerPosition = maze.WorldToMap(Position);
@@ -166,11 +174,11 @@ public partial class Unit : Node2D
             return ToSignal(GetTree().CreateTimer(0), "timeout");
         }
         shadow.HideShadow();
-        maze.MoveBy(this.path, Position, newTarget, moveAbility.Value);
+        moveAbility.MoveBy(maze, Position, newTarget, this.path);
         return ToSignal(this, nameof(MoveDone));
     }
 
-    public void MoveShadowTo(Vector2 newTarget, Ability moveAbility)
+    public void MoveShadowTo(Vector2 newTarget, IMoveAbility moveAbility)
     {
         if (!shadow.Visible)
         {

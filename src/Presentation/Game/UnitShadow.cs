@@ -1,6 +1,7 @@
 using Godot;
 using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.ScriptHelpers;
+using IsometricGame.Logic.Utils;
 using IsometricGame.Presentation;
 using System.Collections.Generic;
 
@@ -13,6 +14,8 @@ public partial class UnitShadow : Node2D
     public Ability? Ability;
     public Unit AbilityUnitTarget;
     public Vector2? NewPosition;
+    public Ability? NewPositionAbility;
+    private readonly PluginUtils pluginUtils;
 
     public bool IsSelected
     {
@@ -21,6 +24,12 @@ public partial class UnitShadow : Node2D
     }
 
     public AnimatedSprite ShadowSprite => this.shadow;
+
+
+    public UnitShadow()
+    {
+        this.pluginUtils = DependencyInjector.pluginUtils;
+    }
 
     public override void _Process(float delta)
     {
@@ -43,19 +52,22 @@ public partial class UnitShadow : Node2D
         }
     }
 
-    public void MoveShadowTo(Vector2 newTarget, Ability moveAbility)
+    public void MoveShadowTo(Vector2 newTarget, IMoveAbility moveAbility)
     {
         var maze = GetParent<Maze>();
-        maze.MoveBy(this.path, Position, newTarget, moveAbility);
+
+        moveAbility.MoveBy(maze, Position, newTarget, this.path);
         Ability = null;
         AbilityDirection = null;
         AbilityUnitTarget = null;
         NewPosition = newTarget;
+        NewPositionAbility = moveAbility.Ability;
     }
 
     public void HideShadow()
     {
         NewPosition = null;
+        NewPositionAbility = null;
         Ability = null;
         AbilityDirection = null;
         AbilityUnitTarget = null;

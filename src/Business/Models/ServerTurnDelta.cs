@@ -6,10 +6,9 @@ namespace IsometricGame.Logic.Models
 {
     public class ServerTurnDelta
     {
-        public Vector2? AbilityDirection;
-        public Vector2? AbilityFrom;
+        public List<(Ability, Vector2)> AppliedAbilities = new List<(Ability, Vector2)>();
         public List<int> HpChanges = new List<int>();
         public List<int> MpChanges = new List<int>();
-        public Ability? MoveAbilityUsed;
+        public List<(Ability, Vector2)> ExecutedAbilities = new List<(Ability, Vector2)>();
     }
 }

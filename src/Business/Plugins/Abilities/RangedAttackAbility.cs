@@ -17,7 +17,9 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
 
         public void HighliteMaze(Maze maze, Vector2 oldPos, Vector2 newPos, ClientUnit currentUnit)
         {
-            maze.HighliteAvailableAttacks(newPos, (int)(currentUnit.RangedAttackDistance * 5), (int)(currentUnit.AOEAttackRadius * 2));
+            maze.BeginHighliting(Maze.HighliteType.AttackDistance, (int)(currentUnit.AOEAttackRadius * 2));
+            maze.HighliteRadius(newPos, (int)(currentUnit.RangedAttackDistance * 5));
+            maze.EndHighliting();
         }
 
         public List<IAppliedAction> Apply(ServerUnit actionUnit, GameData game, Vector2 abilityDirection)
@@ -45,11 +47,11 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
                     }
 
                     result.Add(new ChangeHpAppliedAction(-(int)(actionUnit.AttackPower * 5), targetUnit.Value));
-                    result.Add(new ApplyAbilityFromDirectionAction(actionUnit, targetUnit.Value));
+                    result.Add(new ApplyAbilityFromDirectionAction(actionUnit, this.Ability, targetUnit.Value));
                 }
             }
 
-            result.Add(new ApplyAbilityToDirectionAction(actionUnit, abilityDirection));
+            result.Add(new ApplyAbilityToDirectionAction(actionUnit, this.Ability, abilityDirection));
 
             return result;
         }

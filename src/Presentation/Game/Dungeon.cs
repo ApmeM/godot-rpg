@@ -183,11 +183,12 @@ public partial class Dungeon : Node2D
                     if (moveAvailable)
                     {
                         var ability = this.pluginUtils.FindAbility(currentAbility.Value);
+                        var moveAbility = ability as IMoveAbility;
                         this.currentAction = CurrentAction.None;
 
-                        if (this.pluginUtils.IsMoveAbility(this.currentAbility.Value))
+                        if (moveAbility != null && moveAbility.IsBasicMove)
                         {
-                            currentUnit.MoveShadowTo(cell, this.currentAbility.Value);
+                            currentUnit.MoveShadowTo(cell, moveAbility);
                         }
                         else
                         {
@@ -234,8 +235,8 @@ public partial class Dungeon : Node2D
                 {
                     lists.Add(new TransferTurnDoneData.UnitActionData
                     {
-                        Ability = (a.ClientUnit.UnitType == UnitType.Witch) ? Ability.Fly : Ability.Move,
-                        AbilityDirection = a.NewPosition - this.maze.WorldToMap(a.Position)
+                        Ability = a.NewPositionAbility.Value,
+                        AbilityDirection = a.NewPosition.Value - this.maze.WorldToMap(a.Position)
                     });
                 }
 
@@ -294,23 +295,36 @@ public partial class Dungeon : Node2D
             }
         }
 
-        foreach (var unit in visibleUnits)
-        {
-            var player = turnData.OtherPlayers[unit.ClientUnit.PlayerId];
-            await unit.MoveUnitTo(player.Units[unit.ClientUnit.UnitId].Position, player.Units[unit.ClientUnit.UnitId].MoveAbility);
-        }
-
         var signals = new List<SignalAwaiter>();
 
         foreach (var unit in myUnits)
         {
-            await unit.MoveUnitTo(turnData.YourUnits[unit.ClientUnit.UnitId].Position, turnData.YourUnits[unit.ClientUnit.UnitId].MoveAbility);
+            foreach (var ability in turnData.YourUnits[unit.ClientUnit.UnitId].ExecutedAbilities)
+            {
+                var moveAbility = this.pluginUtils.FindAbility(ability.Item1) as IMoveAbility;
+                if (moveAbility == null || !moveAbility.IsBasicMove)
+                {
+                    continue;
+                }
+
+                await unit.MoveUnitTo(ability.Item2, moveAbility);
+            }
         }
 
         foreach (var unit in visibleUnits)
         {
             var player = turnData.OtherPlayers[unit.ClientUnit.PlayerId];
-            await unit.MoveUnitTo(player.Units[unit.ClientUnit.UnitId].Position, player.Units[unit.ClientUnit.UnitId].MoveAbility);
+
+            foreach (var ability in player.Units[unit.ClientUnit.UnitId].ExecutedAbilities)
+            {
+                var moveAbility = this.pluginUtils.FindAbility(ability.Item1) as IMoveAbility;
+                if (moveAbility == null || !moveAbility.IsBasicMove)
+                {
+                    continue;
+                }
+
+                await unit.MoveUnitTo(ability.Item2, moveAbility);
+            }
         }
 
         foreach (var signal in signals)
@@ -322,13 +336,42 @@ public partial class Dungeon : Node2D
         foreach (var unit in myUnits)
         {
             unit.Mp = turnData.YourUnits[unit.ClientUnit.UnitId].Mp;
-            signals.Add(unit.Attack(turnData.YourUnits[unit.ClientUnit.UnitId].AbilityDirection));
+            foreach (var ability in turnData.YourUnits[unit.ClientUnit.UnitId].ExecutedAbilities)
+            {
+                var generalAbility = this.pluginUtils.FindAbility(ability.Item1);
+                var moveAbility = generalAbility as IMoveAbility;
+
+                if (moveAbility != null && moveAbility.IsBasicMove)
+                {
+                    continue;
+                }
+
+                if (moveAbility != null)
+                    signals.Add(unit.MoveUnitTo(ability.Item2, moveAbility));
+                else
+                    signals.Add(unit.Attack(ability.Item2));
+            }
         }
 
         foreach (var unit in visibleUnits)
         {
             var player = turnData.OtherPlayers[unit.ClientUnit.PlayerId];
-            signals.Add(unit.Attack(player.Units[unit.ClientUnit.UnitId].AttackDirection));
+
+            foreach (var ability in player.Units[unit.ClientUnit.UnitId].ExecutedAbilities)
+            {
+                var generalAbility = this.pluginUtils.FindAbility(ability.Item1);
+                var moveAbility = generalAbility as IMoveAbility;
+
+                if (moveAbility != null && moveAbility.IsBasicMove)
+                {
+                    continue;
+                }
+
+                if (moveAbility != null)
+                    signals.Add(unit.MoveUnitTo(ability.Item2, moveAbility));
+                else
+                    signals.Add(unit.Attack(ability.Item2));
+            }
         }
 
         foreach (var signal in signals)
@@ -339,7 +382,7 @@ public partial class Dungeon : Node2D
 
         foreach (var unit in myUnits)
         {
-            signals.Add(unit.UnitHit(turnData.YourUnits[unit.ClientUnit.UnitId].AbilityFrom, turnData.YourUnits[unit.ClientUnit.UnitId].Hp));
+            signals.Add(unit.UnitHit(turnData.YourUnits[unit.ClientUnit.UnitId].AppliedAbilities.Cast<(Ability, Vector2)?>().FirstOrDefault()?.Item2, turnData.YourUnits[unit.ClientUnit.UnitId].Hp));
             unit.ShowHpChanges(
                 turnData.YourUnits[unit.ClientUnit.UnitId].HpChanges,
                 turnData.YourUnits[unit.ClientUnit.UnitId].MpChanges);
@@ -348,7 +391,7 @@ public partial class Dungeon : Node2D
         foreach (var unit in visibleUnits)
         {
             var player = turnData.OtherPlayers[unit.ClientUnit.PlayerId];
-            signals.Add(unit.UnitHit(player.Units[unit.ClientUnit.UnitId].AttackFrom, player.Units[unit.ClientUnit.UnitId].Hp));
+            signals.Add(unit.UnitHit(player.Units[unit.ClientUnit.UnitId].AppliedAbilities.Cast<(Ability, Vector2)?>().FirstOrDefault()?.Item2, player.Units[unit.ClientUnit.UnitId].Hp));
             unit.ShowHpChanges(
                 player.Units[unit.ClientUnit.UnitId].HpChanges,
                 null);

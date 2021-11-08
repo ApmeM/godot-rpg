@@ -92,14 +92,14 @@ public partial class Maze : TileMap
         var mouse = floor.GetGlobalMousePosition();
         var cell = floor.WorldToMap(mouse);
 
-        BeginHighliting(HighliteType.HighlitedMove);
+        BeginHighliting(HighliteType.HighlitedMove, this.attackRadius);
         HighlitePoint(cell);
         EndHighliting();
 
-        BeginHighliting(HighliteType.AttackRadius);
+        BeginHighliting(HighliteType.AttackRadius, this.attackRadius);
         if (attackRadius != null && highlitedCells[HighliteType.AttackDistance].Contains(cell))
         {
-            HighliteRadius(cell, attackRadius.Value, true);
+            HighliteRadius(cell, attackRadius.Value);
         }
         EndHighliting();
     }
@@ -138,73 +138,39 @@ public partial class Maze : TileMap
         RehighliteCells();
     }
 
-    public void HighliteAvailableAttacks(Vector2 shadowCell, int? attackDistance, int? attackRadius)
-    {
-        this.attackRadius = attackRadius;
-        BeginHighliting(HighliteType.AttackDistance);
-        HighliteRadius(shadowCell, attackDistance.Value, true);
-        EndHighliting();
-    }
-
-    public void HighliteAvailableAttacks(Vector2 shadowCell, List<Vector2> targetCells, int? attackDistance, int? attackRadius)
-    {
-        this.attackRadius = attackRadius;
-
-        BreadthFirstPathfinder.Search(this.astarFly, shadowCell, attackDistance.Value, out var visited);
-
-        BeginHighliting(HighliteType.AttackDistance);
-        foreach (var cell in targetCells.Where(visited.ContainsKey))
-        {
-            HighlitePoint(cell);
-        }
-        EndHighliting();
-    }
-
-    public void HighliteAvailableMoves(Vector2 unitCell, int? moveDistance, bool isFly = false)
-    {
-        if (moveDistance == null)
-        {
-            throw new Exception("Unknown move distance to highlite. Possible reason - trying to highlite distance for enemy unit.");
-        }
-        
-        this.attackRadius = null;
-        BeginHighliting(HighliteType.Move);
-        HighliteRadius(unitCell, moveDistance.Value, isFly);
-        EndHighliting();
-    }
-
     #region HighlitingInternal
 
     private HighliteType? currentHighliteType;
 
-    private void BeginHighliting(HighliteType highliteType)
+    public void BeginHighliting(HighliteType highliteType, int? attackRadius)
     {
         if (currentHighliteType != null)
         {
             throw new Exception("Previous highliting not finished.");
         }
 
+        this.attackRadius = attackRadius;
         this.currentHighliteType = highliteType;
         highlitedCells[highliteType].Clear();
     }
 
-    private void HighliteRadius(Vector2 fromPoint, int highliteRadius, bool isFly)
+    public void HighliteRadius(Vector2 fromPoint, int highliteRadius)
     {
-        EnsureHighliting();
-        BreadthFirstPathfinder.Search(isFly ? this.astarFly : this.astarMove, fromPoint, highliteRadius, out var visited);
+        BreadthFirstPathfinder.Search(this.astarFly, fromPoint, highliteRadius, out var visited);
+
         foreach (var cell in visited.Keys)
         {
-            highlitedCells[this.currentHighliteType.Value].Add(cell);
+            HighlitePoint(cell);
         }
     }
 
-    private void HighlitePoint(Vector2 fromPoint)
+    public void HighlitePoint(Vector2 fromPoint)
     {
         EnsureHighliting();
         highlitedCells[this.currentHighliteType.Value].Add(fromPoint);
     }
 
-    private void EndHighliting()
+    public void EndHighliting()
     {
         EnsureHighliting();
         RehighliteCells();
@@ -270,30 +236,6 @@ public partial class Maze : TileMap
         }
 
         return motion * delta;
-    }
-
-    public void MoveBy(Queue<Vector2> currentPath, Vector2 currentPosition, Vector2 newTarget, Ability moveAbility)
-    {
-        var playerPosition = this.WorldToMap(currentPosition);
-        var newPath = AStarPathfinder.Search(moveAbility == Ability.Fly ? this.astarFly : this.astarMove, playerPosition, newTarget);
-        if (newPath == null)
-        {
-            return;
-        }
-
-        if (currentPath.Count > 0)
-        {
-            var current = currentPath.Peek();
-            currentPath.Clear();
-            currentPath.Enqueue(current);
-        }
-
-        for (var i = 0; i < newPath.Count; i++)
-        {
-            var worldPos = this.MapToWorld(newPath[i]);
-            worldPos += Vector2.Down * this.CellSize.y / 2;
-            currentPath.Enqueue(worldPos);
-        }
     }
 
     private int Distance(Vector2 from, Vector2 to)

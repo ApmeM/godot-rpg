@@ -10,6 +10,7 @@
         HasteAura,
         Move,
         Fly,
+        Teleport,
         Regeneration
     };
 }

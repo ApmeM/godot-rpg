@@ -15,11 +15,9 @@ namespace IsometricGame.Logic.Models
         public class YourUnitsData
         {
             public Vector2 Position;
-            public Ability? MoveAbility;
-            public Vector2? AbilityDirection;
             public int Hp;
             public int Mp;
-            public Vector2? AbilityFrom;
+            public List<(Ability, Vector2)> AppliedAbilities;
             public List<EffectDuration> Effects;
             public int MoveDistance;
             public int SightRange;
@@ -29,6 +27,7 @@ namespace IsometricGame.Logic.Models
             public float MagicPower;
             public List<int> HpChanges;
             public List<int> MpChanges;
+            public List<(Ability, Vector2)> ExecutedAbilities;
         }
 
         public class OtherPlayersData
@@ -38,12 +37,11 @@ namespace IsometricGame.Logic.Models
         public class OtherUnitsData
         {
             public Vector2 Position;
-            public Ability? MoveAbility;
-            public Vector2? AttackDirection;
             public int Hp;
-            public Vector2? AttackFrom;
+            public List<(Ability, Vector2)> AppliedAbilities;
             public List<EffectDuration> Effects;
             public List<int> HpChanges;
+            public List<(Ability, Vector2)> ExecutedAbilities;
         }
     }
 }

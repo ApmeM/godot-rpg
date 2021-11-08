@@ -42,6 +42,7 @@ namespace IsometricGame.Logic.Utils
                     new HasteAuraAbility(pluginUtils),
                     new MoveAbility(),
                     new FlyAbility(),
+                    new TeleportAbility(),
                     new RegenerationAbility()
                 },
                 new List<ISkill>

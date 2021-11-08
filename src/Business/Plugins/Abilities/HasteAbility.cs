@@ -29,7 +29,15 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
             var targetCells = myUnits
                 .Select(unit => unit.NewPosition == null ? maze.WorldToMap(unit.Position) : unit.NewPosition.Value)
                 .ToList();
-            maze.HighliteAvailableAttacks(newPos, targetCells, (int)(currentUnit.RangedAttackDistance * 5), (int)(currentUnit.AOEAttackRadius * 0));
+
+            BreadthFirstPathfinder.Search(maze.astarFly, newPos, (int)(currentUnit.RangedAttackDistance * 5), out var visited);
+
+            maze.BeginHighliting(Maze.HighliteType.AttackDistance, (int)(currentUnit.AOEAttackRadius * 0));
+            foreach (var cell in targetCells.Where(visited.ContainsKey))
+            {
+                maze.HighlitePoint(cell);
+            }
+            maze.EndHighliting();
         }
 
         public List<IAppliedAction> Apply(ServerUnit actionUnit, GameData game, Vector2 abilityDirection)
@@ -65,13 +73,13 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
 
                     result.Add(new ApplyEffectAppliedAction(Effect.Haste, 10, targetUnit.Value));
                     result.Add(new ChangeMoveDistanceAppliedAction(3, targetUnit.Value));
-                    result.Add(new ApplyAbilityFromDirectionAction(actionUnit, targetUnit.Value));
+                    result.Add(new ApplyAbilityFromDirectionAction(actionUnit, this.Ability, targetUnit.Value));
                 }
             }
 
             if (result.Count > 0)
             {
-                result.Add(new ApplyAbilityToDirectionAction(actionUnit, abilityDirection));
+                result.Add(new ApplyAbilityToDirectionAction(actionUnit, this.Ability, abilityDirection));
                 result.Add(new ChangeMpAppliedAction(-5, actionUnit));
             }
 

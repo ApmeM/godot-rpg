@@ -80,10 +80,5 @@ namespace IsometricGame.Logic.ScriptHelpers
 
             return SupportedBots[botName];
         }
-
-        public bool IsMoveAbility(Ability ability)
-        {
-            return ability == Ability.Fly || ability == Ability.Move;
-        }
     }
 }

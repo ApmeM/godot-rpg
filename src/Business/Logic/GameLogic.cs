@@ -207,12 +207,20 @@ namespace IsometricGame.Logic
                 .Where(a => game.Players[a.PlayerId].Units[a.UnitId].Abilities.Contains(a.Ability));
 
             var moveAbilities = turnAbilities
-                .Where(a => this.pluginUtils.IsMoveAbility(a.Ability))
+                .Where(a =>
+                {
+                    var moveAbility = this.pluginUtils.FindAbility(a.Ability) as IMoveAbility;
+                    return moveAbility != null && moveAbility.IsBasicMove;
+                })
                 .GroupBy(a => UnitUtils.GetFullUnitId(a.PlayerId, a.UnitId))
                 .Select(a => new ServerAction(a.First()) { ExecuteOrder = 1 });
 
             var skillAbilities = turnAbilities
-                .Where(a => !this.pluginUtils.IsMoveAbility(a.Ability))
+                .Where(a =>
+                {
+                    var moveAbility = this.pluginUtils.FindAbility(a.Ability) as IMoveAbility;
+                    return moveAbility == null || !moveAbility.IsBasicMove;
+                })
                 .GroupBy( a => UnitUtils.GetFullUnitId(a.PlayerId, a.UnitId))
                 .Select(a => new ServerAction(a.First()) { ExecuteOrder = 2 });
 
@@ -299,6 +307,11 @@ namespace IsometricGame.Logic
                 {
                     actionUnit.Value.Hp = Mathf.Clamp(actionUnit.Value.Hp, 0, actionUnit.Value.MaxHp);
                     actionUnit.Value.Mp = Mathf.Clamp(actionUnit.Value.Mp, 0, actionUnit.Value.MaxMp);
+                    if (actionUnit.Value.Hp == 0)
+                    {
+                        var fullId = UnitUtils.GetFullUnitId(actionUnit.Value);
+                        unitsTurnDelta[fullId].AppliedAbilities.Clear();
+                    }
                 }
 
                 actionPlayer.Value.IsGameOver = actionPlayer.Value.IsGameOver || CheckGameOver(actionPlayer.Value);
@@ -366,7 +379,7 @@ namespace IsometricGame.Logic
             };
         }
 
-        private TransferTurnData GetTurnData(GameData game, int forPlayer, Dictionary<long, ServerTurnDelta> UnitsTurnDelta)
+        private TransferTurnData GetTurnData(GameData game, int forPlayer, Dictionary<long, ServerTurnDelta> unitsTurnDelta)
         {
             var player = game.Players[forPlayer];
             return new TransferTurnData
@@ -376,15 +389,15 @@ namespace IsometricGame.Logic
                 YourUnits = player.Units.ToDictionary(a => a.Key, a =>
                 {
                     var fullId = UnitUtils.GetFullUnitId(a.Value);
-                    UnitsTurnDelta.TryGetValue(fullId, out var delta);
+                    var delta = unitsTurnDelta[fullId];
+
                     return new TransferTurnData.YourUnitsData
                     {
                         Position = a.Value.Position,
-                        MoveAbility = delta?.MoveAbilityUsed,
-                        AbilityDirection = a.Value.Hp <= 0 ? null : delta?.AbilityDirection,
+                        ExecutedAbilities = delta.ExecutedAbilities,
                         Hp = a.Value.Hp,
                         Mp = a.Value.Mp,
-                        AbilityFrom = a.Value.Hp <= 0 ? null : delta?.AbilityFrom,
+                        AppliedAbilities = delta.AppliedAbilities,
                         Effects = a.Value.Effects,
                         MoveDistance = a.Value.MoveDistance,
                         SightRange = a.Value.SightRange,
@@ -402,15 +415,14 @@ namespace IsometricGame.Logic
                     Units = a.Value.Units.Where(b => IsVisible(player, (int)b.Value.Position.x, (int)b.Value.Position.y)).ToDictionary(b => b.Key, b =>
                     {
                         var fullId = UnitUtils.GetFullUnitId(b.Value);
-                        UnitsTurnDelta.TryGetValue(fullId, out var delta);
+                        var delta = unitsTurnDelta[fullId];
 
                         return new TransferTurnData.OtherUnitsData
                         {
                             Position = b.Value.Position,
-                            MoveAbility = delta?.MoveAbilityUsed,
-                            AttackDirection = b.Value.Hp <= 0 ? null : delta?.AbilityDirection,
+                            ExecutedAbilities = delta.ExecutedAbilities,
                             Hp = b.Value.Hp,
-                            AttackFrom = b.Value.Hp <= 0 ? null : delta?.AbilityFrom,
+                            AppliedAbilities = delta.AppliedAbilities,
                             Effects = b.Value.Effects,
                             HpChanges = delta?.HpChanges,
                         };

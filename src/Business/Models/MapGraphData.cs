@@ -18,14 +18,14 @@ namespace IsometricGame.Logic.ScriptHelpers
         public int DefaultWeight = 1;
         public int WeightedNodeWeight = 5;
 
-        private static readonly Vector2[] CardinalDirs = {
+        public static readonly Vector2[] CardinalDirs = {
             new Vector2( 1, 0 ),
             new Vector2( 0, -1 ),
             new Vector2( -1, 0 ),
             new Vector2( 0, 1 ),
         };
 
-        private static readonly Vector2[] CompassDirs = {
+        public static readonly Vector2[] CompassDirs = {
             new Vector2( 1, 0 ),
             new Vector2( 1, -1 ),
             new Vector2( 0, -1 ),

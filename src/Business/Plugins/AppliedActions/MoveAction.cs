@@ -1,6 +1,7 @@
 ﻿using Godot;
 using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.Models;
+using System;
 using System.Collections.Generic;
 
 namespace IsometricGame.Logic.ScriptHelpers.AppliedActions
@@ -22,7 +23,8 @@ namespace IsometricGame.Logic.ScriptHelpers.AppliedActions
         {
             var actionFullId = UnitUtils.GetFullUnitId(actionUnit);
             var actionDelta = unitsTurnDelta[actionFullId];
-            actionDelta.MoveAbilityUsed = moveAbility;
+            actionDelta.ExecutedAbilities.Add(new ValueTuple<Ability, Vector2>(moveAbility, movePosition));
+            actionUnit.Position = movePosition;
         }
     }
 }
