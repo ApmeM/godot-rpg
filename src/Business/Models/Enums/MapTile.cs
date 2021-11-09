@@ -5,6 +5,7 @@
         Unknown,
         Wall,
         Path,
-        Pit
+        Pit,
+        Door
     }
 }

@@ -70,6 +70,14 @@ public partial class Maze : TileMap
                             fog.SetCellv(position, -1);
                             break;
                         }
+                    case MapTile.Door:
+                        {
+                            astarMove.Paths.Add(position);
+                            astarFly.Paths.Add(position);
+                            this.SetCellv(position, 4);
+                            fog.SetCellv(position, -1);
+                            break;
+                        }
                     case MapTile.Pit:
                         {
                             astarFly.Paths.Add(position);

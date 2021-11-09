@@ -1,6 +1,5 @@
 ﻿using IsometricGame.Business.Models;
 using IsometricGame.Logic.Enums;
-using IsometricGame.Logic.Models;
 using MazeGenerators;
 using MazeGenerators.Utils;
 using System;
@@ -33,6 +32,12 @@ namespace IsometricGame.Logic.ScriptHelpers
                     switch (map.Paths[x, y])
                     {
                         case JunctionTileId:
+                            {
+                                game.Map[x, y] = MapTile.Door;
+                                game.AstarMove.Paths.Add(new Godot.Vector2(x, y));
+                                game.AstarFly.Paths.Add(new Godot.Vector2(x, y));
+                                break;
+                            }
                         case MazeTileId:
                         case RoomTileId:
                             {
