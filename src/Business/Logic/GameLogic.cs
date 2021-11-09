@@ -27,32 +27,16 @@ namespace IsometricGame.Logic
 
         public GameData StartForLobby(LobbyData lobby)
         {
-            var game = new GameData(lobby.Id);
-            game.Configuration = lobby.ServerConfiguration;
-            game.Map = this.mapRepository.CreateForType(lobby.ServerConfiguration.MapType);
-            game.AstarMove = new MapGraphData(game.Map.Paths.GetLength(0), game.Map.Paths.GetLength(1));
-            game.AstarFly = new MapGraphData(game.Map.Paths.GetLength(0), game.Map.Paths.GetLength(1));
-            for (var x = 0; x < game.Map.Paths.GetLength(0); x++)
-                for (var y = 0; y < game.Map.Paths.GetLength(1); y++)
-                {
-                    switch (game.Map.Paths[x, y])
-                    {
-                        case MapRepository.JunctionTileId:
-                        case MapRepository.MazeTileId:
-                        case MapRepository.RoomTileId:
-                            {
-                                game.AstarMove.Paths.Add(new Vector2(x, y));
-                                game.AstarFly.Paths.Add(new Vector2(x, y));
-                                break;
-                            }
-                        case MapRepository.EmptyTileId:
-                            {
+            var game = new GameData(lobby.Id)
+            {
+                Configuration = lobby.ServerConfiguration
+            };
 
-                                game.AstarFly.Paths.Add(new Vector2(x, y));
-                                break;
-                            }
-                    }
-                }
+            var generatorData = this.mapRepository.CreateForType(lobby.ServerConfiguration.MapType);
+            game.StartingPoints = generatorData.StartingPoints;
+            game.Map = generatorData.Map;
+            game.AstarFly = generatorData.AstarFly;
+            game.AstarMove = generatorData.AstarMove;
 
             List<Tuple<IBot, int>> bots = new List<Tuple<IBot, int>>();
             var botNumber = 1;
@@ -107,9 +91,7 @@ namespace IsometricGame.Logic
             player.TurnDoneMethod = turnDone;
 
             var connectedPlayers = game.Players.Count(a => a.Value.IsConnected);
-            var centerX = game.Map.Rooms[connectedPlayers - 1].X + game.Map.Rooms[connectedPlayers - 1].Width / 2;
-            var centerY = game.Map.Rooms[connectedPlayers - 1].Y + game.Map.Rooms[connectedPlayers - 1].Height / 2;
-            var center = new Vector2(centerX, centerY);
+            var center = game.StartingPoints[connectedPlayers - 1];
             foreach (var u in connectData.Units.Take(game.Configuration.MaxUnits))
             {
                 var unitId = player.Units.Count + 1;
@@ -439,37 +421,14 @@ namespace IsometricGame.Logic
         private MapTile[,] GetVisibleMap(GameData game, int forPlayer, bool isInitialize)
         {
             var player = game.Players[forPlayer];
-
-            var result = new MapTile[game.Map.Paths.GetLength(0), game.Map.Paths.GetLength(1)];
-            for (var x = 0; x < game.Map.Paths.GetLength(0); x++)
-                for (var y = 0; y < game.Map.Paths.GetLength(1); y++)
+            
+            var result = (MapTile[,])game.Map.Clone();
+            for (var x = 0; x < result.GetLength(0); x++)
+                for (var y = 0; y < result.GetLength(1); y++)
                 {
                     if (!IsVisible(player, x, y) && (!game.Configuration.FullMapVisible || !isInitialize))
                     {
                         result[x, y] = MapTile.Unknown;
-                    }
-                    else
-                    {
-                        switch (game.Map.Paths[x, y])
-                        {
-                            case MapRepository.JunctionTileId:
-                            case MapRepository.MazeTileId:
-                            case MapRepository.RoomTileId:
-                                {
-                                    result[x, y] = MapTile.Path;
-                                    break;
-                                }
-                            case MapRepository.WallTileId:
-                                {
-                                    result[x, y] = MapTile.Wall;
-                                    break;
-                                }
-                            case MapRepository.EmptyTileId:
-                                {
-                                    result[x, y] = MapTile.Pit;
-                                    break;
-                                }
-                        }
                     }
                 }
 

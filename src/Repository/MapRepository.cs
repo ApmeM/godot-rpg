@@ -1,7 +1,10 @@
-﻿using IsometricGame.Logic.Enums;
+﻿using IsometricGame.Business.Models;
+using IsometricGame.Logic.Enums;
+using IsometricGame.Logic.Models;
 using MazeGenerators;
 using MazeGenerators.Utils;
 using System;
+using System.Linq;
 
 namespace IsometricGame.Logic.ScriptHelpers
 {
@@ -12,8 +15,49 @@ namespace IsometricGame.Logic.ScriptHelpers
         public const int MazeTileId     = 2;
         public const int WallTileId     = 1;
         public const int EmptyTileId    = 0;
+        
+        public MapGeneratorData CreateForType(MapGeneratingType mapType)
+        {
+            var map = this.CreateForTypeInternal(mapType);
+            var game = new MapGeneratorData
+            {
+                StartingPoints = map.Rooms.Select(a => new Godot.Vector2(a.X + a.Width / 2, a.Y + a.Height / 2)).ToList(),
+                Map = new MapTile[map.Paths.GetLength(0), map.Paths.GetLength(1)],
+                AstarMove = new MapGraphData(map.Paths.GetLength(0), map.Paths.GetLength(1)),
+                AstarFly = new MapGraphData(map.Paths.GetLength(0), map.Paths.GetLength(1))
+            };
 
-        public GeneratorResult CreateForType(MapGeneratingType mapType)
+            for (var x = 0; x < map.Paths.GetLength(0); x++)
+                for (var y = 0; y < map.Paths.GetLength(1); y++)
+                {
+                    switch (map.Paths[x, y])
+                    {
+                        case JunctionTileId:
+                        case MazeTileId:
+                        case RoomTileId:
+                            {
+                                game.Map[x, y] = MapTile.Path;
+                                game.AstarMove.Paths.Add(new Godot.Vector2(x, y));
+                                game.AstarFly.Paths.Add(new Godot.Vector2(x, y));
+                                break;
+                            }
+                        case WallTileId:
+                            {
+                                game.Map[x, y] = MapTile.Wall;
+                                break;
+                            }
+                        case EmptyTileId:
+                            {
+                                game.Map[x, y] = MapTile.Pit;
+                                game.AstarFly.Paths.Add(new Godot.Vector2(x, y));
+                                break;
+                            }
+                    }
+                }
+            return game;
+        }
+
+        private GeneratorResult CreateForTypeInternal(MapGeneratingType mapType)
         {
             var result = new GeneratorResult();
 
