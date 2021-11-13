@@ -29,7 +29,7 @@ public partial class Menu : Container
         if (OS.GetName() == "HTML5")
         {
             this.serverButton.Visible = false;
-            this.serverLabel.Visible = false;
+            this.orLabel.Visible = false;
         }
 
         this.teamSelector.Refresh(this.teamsRepository.LoadTeams());

@@ -215,7 +215,7 @@ public partial class Maze : TileMap
     {
         foreach (var cell in lastHighlitedCells)
         {
-            if (astarMove.Paths.Contains(cell))
+            if (astarMove?.Paths?.Contains(cell) ?? false)
             {
                 floor.SetCellv(cell, Fate.GlobalFate.Chance(90) ? 1 : 0);
             }
