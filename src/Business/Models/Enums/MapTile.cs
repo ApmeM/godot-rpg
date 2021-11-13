@@ -6,6 +6,7 @@
         Wall,
         Path,
         Pit,
-        Door
+        Door,
+        StartPoint
     }
 }

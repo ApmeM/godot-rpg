@@ -1,6 +1,5 @@
 ﻿using Godot;
 using IsometricGame.Logic.Enums;
-using IsometricGame.Logic.ScriptHelpers;
 using System.Collections.Generic;
 
 namespace IsometricGame.Business.Models
@@ -9,7 +8,5 @@ namespace IsometricGame.Business.Models
     {
         public List<Vector2> StartingPoints;
         public MapTile[,] Map;
-        public MapGraphData AstarMove;
-        public MapGraphData AstarFly;
     }
 }

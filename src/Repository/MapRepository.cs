@@ -9,22 +9,17 @@ namespace IsometricGame.Logic.ScriptHelpers
 {
     public class MapRepository
     {
-        public const int JunctionTileId = 4;
-        public const int RoomTileId     = 3;
-        public const int MazeTileId     = 2;
-        public const int WallTileId     = 1;
-        public const int EmptyTileId    = 0;
+        private const int JunctionTileId = 4;
+        private const int RoomTileId     = 3;
+        private const int MazeTileId     = 2;
+        private const int WallTileId     = 1;
+        private const int EmptyTileId    = 0;
         
-        public MapGeneratorData CreateForType(MapGeneratingType mapType)
+        public MapTile[,] CreateForType(MapGeneratingType mapType)
         {
             var map = this.CreateForTypeInternal(mapType);
-            var game = new MapGeneratorData
-            {
-                StartingPoints = map.Rooms.Select(a => new Godot.Vector2(a.X + a.Width / 2, a.Y + a.Height / 2)).ToList(),
-                Map = new MapTile[map.Paths.GetLength(0), map.Paths.GetLength(1)],
-                AstarMove = new MapGraphData(map.Paths.GetLength(0), map.Paths.GetLength(1)),
-                AstarFly = new MapGraphData(map.Paths.GetLength(0), map.Paths.GetLength(1))
-            };
+
+            var game = new MapTile[map.Paths.GetLength(0), map.Paths.GetLength(1)];
 
             for (var x = 0; x < map.Paths.GetLength(0); x++)
                 for (var y = 0; y < map.Paths.GetLength(1); y++)
@@ -33,32 +28,33 @@ namespace IsometricGame.Logic.ScriptHelpers
                     {
                         case JunctionTileId:
                             {
-                                game.Map[x, y] = MapTile.Door;
-                                game.AstarMove.Paths.Add(new Godot.Vector2(x, y));
-                                game.AstarFly.Paths.Add(new Godot.Vector2(x, y));
+                                game[x, y] = MapTile.Door;
                                 break;
                             }
                         case MazeTileId:
                         case RoomTileId:
                             {
-                                game.Map[x, y] = MapTile.Path;
-                                game.AstarMove.Paths.Add(new Godot.Vector2(x, y));
-                                game.AstarFly.Paths.Add(new Godot.Vector2(x, y));
+                                game[x, y] = MapTile.Path;
                                 break;
                             }
                         case WallTileId:
                             {
-                                game.Map[x, y] = MapTile.Wall;
+                                game[x, y] = MapTile.Wall;
                                 break;
                             }
                         case EmptyTileId:
                             {
-                                game.Map[x, y] = MapTile.Pit;
-                                game.AstarFly.Paths.Add(new Godot.Vector2(x, y));
+                                game[x, y] = MapTile.Pit;
                                 break;
                             }
                     }
                 }
+
+            foreach (var room in map.Rooms)
+            {
+                game[room.X + room.Width / 2, room.Y + room.Height / 2] = MapTile.StartPoint;
+
+            }
             return game;
         }
 

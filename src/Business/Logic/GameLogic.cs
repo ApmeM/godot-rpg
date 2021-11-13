@@ -1,5 +1,6 @@
 using FateRandom;
 using Godot;
+using IsometricGame.Business.Logic;
 using IsometricGame.Business.Models;
 using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.Models;
@@ -17,12 +18,14 @@ namespace IsometricGame.Logic
         private readonly MapRepository mapRepository;
         private readonly PluginUtils pluginUtils;
         private readonly UnitUtils unitUtils;
+        private readonly PathLogic pathLogic;
 
-        public GameLogic(MapRepository mapRepository, PluginUtils pluginUtils, UnitUtils unitUtils)
+        public GameLogic(MapRepository mapRepository, PluginUtils pluginUtils, UnitUtils unitUtils, PathLogic pathLogic)
         {
             this.mapRepository = mapRepository;
             this.pluginUtils = pluginUtils;
             this.unitUtils = unitUtils;
+            this.pathLogic = pathLogic;
         }
 
         public GameData StartForLobby(LobbyData lobby)
@@ -32,11 +35,10 @@ namespace IsometricGame.Logic
                 Configuration = lobby.ServerConfiguration
             };
 
-            var generatorData = this.mapRepository.CreateForType(lobby.ServerConfiguration.MapType);
-            game.StartingPoints = generatorData.StartingPoints;
-            game.Map = generatorData.Map;
-            game.AstarFly = generatorData.AstarFly;
-            game.AstarMove = generatorData.AstarMove;
+            game.Map = this.mapRepository.CreateForType(lobby.ServerConfiguration.MapType);
+            game.StartingPoints = this.pathLogic.CollectStartingPoint(game.Map);
+            game.AstarFly = this.pathLogic.GetGraphData(game.Map, true);
+            game.AstarMove = this.pathLogic.GetGraphData(game.Map, false);
 
             List<Tuple<IBot, int>> bots = new List<Tuple<IBot, int>>();
             var botNumber = 1;
@@ -426,7 +428,7 @@ namespace IsometricGame.Logic
             for (var x = 0; x < result.GetLength(0); x++)
                 for (var y = 0; y < result.GetLength(1); y++)
                 {
-                    if (!IsVisible(player, x, y) && (!game.Configuration.FullMapVisible || !isInitialize))
+                    if (!IsVisible(player, x, y) && (!game.Configuration.FullMapVisible || !isInitialize) && result[x,y] != MapTile.StartPoint)
                     {
                         result[x, y] = MapTile.Unknown;
                     }

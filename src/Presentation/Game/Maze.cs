@@ -1,9 +1,10 @@
-using BrainAI.Pathfinding.AStar;
 using BrainAI.Pathfinding.BreadthFirst;
 using FateRandom;
 using Godot;
+using IsometricGame.Business.Logic;
 using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.ScriptHelpers;
+using IsometricGame.Logic.Utils;
 using IsometricGame.Presentation;
 using System;
 using System.Collections.Generic;
@@ -20,11 +21,15 @@ public partial class Maze : TileMap
         HighlitedMove = 8
     }
 
+    private readonly PathLogic pathLogic;
+    
     private readonly List<Vector2> lastHighlitedCells = new List<Vector2>();
     private readonly Dictionary<HighliteType, List<Vector2>> highlitedCells;
-
+    
+    public MapTile[,] visibleMap;
     public MapGraphData astarMove;
     public MapGraphData astarFly;
+    
     private int? attackRadius;
 
     [Signal]
@@ -33,6 +38,7 @@ public partial class Maze : TileMap
     public Maze()
     {
         this.highlitedCells = Enum.GetValues(typeof(HighliteType)).Cast<HighliteType>().ToDictionary(a => a, a => new List<Vector2>());
+        this.pathLogic = DependencyInjector.pathLogic;
     }
 
     public override void _Ready()
@@ -49,13 +55,21 @@ public partial class Maze : TileMap
         for (var x = 0; x < maze.GetLength(0); x++)
             for (var y = 0; y < maze.GetLength(1); y++)
             {
+                if (maze[x, y] != MapTile.Unknown)
+                {
+                    visibleMap[x, y] = maze[x, y];
+                }
+
                 var position = new Vector2(x, y);
                 switch (maze[x, y])
                 {
+                    case MapTile.StartPoint:
+                        {
+                            floor.SetCellv(position, 3);
+                            break;
+                        }
                     case MapTile.Path:
                         {
-                            astarMove.Paths.Add(position);
-                            astarFly.Paths.Add(position);
                             if (floor.GetCellv(position) == -1)
                             {
                                 floor.SetCellv(position, Fate.GlobalFate.Chance(90) ? 1 : 0);
@@ -72,25 +86,28 @@ public partial class Maze : TileMap
                         }
                     case MapTile.Door:
                         {
-                            astarMove.Paths.Add(position);
-                            astarFly.Paths.Add(position);
                             this.SetCellv(position, 4);
                             fog.SetCellv(position, -1);
                             break;
                         }
                     case MapTile.Pit:
                         {
-                            astarFly.Paths.Add(position);
                             fog.SetCellv(position, -1);
                             break;
                         }
-                    default:
+                    case MapTile.Unknown:
                         {
                             fog.SetCellv(position, 9);
                             break;
                         }
+                    default:
+                        {
+                            throw new Exception($"Unhandled MapTile {maze[x, y]}");
+                        }
                 }
             }
+        this.pathLogic.RefreshGraphData(visibleMap, true, this.astarFly);
+        this.pathLogic.RefreshGraphData(visibleMap, false, this.astarMove);
     }
 
     public override void _Process(float delta)
@@ -114,6 +131,7 @@ public partial class Maze : TileMap
 
     public void Initialize(int mapWidth, int mapHeight)
     {
+        visibleMap = new MapTile[mapWidth, mapHeight];
         astarMove = new MapGraphData(mapWidth, mapHeight);
         astarFly = new MapGraphData(mapWidth, mapHeight);
     }

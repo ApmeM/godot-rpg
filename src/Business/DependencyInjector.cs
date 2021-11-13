@@ -1,4 +1,5 @@
-﻿using IsometricGame.Logic.ScriptHelpers;
+﻿using IsometricGame.Business.Logic;
+using IsometricGame.Logic.ScriptHelpers;
 using IsometricGame.Logic.ScriptHelpers.Abilities;
 using IsometricGame.Logic.ScriptHelpers.Effects;
 using IsometricGame.Logic.ScriptHelpers.Skills;
@@ -17,7 +18,8 @@ namespace IsometricGame.Logic.Utils
             teamsRepository = new TeamsRepository();
             pluginUtils = new PluginUtils();
             unitUtils = new UnitUtils(pluginUtils);
-            gameLogic = new GameLogic(mapRepository, pluginUtils, unitUtils);
+            pathLogic = new PathLogic();
+            gameLogic = new GameLogic(mapRepository, pluginUtils, unitUtils, pathLogic);
             serverLogic = new ServerLogic(gameLogic, accountRepository, gamesRepository);
 
             pluginUtils.Initialize(
@@ -73,6 +75,7 @@ namespace IsometricGame.Logic.Utils
         public static MapRepository mapRepository { get; }
         public static GameLogic gameLogic { get; }
         public static ServerLogic serverLogic { get; }
+        public static PathLogic pathLogic { get; }
         public static TeamsRepository teamsRepository { get; }
     }
 }
