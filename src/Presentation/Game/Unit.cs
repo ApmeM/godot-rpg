@@ -9,7 +9,7 @@ using System.Collections.Generic;
 [SceneReference("Unit.tscn")]
 public partial class Unit : Node2D
 {
-    private const int MOTION_SPEED = 800;
+    private const int MOTION_SPEED = 80;
     private readonly Queue<Vector2> path = new Queue<Vector2>();
     public ClientUnit ClientUnit;
     public bool IsSelected
@@ -60,8 +60,8 @@ public partial class Unit : Node2D
         this.GetParent<Maze>().AddChild(this.shadow);
         this.shadow.FillMembers();
 
-        this.animatedSprite.Frames = ResourceLoader.Load<SpriteFrames>($"Presentation/Units/{ClientUnit.UnitType}.tres");
-        this.shadow.ShadowSprite.Frames = ResourceLoader.Load<SpriteFrames>($"Presentation/Units/{ClientUnit.UnitType}.tres");
+        this.animatedSprite.Frames = this.pluginUtils.FindUnitType(ClientUnit.UnitType).GetFrames();
+        this.shadow.ShadowSprite.Frames = this.pluginUtils.FindUnitType(ClientUnit.UnitType).GetFrames();
         this.hpBar.MaxValue = this.ClientUnit.MaxHp;
         this.hpBar.Value = ClientUnit.Hp;
 

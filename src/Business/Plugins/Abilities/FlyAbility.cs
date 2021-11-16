@@ -84,8 +84,7 @@ namespace IsometricGame.Logic.ScriptHelpers.Abilities
 
             for (var i = 0; i < newPath.Count; i++)
             {
-                var worldPos = maze.MapToWorld(newPath[i]);
-                worldPos += Vector2.Down * maze.CellSize.y / 2;
+                var worldPos = maze.GetSpritePositionForCell(newPath[i]);
                 currentPath.Enqueue(worldPos);
             }
         }

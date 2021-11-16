@@ -2,9 +2,9 @@
 {
     public enum UnitType
     {
-        Amazon,
-        Goatman,
-        Witch,
+        Warlock,
+        Gnoll,
+        Bat,
         Wraith
     }
 }

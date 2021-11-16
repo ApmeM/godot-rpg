@@ -56,10 +56,10 @@ namespace IsometricGame.Repository
                     TeamName = "Dream team!",
                     Units = new List<TransferConnectData.UnitData>
                     {
-                        new TransferConnectData.UnitData{ UnitType = UnitType.Amazon, Skills = new List<Skill>{Skill.FirstAid, Skill.Logistics}},
-                        new TransferConnectData.UnitData{ UnitType = UnitType.Goatman, Skills = new List<Skill>{Skill.EagleEye, Skill.Logistics}},
-                        new TransferConnectData.UnitData{ UnitType = UnitType.Amazon, Skills = new List<Skill>{Skill.Ballistics, Skill.Logistics}},
-                        new TransferConnectData.UnitData{ UnitType = UnitType.Goatman, Skills = new List<Skill>{Skill.FirstAid, Skill.Logistics}},
+                        new TransferConnectData.UnitData{ UnitType = UnitType.Warlock, Skills = new List<Skill>{Skill.FirstAid, Skill.Logistics}},
+                        new TransferConnectData.UnitData{ UnitType = UnitType.Gnoll, Skills = new List<Skill>{Skill.EagleEye, Skill.Logistics}},
+                        new TransferConnectData.UnitData{ UnitType = UnitType.Warlock, Skills = new List<Skill>{Skill.Ballistics, Skill.Logistics}},
+                        new TransferConnectData.UnitData{ UnitType = UnitType.Gnoll, Skills = new List<Skill>{Skill.FirstAid, Skill.Logistics}},
                     }
                 }
             };

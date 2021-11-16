@@ -13,12 +13,23 @@ using System.Linq;
 [SceneReference("Maze.tscn")]
 public partial class Maze : TileMap
 {
+    private const int pitCell = -1;
+    private const int floorCell = 0;
+    private const int attackCell = 1;
+    private const int moveCell = 2;
+    private const int move2Cell = 3;
+    private const int fogCell = 4;
+    private const int wallCell = 5;
+    private const int startCell = 6;
+    private const int doorCell = 7;
+    private const int damageRadiusCell = 8;
+
     public enum HighliteType
     {
-        Move = 7,
-        AttackRadius = 6,
-        AttackDistance = 5,
-        HighlitedMove = 8
+        Move = moveCell,
+        AttackRadius = damageRadiusCell,
+        AttackDistance = attackCell,
+        HighlitedMove = move2Cell
     }
 
     private readonly PathLogic pathLogic;
@@ -65,14 +76,14 @@ public partial class Maze : TileMap
                 {
                     case MapTile.StartPoint:
                         {
-                            floor.SetCellv(position, 3);
+                            floor.SetCellv( position, startCell);
                             break;
                         }
                     case MapTile.Path:
                         {
                             if (floor.GetCellv(position) == -1)
                             {
-                                floor.SetCellv(position, Fate.GlobalFate.Chance(90) ? 1 : 0);
+                                floor.SetCellv(position, floorCell);
                             }
 
                             fog.SetCellv(position, -1);
@@ -80,24 +91,25 @@ public partial class Maze : TileMap
                         }
                     case MapTile.Wall:
                         {
-                            this.SetCellv(position, 2);
+                            this.SetCellv(position, wallCell);
                             fog.SetCellv(position, -1);
                             break;
                         }
                     case MapTile.Door:
                         {
-                            this.SetCellv(position, 4);
+                            this.SetCellv(position, doorCell);
                             fog.SetCellv(position, -1);
                             break;
                         }
                     case MapTile.Pit:
                         {
+                            this.SetCellv(position, pitCell);
                             fog.SetCellv(position, -1);
                             break;
                         }
                     case MapTile.Unknown:
                         {
-                            fog.SetCellv(position, 9);
+                            fog.SetCellv(position, fogCell);
                             break;
                         }
                     default:
@@ -108,6 +120,14 @@ public partial class Maze : TileMap
             }
         this.pathLogic.RefreshGraphData(visibleMap, true, this.astarFly);
         this.pathLogic.RefreshGraphData(visibleMap, false, this.astarMove);
+    }
+
+    public Vector2 GetSpritePositionForCell(Vector2 mapPos)
+    {
+        var worldPos = this.MapToWorld(mapPos);
+        worldPos += Vector2.Down * this.CellSize.y / 2;
+        worldPos += Vector2.Right * this.CellSize.x / 2;
+        return worldPos;
     }
 
     public override void _Process(float delta)
@@ -217,7 +237,7 @@ public partial class Maze : TileMap
         {
             if (astarMove?.Paths?.Contains(cell) ?? false)
             {
-                floor.SetCellv(cell, Fate.GlobalFate.Chance(90) ? 1 : 0);
+                floor.SetCellv(cell, floorCell);
             }
             else
             {

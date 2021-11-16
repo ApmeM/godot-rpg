@@ -8,7 +8,7 @@ using System.Collections.Generic;
 [SceneReference("UnitShadow.tscn")]
 public partial class UnitShadow : Node2D
 {
-    private const int MOTION_SPEED = 800;
+    private const int MOTION_SPEED = 80;
     private readonly Queue<Vector2> path = new Queue<Vector2>();
     public Vector2? AbilityDirection;
     public Ability? Ability;

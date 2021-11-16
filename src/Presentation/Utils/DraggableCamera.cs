@@ -5,8 +5,12 @@ public class DraggableCamera : Camera2D
 {
 	private bool drag = false;
 	private Vector2 initPosMouse = Vector2.Zero;
-	private float minimumZoom = 0.3f;
-	private float maximumZoom = 3f;
+	
+	[Export]
+	public float minimumZoom = 0.3f;
+	
+	[Export]
+	public float maximumZoom = 3f;
 
 
 	/// <summary>

@@ -37,7 +37,7 @@ public partial class UnitActions : Control
                     TextureNormal = ResourceLoader.Load<Texture>($"assets/Abilities/{ability}.png"),
                     Expand = true,
                     StretchMode = TextureButton.StretchModeEnum.KeepAspect,
-                    RectMinSize = Vector2.One * 100,
+                    RectMinSize = Vector2.One * 24,
                     HintTooltip = this.pluginUtils.FindAbility(ability).Description
                 };
 

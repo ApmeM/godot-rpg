@@ -89,8 +89,7 @@ public partial class Dungeon : Node2D
                 Abilities = unit.Abilities.ToDictionary(a => a, a => this.pluginUtils.FindAbility(a)),
                 Skills = unit.Skills.ToHashSet()
             };
-            unitSceneInstance.Position = this.maze.MapToWorld(unit.Position);
-            unitSceneInstance.Position += Vector2.Down * this.maze.CellSize.y / 2;
+            unitSceneInstance.Position = this.maze.GetSpritePositionForCell(unit.Position);
             unitSceneInstance.AddToGroup(Groups.MyUnits);
             this.maze.AddChild(unitSceneInstance);
         }
@@ -114,7 +113,7 @@ public partial class Dungeon : Node2D
             }
         }
 
-        this.draggableCamera.Position = this.maze.MapToWorld(initialData.YourUnits[0].Position) + Vector2.Down * maze.CellSize.y / 2;
+        this.draggableCamera.Position = this.maze.GetSpritePositionForCell(initialData.YourUnits[0].Position);
     }
 
     private void UnitActionSelected(CurrentAction action, Ability ability)

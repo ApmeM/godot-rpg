@@ -25,10 +25,10 @@ public class EasyBot: IBot
 			TeamName = $"Bot-{myId}",
 			Units = new List<TransferConnectData.UnitData>
 			{
-				new TransferConnectData.UnitData{ UnitType = UnitType.Amazon, Skills = new List<Skill>{Skill.EagleEye}},
-				new TransferConnectData.UnitData{ UnitType = UnitType.Goatman, Skills = new List<Skill>{Skill.EagleEye}},
-				new TransferConnectData.UnitData{ UnitType = UnitType.Amazon, Skills = new List<Skill>{Skill.EagleEye}},
-				new TransferConnectData.UnitData{ UnitType = UnitType.Goatman, Skills = new List<Skill>{Skill.EagleEye}},
+				new TransferConnectData.UnitData{ UnitType = UnitType.Warlock, Skills = new List<Skill>{Skill.EagleEye}},
+				new TransferConnectData.UnitData{ UnitType = UnitType.Gnoll, Skills = new List<Skill>{Skill.EagleEye}},
+				new TransferConnectData.UnitData{ UnitType = UnitType.Warlock, Skills = new List<Skill>{Skill.EagleEye}},
+				new TransferConnectData.UnitData{ UnitType = UnitType.Gnoll, Skills = new List<Skill>{Skill.EagleEye}},
 			}
 		}, 
 		(initialData) => { initData = initialData; }, 
@@ -45,13 +45,13 @@ public class EasyBot: IBot
 				new TransferTurnDoneData.UnitActionData
 				{
 					AbilityDirection = Fate.GlobalFate.Choose(Vector2.Up, Vector2.Down, Vector2.Left, Vector2.Right),
-					Ability = (u.UnitType == UnitType.Witch) ? Ability.Fly : Ability.Move
+					Ability = (u.UnitType == UnitType.Bat) ? Ability.Fly : Ability.Move
 				},
 
 				new TransferTurnDoneData.UnitActionData
 				{
 					AbilityDirection = Fate.GlobalFate.Choose(Vector2.Up, Vector2.Down, Vector2.Left, Vector2.Right),
-					Ability = (u.UnitType == UnitType.Amazon) ? Ability.RangedAttack : Ability.MeleeAttack
+					Ability = (u.UnitType == UnitType.Warlock) ? Ability.RangedAttack : Ability.MeleeAttack
 				}
 			});
 		}

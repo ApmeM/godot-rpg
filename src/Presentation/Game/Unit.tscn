@@ -1,7 +1,7 @@
-[gd_scene load_steps=13 format=2]
+[gd_scene load_steps=15 format=2]
 
 [ext_resource path="res://Presentation/Game/Unit.cs" type="Script" id=1]
-[ext_resource path="res://Presentation/Units/Amazon.tres" type="SpriteFrames" id=2]
+[ext_resource path="res://assets/enemy/bat.png" type="Texture" id=2]
 [ext_resource path="res://assets/Hp/Green.png" type="Texture" id=3]
 [ext_resource path="res://Presentation/Game/UnitShadow.tscn" type="PackedScene" id=4]
 [ext_resource path="res://Presentation/Utils/FloatingTextManager.tscn" type="PackedScene" id=5]
@@ -36,16 +36,29 @@ animations = [ {
 "speed": 5.0
 } ]
 
+[sub_resource type="AtlasTexture" id=6]
+flags = 4
+atlas = ExtResource( 2 )
+region = Rect2( 0, 0, 16, 16 )
+
+[sub_resource type="SpriteFrames" id=7]
+animations = [ {
+"frames": [ SubResource( 6 ) ],
+"loop": true,
+"name": "idleUp",
+"speed": 5.0
+} ]
+
 [node name="Unit" type="Node2D"]
 script = ExtResource( 1 )
 UnitShadowScene = ExtResource( 4 )
 
 [node name="HpBar" type="TextureProgress" parent="."]
-margin_left = -50.7341
-margin_top = -175.286
-margin_right = 149.266
-margin_bottom = -149.286
-rect_scale = Vector2( 0.5, 0.5 )
+margin_left = -8.0
+margin_top = -14.0
+margin_right = 192.0
+margin_bottom = 12.0
+rect_scale = Vector2( 0.08, 0.08 )
 value = 100.0
 texture_progress = ExtResource( 3 )
 __meta__ = {
@@ -53,11 +66,11 @@ __meta__ = {
 }
 
 [node name="MpBar" type="TextureProgress" parent="."]
-margin_left = -50.7341
-margin_top = -156.286
-margin_right = 149.266
-margin_bottom = -130.286
-rect_scale = Vector2( 0.5, 0.5 )
+margin_left = -8.0
+margin_top = -12.0
+margin_right = 192.0
+margin_bottom = 14.0
+rect_scale = Vector2( 0.08, 0.08 )
 value = 100.0
 texture_progress = ExtResource( 6 )
 __meta__ = {
@@ -66,16 +79,15 @@ __meta__ = {
 
 [node name="SelectionMarker" type="AnimatedSprite" parent="."]
 visible = false
-position = Vector2( 0, -188.432 )
-scale = Vector2( 2, 2 )
+position = Vector2( 0, -16 )
+scale = Vector2( 0.5, 0.5 )
 frames = SubResource( 5 )
+frame = 1
 playing = true
 
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
-scale = Vector2( 2, 2 )
-frames = ExtResource( 2 )
-animation = "attackRight"
-offset = Vector2( -0.076355, -29.8558 )
+frames = SubResource( 7 )
+animation = "idleUp"
 
 [node name="FloatingTextManager" parent="." instance=ExtResource( 5 )]
-position = Vector2( 0, -140 )
+position = Vector2( 0, -16 )

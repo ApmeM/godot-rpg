@@ -1,4 +1,5 @@
-﻿using IsometricGame.Logic.Enums;
+﻿using Godot;
+using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.Models;
 
 namespace IsometricGame.Logic.ScriptHelpers
@@ -8,5 +9,6 @@ namespace IsometricGame.Logic.ScriptHelpers
         UnitType UnitType { get; }
         void Apply(ServerUnit unit);
         void Initialize(ServerUnit unit);
+        SpriteFrames GetFrames();
     }
 }

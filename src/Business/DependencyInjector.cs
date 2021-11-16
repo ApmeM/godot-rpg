@@ -25,9 +25,9 @@ namespace IsometricGame.Logic.Utils
             pluginUtils.Initialize(
                 new List<IUnitType>
                 {
-                    new AmazonUnitType(),
-                    new GoatmanUnitType(),
-                    new WitchUnitType(),
+                    new WarlockUnitType(),
+                    new GnollUnitType(),
+                    new BatUnitType(),
                     new WraithUnitType(),
                 },
                 new List<IEffect>
