@@ -17,12 +17,12 @@ public partial class Main : Node
 
     public void LoginSuccess()
     {
-        this.menu.LoginSuccess();
+        this.menu.EmitSignal(nameof(Menu.LoginDone), true);
     }
 
     public void IncorrectLogin()
     {
-        this.menu.IncorrectLogin();
+        this.menu.EmitSignal(nameof(Menu.LoginDone), false);
     }
 
     public void LobbyCreated(string lobbyId)

@@ -9,10 +9,13 @@ using Newtonsoft.Json;
 public class Communicator : Node
 {
     private const int ConnectionPort = 12345;
+    private const int ClientConnectionTimeout = 5;
+
     private GamesRepository gamesRepository;
     private AccountRepository accountRepository;
     private ServerLogic serverLogic;
     private Main main;
+    private float clientConnectingTime = 0;
 
     public override void _Ready()
     {
@@ -21,6 +24,9 @@ public class Communicator : Node
         this.accountRepository = DependencyInjector.accountRepository;
         this.serverLogic = DependencyInjector.serverLogic;
         this.main = GetNode<Main>("/root/Main");
+
+        GetTree().Connect("network_peer_connected", this, nameof(PlayerConnected));
+        GetTree().Connect("network_peer_disconnected", this, nameof(PlayerDisconnected));
     }
 
     public override void _Process(float delta)
@@ -36,6 +42,16 @@ public class Communicator : Node
            client.GetConnectionStatus() == NetworkedMultiplayerPeer.ConnectionStatus.Connecting
            ))
         {
+            if(client.GetConnectionStatus() == NetworkedMultiplayerPeer.ConnectionStatus.Connecting)
+            {
+                clientConnectingTime += delta;
+                if(clientConnectingTime > ClientConnectionTimeout)
+                {
+                    GetTree().NetworkPeer = null;
+                    clientConnectingTime = 0;
+                    this.IncorrectLogin();
+                }
+            }
             client.Poll();
         }
 
@@ -50,9 +66,6 @@ public class Communicator : Node
         peer.Listen(ConnectionPort, null, true);
         GetTree().NetworkPeer = peer;
 
-        GetTree().Connect("network_peer_connected", this, nameof(PlayerConnected));
-        GetTree().Connect("network_peer_disconnected", this, nameof(PlayerDisconnected));
-
         this.serverLogic.InitializeServer();
         
         LoginSuccess();
@@ -60,12 +73,13 @@ public class Communicator : Node
 
     public void CreateClient(string serverAddress, string login, string password)
     {
+        this.clientConnectingTime = 0;
+
         var peer = new WebSocketClient();
         peer.ConnectToUrl($"ws://{serverAddress}:{ConnectionPort}", null, true);
         GetTree().NetworkPeer = peer;
 
-        GetTree().Connect("network_peer_connected", this, nameof(PlayerConnected));
-        GetTree().Connect("network_peer_disconnected", this, nameof(PlayerDisconnected));
+        GetTree().Disconnect("connected_to_server", this, nameof(PlayerConnectedToServer));
         GetTree().Connect("connected_to_server", this, nameof(PlayerConnectedToServer), new Godot.Collections.Array { login, password });
     }
 
@@ -95,16 +109,11 @@ public class Communicator : Node
     {
         GetTree().NetworkPeer = null;
 
-        GetTree().Disconnect("network_peer_connected", this, nameof(PlayerConnected));
-        GetTree().Disconnect("network_peer_disconnected", this, nameof(PlayerDisconnected));
-        GetTree().Disconnect("connected_to_server", this, nameof(PlayerConnectedToServer));
-
         this.main.IncorrectLogin();
     }
 
     private void PlayerConnected(int id)
     {
-        GD.Print("player connected");
     }
 
     private void PlayerConnectedToServer(string login, string password)
@@ -116,7 +125,6 @@ public class Communicator : Node
     {
         SendAllPlayerLeftLobby(id);
         this.serverLogic.Logout(id);
-        GD.Print("player disconnected");
     }
 
     #endregion

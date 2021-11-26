@@ -7,31 +7,61 @@ namespace IsometricGame.Repository
     public class AccountRepository
     {
         private const string DefaultLoginFileName = "user://default_login";
+        private const string DefaultPasswordFileName = "user://default_password";
+        private const string DefaultServerFileName = "user://default_server";
         private const string LoginsFileName = "user://logins";
 
         private static readonly Dictionary<int, string> ActiveLogins = new Dictionary<int, string>();
 
         public void SaveLogin(string login)
         {
-            var file = new File();
-            if (file.Open(DefaultLoginFileName, File.ModeFlags.Write) == Error.Ok)
-            {
-                file.StorePascalString(login);
-            }
-            file.Close();
+            this.SaveString(DefaultLoginFileName, login);
+        }
+        
+        public void SavePassword(string password)
+        {
+            this.SaveString(DefaultPasswordFileName, password);
+        }
+
+        public void SaveServer(string server)
+        {
+            this.SaveString(DefaultServerFileName, server);
         }
 
         public string LoadLogin()
         {
+            return LoadString(DefaultLoginFileName);
+        }
+        public string LoadPassword()
+        {
+            return LoadString(DefaultPasswordFileName);
+        }
+        public string LoadServer()
+        {
+            return LoadString(DefaultServerFileName) ?? "91.146.57.100";
+        }
+
+        private string LoadString(string fileName)
+        {
             var file = new File();
-            if (file.Open(DefaultLoginFileName, File.ModeFlags.Read) == Error.Ok)
+            if (file.Open(fileName, File.ModeFlags.Read) == Error.Ok)
             {
-                var login = file.GetPascalString();
+                var value = file.GetPascalString();
                 file.Close();
-                return login;
+                return value;
             }
 
             return null;
+        }
+
+        private void SaveString(string fileName, string value)
+        {
+            var file = new File();
+            if (file.Open(fileName, File.ModeFlags.Write) == Error.Ok)
+            {
+                file.StorePascalString(value);
+            }
+            file.Close();
         }
 
         public Dictionary<string, string> LoadCredentials()

@@ -86,7 +86,7 @@ namespace IsometricGame.Logic
 
             this.gamesRepository.AttachPlayerToGameLobby(clientId, lobby.Id);
             var playerName = this.accountRepository.FindForClientActiveLogin(clientId);
-            return this.AddPlayer(clientId, clientId, playerName);
+            return this.AddPlayer(lobby.Creator, clientId, playerName);
         }
 
         public LobbyData.PlayerData AddBot(int clientId, Bot bot)

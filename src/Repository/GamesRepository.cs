@@ -35,9 +35,9 @@ namespace IsometricGame.Repository
             return Lobbies[lobbyId];
         }
 
-        public void RemoveLobby(string id)
+        public void RemoveLobby(string lobbyId)
         {
-            Lobbies.Remove(id);
+            Lobbies.Remove(lobbyId);
         }
 
         public GameData FindForClientGame(int clientId)

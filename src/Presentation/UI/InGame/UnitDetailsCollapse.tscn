@@ -17,7 +17,7 @@ __meta__ = {
 }
 
 [node name="Close" type="Button" parent="."]
-margin_left = -35.0
+margin_left = -30.0
 margin_bottom = 45.0
 text = ">"
 __meta__ = {
@@ -25,3 +25,5 @@ __meta__ = {
 }
 
 [node name="UnitDetails" parent="." instance=ExtResource( 3 )]
+margin_left = 20.0
+margin_top = 20.0

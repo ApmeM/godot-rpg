@@ -1,9 +1,10 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=17 format=2]
 
 [ext_resource path="res://assets/Fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://Presentation/UI/MainMenu/Menu.cs" type="Script" id=2]
 [ext_resource path="res://Presentation/UI/MainMenu/TeamSelect.tscn" type="PackedScene" id=3]
 [ext_resource path="res://Presentation/UI/MainMenu/TeamSelector.tscn" type="PackedScene" id=4]
+[ext_resource path="res://assets/ui.png" type="Texture" id=5]
 
 [sub_resource type="DynamicFont" id=1]
 size = 24
@@ -12,11 +13,46 @@ font_data = ExtResource( 1 )
 [sub_resource type="Theme" id=2]
 default_font = SubResource( 1 )
 
+[sub_resource type="AtlasTexture" id=13]
+flags = 4
+atlas = ExtResource( 5 )
+region = Rect2( 0, 0, 32, 32 )
+
+[sub_resource type="AtlasTexture" id=5]
+flags = 4
+atlas = ExtResource( 5 )
+region = Rect2( 64, 0, 32, 32 )
+
+[sub_resource type="AtlasTexture" id=7]
+flags = 4
+atlas = ExtResource( 5 )
+region = Rect2( 96, 0, 32, 32 )
+
+[sub_resource type="AtlasTexture" id=6]
+flags = 4
+atlas = ExtResource( 5 )
+region = Rect2( 32, 68, 12, 13 )
+
+[sub_resource type="AtlasTexture" id=12]
+flags = 4
+atlas = ExtResource( 5 )
+region = Rect2( 100, 68, 13, 11 )
+
+[sub_resource type="AtlasTexture" id=9]
+flags = 4
+atlas = ExtResource( 5 )
+region = Rect2( 64, 0, 32, 32 )
+
 [sub_resource type="InputEventAction" id=3]
 action = "ui_select"
 
 [sub_resource type="ShortCut" id=4]
 shortcut = SubResource( 3 )
+
+[sub_resource type="AtlasTexture" id=11]
+flags = 4
+atlas = ExtResource( 5 )
+region = Rect2( 0, 0, 32, 32 )
 
 [node name="Menu" type="MarginContainer"]
 anchor_right = 1.0
@@ -31,236 +67,294 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
+[node name="MenuContentContainer" type="VBoxContainer" parent="."]
 margin_left = 5.0
 margin_top = 5.0
 margin_right = 1019.0
 margin_bottom = 595.0
 
-[node name="CaptionLabel" type="Label" parent="VBoxContainer"]
+[node name="HeaderContainer" type="HBoxContainer" parent="MenuContentContainer"]
 margin_right = 1014.0
 margin_bottom = 30.0
+size_flags_horizontal = 3
+custom_constants/separation = 0
+
+[node name="HeaderCaptionLabel" type="Label" parent="MenuContentContainer/HeaderContainer"]
+margin_right = 1014.0
+margin_bottom = 30.0
+size_flags_horizontal = 3
 text = "Welcome to Godot-RPG"
 align = 1
-autowrap = true
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="TabContainer" type="TabContainer" parent="VBoxContainer"]
+[node name="Dashboard" type="VBoxContainer" parent="MenuContentContainer"]
 margin_top = 34.0
 margin_right = 1014.0
-margin_bottom = 590.0
+margin_bottom = 408.0
+custom_constants/separation = 50
+
+[node name="DashboardControlContainer" type="HBoxContainer" parent="MenuContentContainer/Dashboard"]
+margin_right = 1014.0
+margin_bottom = 162.0
+
+[node name="CampaignContainer" type="VBoxContainer" parent="MenuContentContainer/Dashboard/DashboardControlContainer"]
+margin_right = 335.0
+margin_bottom = 162.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-tab_align = 0
 
-[node name="Online" type="MarginContainer" parent="VBoxContainer/TabContainer"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = 4.0
-margin_top = 48.0
-margin_right = -4.0
-margin_bottom = -4.0
-custom_constants/margin_right = 5
-custom_constants/margin_top = 10
-custom_constants/margin_left = 5
-custom_constants/margin_bottom = 5
-
-[node name="OnlineTabs" type="TabContainer" parent="VBoxContainer/TabContainer/Online"]
-margin_left = 5.0
-margin_top = 10.0
-margin_right = 1001.0
-margin_bottom = 499.0
-tabs_visible = false
-
-[node name="LoginContentContainer" type="VBoxContainer" parent="VBoxContainer/TabContainer/Online/OnlineTabs"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = 4.0
-margin_top = 8.0
-margin_right = -4.0
-margin_bottom = -4.0
-
-[node name="ClientLabel" type="Label" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LoginContentContainer"]
-margin_right = 988.0
-margin_bottom = 30.0
-size_flags_horizontal = 3
-text = "Join server"
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="CredentialsContainer" type="GridContainer" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LoginContentContainer"]
-margin_top = 34.0
-margin_right = 988.0
-margin_bottom = 162.0
-columns = 2
-
-[node name="ServerLabel" type="Label" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LoginContentContainer/CredentialsContainer"]
-margin_top = 5.0
-margin_right = 130.0
-margin_bottom = 35.0
-text = "Server"
-
-[node name="ServerLineEdit" type="LineEdit" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LoginContentContainer/CredentialsContainer"]
-margin_left = 134.0
-margin_right = 988.0
-margin_bottom = 40.0
-size_flags_horizontal = 3
-text = "91.146.57.100"
-
-[node name="LoginLabel" type="Label" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LoginContentContainer/CredentialsContainer"]
-margin_top = 49.0
-margin_right = 130.0
-margin_bottom = 79.0
-text = "Login"
-
-[node name="LoginLineEdit" type="LineEdit" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LoginContentContainer/CredentialsContainer"]
-margin_left = 134.0
-margin_top = 44.0
-margin_right = 988.0
-margin_bottom = 84.0
-size_flags_horizontal = 3
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="PasswordLabel" type="Label" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LoginContentContainer/CredentialsContainer"]
-margin_top = 93.0
-margin_right = 130.0
-margin_bottom = 123.0
-text = "Password"
-
-[node name="PasswordLineEdit" type="LineEdit" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LoginContentContainer/CredentialsContainer"]
-margin_left = 134.0
-margin_top = 88.0
-margin_right = 988.0
+[node name="CampaignIconContainer" type="CenterContainer" parent="MenuContentContainer/Dashboard/DashboardControlContainer/CampaignContainer"]
+margin_right = 335.0
 margin_bottom = 128.0
+
+[node name="CampaignTextureButton" type="TextureButton" parent="MenuContentContainer/Dashboard/DashboardControlContainer/CampaignContainer/CampaignIconContainer"]
+margin_left = 103.0
+margin_right = 231.0
+margin_bottom = 128.0
+rect_min_size = Vector2( 128, 128 )
+texture_normal = SubResource( 13 )
+expand = true
+stretch_mode = 4
+
+[node name="CampaignLabelContainer" type="CenterContainer" parent="MenuContentContainer/Dashboard/DashboardControlContainer/CampaignContainer"]
+margin_top = 132.0
+margin_right = 335.0
+margin_bottom = 162.0
+
+[node name="CampaignLabel" type="Label" parent="MenuContentContainer/Dashboard/DashboardControlContainer/CampaignContainer/CampaignLabelContainer"]
+margin_left = 102.0
+margin_right = 232.0
+margin_bottom = 30.0
+text = "Campaign"
+
+[node name="LadderContainer" type="VBoxContainer" parent="MenuContentContainer/Dashboard/DashboardControlContainer"]
+margin_left = 339.0
+margin_right = 674.0
+margin_bottom = 162.0
 size_flags_horizontal = 3
-secret = true
-__meta__ = {
-"_edit_use_anchors_": false
-}
+size_flags_vertical = 3
 
-[node name="IncorrectLoginLabel" type="Label" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LoginContentContainer"]
-visible = false
-margin_top = 166.0
-margin_right = 988.0
-margin_bottom = 196.0
-size_flags_horizontal = 3
-custom_colors/font_color = Color( 1, 0, 0, 1 )
-text = "Incorrect login"
-align = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
+[node name="LadderIconContainer" type="CenterContainer" parent="MenuContentContainer/Dashboard/DashboardControlContainer/LadderContainer"]
+margin_right = 335.0
+margin_bottom = 128.0
 
-[node name="ClientButton" type="Button" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LoginContentContainer"]
-margin_top = 166.0
-margin_right = 988.0
-margin_bottom = 202.0
-shortcut = SubResource( 4 )
-text = "Connect"
-__meta__ = {
-"_edit_use_anchors_": false
-}
+[node name="LadderTextureButton" type="TextureButton" parent="MenuContentContainer/Dashboard/DashboardControlContainer/LadderContainer/LadderIconContainer"]
+margin_left = 103.0
+margin_right = 231.0
+margin_bottom = 128.0
+rect_min_size = Vector2( 128, 128 )
+texture_normal = SubResource( 5 )
+expand = true
+stretch_mode = 4
 
-[node name="OrLabel" type="Label" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LoginContentContainer"]
-margin_top = 206.0
-margin_right = 988.0
-margin_bottom = 236.0
-size_flags_horizontal = 3
-text = "Or"
-align = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
+[node name="LadderLabelContainer" type="CenterContainer" parent="MenuContentContainer/Dashboard/DashboardControlContainer/LadderContainer"]
+margin_top = 132.0
+margin_right = 335.0
+margin_bottom = 162.0
 
-[node name="ServerButton" type="Button" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LoginContentContainer"]
-margin_top = 240.0
-margin_right = 988.0
-margin_bottom = 276.0
-shortcut = SubResource( 4 )
-text = "Start as Server"
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="LobbyContentContainer" type="VBoxContainer" parent="VBoxContainer/TabContainer/Online/OnlineTabs"]
-visible = false
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = 4.0
-margin_top = 8.0
-margin_right = -4.0
-margin_bottom = -4.0
-custom_constants/separation = 20
-
-[node name="TeamSelector" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LobbyContentContainer" instance=ExtResource( 4 )]
-margin_right = 988.0
-
-[node name="ActionContainer" type="HBoxContainer" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LobbyContentContainer"]
-margin_top = 56.0
-margin_right = 988.0
-margin_bottom = 262.0
-size_flags_horizontal = 3
-custom_constants/separation = 30
-
-[node name="LadderContainer" type="VBoxContainer" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LobbyContentContainer/ActionContainer"]
-margin_right = 479.0
-margin_bottom = 206.0
-size_flags_horizontal = 3
-
-[node name="LadderLabel" type="Label" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LobbyContentContainer/ActionContainer/LadderContainer"]
-margin_right = 479.0
+[node name="LadderLabel" type="Label" parent="MenuContentContainer/Dashboard/DashboardControlContainer/LadderContainer/LadderLabelContainer"]
+margin_left = 121.0
+margin_right = 214.0
 margin_bottom = 30.0
 text = "Ladder"
 
-[node name="LadderGridContainer" type="GridContainer" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LobbyContentContainer/ActionContainer/LadderContainer"]
-margin_top = 34.0
-margin_right = 479.0
-margin_bottom = 70.0
-custom_constants/vseparation = 30
-custom_constants/hseparation = 30
-columns = 2
+[node name="CustomContainer" type="VBoxContainer" parent="MenuContentContainer/Dashboard/DashboardControlContainer"]
+margin_left = 678.0
+margin_right = 1014.0
+margin_bottom = 162.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
 
-[node name="SearchButton" type="Button" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LobbyContentContainer/ActionContainer/LadderContainer/LadderGridContainer"]
-margin_right = 105.0
-margin_bottom = 36.0
-shortcut = SubResource( 4 )
-text = "Search"
+[node name="CustomIconContainer" type="CenterContainer" parent="MenuContentContainer/Dashboard/DashboardControlContainer/CustomContainer"]
+margin_right = 336.0
+margin_bottom = 128.0
+
+[node name="CustomTextureButton" type="TextureButton" parent="MenuContentContainer/Dashboard/DashboardControlContainer/CustomContainer/CustomIconContainer"]
+margin_left = 104.0
+margin_right = 232.0
+margin_bottom = 128.0
+rect_min_size = Vector2( 128, 128 )
+texture_normal = SubResource( 7 )
+expand = true
+stretch_mode = 4
+
+[node name="CustomLabelContainer" type="CenterContainer" parent="MenuContentContainer/Dashboard/DashboardControlContainer/CustomContainer"]
+margin_top = 132.0
+margin_right = 336.0
+margin_bottom = 162.0
+
+[node name="CustomLabel" type="Label" parent="MenuContentContainer/Dashboard/DashboardControlContainer/CustomContainer/CustomLabelContainer"]
+margin_left = 118.0
+margin_right = 217.0
+margin_bottom = 30.0
+text = "Custom"
+
+[node name="DashboardControlContainer2" type="HBoxContainer" parent="MenuContentContainer/Dashboard"]
+margin_top = 212.0
+margin_right = 1014.0
+margin_bottom = 374.0
+
+[node name="SettingsContainer" type="VBoxContainer" parent="MenuContentContainer/Dashboard/DashboardControlContainer2"]
+margin_right = 505.0
+margin_bottom = 162.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="SettingsIconContainer" type="CenterContainer" parent="MenuContentContainer/Dashboard/DashboardControlContainer2/SettingsContainer"]
+margin_right = 505.0
+margin_bottom = 128.0
+
+[node name="SettingsTextureButton" type="TextureButton" parent="MenuContentContainer/Dashboard/DashboardControlContainer2/SettingsContainer/SettingsIconContainer"]
+margin_left = 188.0
+margin_right = 316.0
+margin_bottom = 128.0
+rect_min_size = Vector2( 128, 128 )
+texture_normal = SubResource( 6 )
+expand = true
+stretch_mode = 4
+
+[node name="SettingsLabelContainer" type="CenterContainer" parent="MenuContentContainer/Dashboard/DashboardControlContainer2/SettingsContainer"]
+margin_top = 132.0
+margin_right = 505.0
+margin_bottom = 162.0
+
+[node name="SettingsLabel" type="Label" parent="MenuContentContainer/Dashboard/DashboardControlContainer2/SettingsContainer/SettingsLabelContainer"]
+margin_left = 197.0
+margin_right = 308.0
+margin_bottom = 30.0
+text = "Settings"
+
+[node name="ExitContainer" type="VBoxContainer" parent="MenuContentContainer/Dashboard/DashboardControlContainer2"]
+margin_left = 509.0
+margin_right = 1014.0
+margin_bottom = 162.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ExitIconContainer" type="CenterContainer" parent="MenuContentContainer/Dashboard/DashboardControlContainer2/ExitContainer"]
+margin_right = 505.0
+margin_bottom = 128.0
+
+[node name="ExitTextureButton" type="TextureButton" parent="MenuContentContainer/Dashboard/DashboardControlContainer2/ExitContainer/ExitIconContainer"]
+margin_left = 188.0
+margin_right = 316.0
+margin_bottom = 128.0
+rect_min_size = Vector2( 128, 128 )
+texture_normal = SubResource( 12 )
+expand = true
+stretch_mode = 4
+
+[node name="ExitLabelContainer" type="CenterContainer" parent="MenuContentContainer/Dashboard/DashboardControlContainer2/ExitContainer"]
+margin_top = 132.0
+margin_right = 505.0
+margin_bottom = 162.0
+
+[node name="ExitLabel" type="Label" parent="MenuContentContainer/Dashboard/DashboardControlContainer2/ExitContainer/ExitLabelContainer"]
+margin_left = 228.0
+margin_right = 277.0
+margin_bottom = 30.0
+text = "Exit"
+
+[node name="Teams" type="MarginContainer" parent="MenuContentContainer"]
+visible = false
+margin_top = 236.0
+margin_right = 1014.0
+margin_bottom = 590.0
+
+[node name="TeamSelect" parent="MenuContentContainer/Teams" instance=ExtResource( 3 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_right = 1014.0
+margin_bottom = 354.0
+
+[node name="LadderDialog" type="WindowDialog" parent="."]
+margin_left = 5.0
+margin_top = 5.0
+margin_right = 1019.0
+margin_bottom = 595.0
+popup_exclusive = true
+window_title = "Ladder"
+
+[node name="Ladder" type="VBoxContainer" parent="LadderDialog"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 4.0
+margin_top = 62.0
+margin_right = -4.0
+margin_bottom = 50.0
+custom_constants/separation = 50
+
+[node name="LadderControlContainer" type="HBoxContainer" parent="LadderDialog/Ladder"]
+margin_right = 1006.0
+margin_bottom = 162.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="SearchLabel" type="Label" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LobbyContentContainer/ActionContainer/LadderContainer/LadderGridContainer"]
-margin_left = 135.0
-margin_top = 3.0
-margin_right = 364.0
-margin_bottom = 33.0
-text = "Search opponent"
-
-[node name="CustomContainer" type="VBoxContainer" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LobbyContentContainer/ActionContainer"]
-margin_left = 509.0
-margin_right = 988.0
-margin_bottom = 206.0
+[node name="LadderSearchContainer" type="VBoxContainer" parent="LadderDialog/Ladder/LadderControlContainer"]
+margin_right = 1006.0
+margin_bottom = 162.0
 size_flags_horizontal = 3
+size_flags_vertical = 3
 
-[node name="CustomLabel" type="Label" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LobbyContentContainer/ActionContainer/CustomContainer"]
-margin_right = 479.0
+[node name="LadderSearchIconContainer" type="CenterContainer" parent="LadderDialog/Ladder/LadderControlContainer/LadderSearchContainer"]
+margin_right = 1006.0
+margin_bottom = 128.0
+
+[node name="LadderSearchIcon" type="TextureRect" parent="LadderDialog/Ladder/LadderControlContainer/LadderSearchContainer/LadderSearchIconContainer"]
+margin_left = 439.0
+margin_right = 567.0
+margin_bottom = 128.0
+rect_min_size = Vector2( 128, 128 )
+texture = SubResource( 9 )
+expand = true
+stretch_mode = 5
+
+[node name="LadderSearchLabelContainer" type="CenterContainer" parent="LadderDialog/Ladder/LadderControlContainer/LadderSearchContainer"]
+margin_top = 132.0
+margin_right = 1006.0
+margin_bottom = 162.0
+
+[node name="LaderSearchLabel" type="Label" parent="LadderDialog/Ladder/LadderControlContainer/LadderSearchContainer/LadderSearchLabelContainer"]
+margin_left = 425.0
+margin_right = 580.0
 margin_bottom = 30.0
-text = "Custom"
+text = "Searching..."
 
-[node name="CustomGridContainer" type="GridContainer" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LobbyContentContainer/ActionContainer/CustomContainer"]
-margin_top = 34.0
-margin_right = 479.0
-margin_bottom = 206.0
+[node name="CustomDialog" type="WindowDialog" parent="."]
+margin_left = 5.0
+margin_top = 5.0
+margin_right = 1019.0
+margin_bottom = 595.0
+popup_exclusive = true
+window_title = "Custom"
+
+[node name="Custom" type="MarginContainer" parent="CustomDialog"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_constants/margin_top = 20
+
+[node name="LobbyContentContainer" type="VBoxContainer" parent="CustomDialog/Custom"]
+margin_top = 20.0
+margin_right = 1014.0
+margin_bottom = 590.0
+custom_constants/separation = 20
+
+[node name="TeamSelector" parent="CustomDialog/Custom/LobbyContentContainer" instance=ExtResource( 4 )]
+margin_right = 1014.0
+text = ""
+
+[node name="CustomGridContainer" type="GridContainer" parent="CustomDialog/Custom/LobbyContentContainer"]
+margin_top = 56.0
+margin_right = 1014.0
+margin_bottom = 228.0
 custom_constants/vseparation = 30
 custom_constants/hseparation = 30
 columns = 2
 
-[node name="CreateButton" type="Button" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LobbyContentContainer/ActionContainer/CustomContainer/CustomGridContainer"]
+[node name="CreateButton" type="Button" parent="CustomDialog/Custom/LobbyContentContainer/CustomGridContainer"]
 margin_right = 106.0
 margin_bottom = 36.0
 shortcut = SubResource( 4 )
@@ -269,7 +363,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="CreateLabel" type="Label" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LobbyContentContainer/ActionContainer/CustomContainer/CustomGridContainer"]
+[node name="CreateLabel" type="Label" parent="CustomDialog/Custom/LobbyContentContainer/CustomGridContainer"]
 margin_left = 136.0
 margin_top = 3.0
 margin_right = 438.0
@@ -279,12 +373,12 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="lobbyIdLineEdit" type="LineEdit" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LobbyContentContainer/ActionContainer/CustomContainer/CustomGridContainer"]
+[node name="lobbyIdLineEdit" type="LineEdit" parent="CustomDialog/Custom/LobbyContentContainer/CustomGridContainer"]
 margin_top = 66.0
 margin_right = 106.0
 margin_bottom = 106.0
 
-[node name="lobbyIdLabel" type="Label" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LobbyContentContainer/ActionContainer/CustomContainer/CustomGridContainer"]
+[node name="lobbyIdLabel" type="Label" parent="CustomDialog/Custom/LobbyContentContainer/CustomGridContainer"]
 margin_left = 136.0
 margin_top = 71.0
 margin_right = 438.0
@@ -294,7 +388,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="JoinButton" type="Button" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LobbyContentContainer/ActionContainer/CustomContainer/CustomGridContainer"]
+[node name="JoinButton" type="Button" parent="CustomDialog/Custom/LobbyContentContainer/CustomGridContainer"]
 margin_top = 136.0
 margin_right = 106.0
 margin_bottom = 172.0
@@ -304,7 +398,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="JoinLabel" type="Label" parent="VBoxContainer/TabContainer/Online/OnlineTabs/LobbyContentContainer/ActionContainer/CustomContainer/CustomGridContainer"]
+[node name="JoinLabel" type="Label" parent="CustomDialog/Custom/LobbyContentContainer/CustomGridContainer"]
 margin_left = 136.0
 margin_top = 139.0
 margin_right = 438.0
@@ -314,42 +408,187 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Campaign" type="MarginContainer" parent="VBoxContainer/TabContainer"]
-visible = false
+[node name="CampaignDialog" type="WindowDialog" parent="."]
+visible = true
+margin_left = 5.0
+margin_top = 5.0
+margin_right = 1019.0
+margin_bottom = 595.0
+popup_exclusive = true
+window_title = "Campaign"
+
+[node name="Campaign" type="VBoxContainer" parent="CampaignDialog"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = 4.0
-margin_top = 48.0
+margin_top = 62.0
 margin_right = -4.0
-margin_bottom = -4.0
-custom_constants/margin_right = 5
-custom_constants/margin_top = 10
-custom_constants/margin_left = 5
-custom_constants/margin_bottom = 5
+margin_bottom = 50.0
+custom_constants/separation = 50
 
-[node name="ContentContainer" type="VBoxContainer" parent="VBoxContainer/TabContainer/Campaign"]
-margin_left = 5.0
-margin_top = 10.0
-margin_right = 1001.0
-margin_bottom = 499.0
+[node name="CampaignControlContainer" type="HBoxContainer" parent="CampaignDialog/Campaign"]
+margin_right = 1006.0
+margin_bottom = 162.0
 
-[node name="LoadButton" type="Button" parent="VBoxContainer/TabContainer/Campaign/ContentContainer"]
-margin_top = 40.0
-margin_right = 996.0
-margin_bottom = 76.0
+[node name="CampaignNewContainer" type="VBoxContainer" parent="CampaignDialog/Campaign/CampaignControlContainer"]
+margin_right = 1006.0
+margin_bottom = 162.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="CampaignNewIconContainer" type="CenterContainer" parent="CampaignDialog/Campaign/CampaignControlContainer/CampaignNewContainer"]
+margin_right = 1006.0
+margin_bottom = 128.0
+
+[node name="CampaignNewIcon" type="TextureRect" parent="CampaignDialog/Campaign/CampaignControlContainer/CampaignNewContainer/CampaignNewIconContainer"]
+margin_left = 439.0
+margin_right = 567.0
+margin_bottom = 128.0
+rect_min_size = Vector2( 128, 128 )
+texture = SubResource( 11 )
+expand = true
+stretch_mode = 5
+
+[node name="CampaignNewLabelContainer" type="CenterContainer" parent="CampaignDialog/Campaign/CampaignControlContainer/CampaignNewContainer"]
+margin_top = 132.0
+margin_right = 1006.0
+margin_bottom = 162.0
+
+[node name="CampaignNewLabel" type="Label" parent="CampaignDialog/Campaign/CampaignControlContainer/CampaignNewContainer/CampaignNewLabelContainer"]
+margin_left = 439.0
+margin_right = 566.0
+margin_bottom = 30.0
+text = "Start new"
+
+[node name="CampaignLoadExistingContainer" type="GridContainer" parent="CampaignDialog/Campaign"]
+margin_top = 212.0
+margin_right = 1006.0
+margin_bottom = 248.0
+columns = 3
+
+[node name="CampaignLoadTimeLabel" type="Label" parent="CampaignDialog/Campaign/CampaignLoadExistingContainer"]
+margin_top = 3.0
+margin_right = 258.0
+margin_bottom = 33.0
+text = "20-Nov-2021 12:55"
+
+[node name="CampaignLoadSlotDataLabel" type="Label" parent="CampaignDialog/Campaign/CampaignLoadExistingContainer"]
+margin_left = 262.0
+margin_top = 3.0
+margin_right = 923.0
+margin_bottom = 33.0
+size_flags_horizontal = 3
+text = "Level: 1 Deep: 1"
+align = 1
+
+[node name="CampaignLoadButton" type="Button" parent="CampaignDialog/Campaign/CampaignLoadExistingContainer"]
+margin_left = 927.0
+margin_right = 1006.0
+margin_bottom = 36.0
 text = "Load"
 
-[node name="Teams" type="MarginContainer" parent="VBoxContainer/TabContainer"]
-visible = false
+[node name="LoginDialog" type="WindowDialog" parent="."]
+margin_left = 5.0
+margin_top = 5.0
+margin_right = 1019.0
+margin_bottom = 595.0
+popup_exclusive = true
+window_title = "Settings"
+
+[node name="LoginContentContainer" type="VBoxContainer" parent="LoginDialog"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = 4.0
-margin_top = 48.0
-margin_right = -4.0
-margin_bottom = -4.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
-[node name="TeamSelect" parent="VBoxContainer/TabContainer/Teams" instance=ExtResource( 3 )]
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_right = 1006.0
-margin_bottom = 504.0
+[node name="LoginCaptionLabel" type="Label" parent="LoginDialog/LoginContentContainer"]
+margin_right = 1014.0
+margin_bottom = 30.0
+size_flags_horizontal = 3
+text = "Connection"
+align = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="LoginServerContainer" type="HBoxContainer" parent="LoginDialog/LoginContentContainer"]
+margin_top = 34.0
+margin_right = 1014.0
+margin_bottom = 72.0
+
+[node name="LoginServerLabel" type="Label" parent="LoginDialog/LoginContentContainer/LoginServerContainer"]
+margin_top = 4.0
+margin_right = 313.0
+margin_bottom = 34.0
+text = "Play offline or as server"
+
+[node name="LoginServerCheckbox" type="CheckBox" parent="LoginDialog/LoginContentContainer/LoginServerContainer"]
+margin_left = 317.0
+margin_right = 341.0
+margin_bottom = 38.0
+
+[node name="LoginCredentialsContainer" type="GridContainer" parent="LoginDialog/LoginContentContainer"]
+margin_top = 76.0
+margin_right = 1014.0
+margin_bottom = 204.0
+columns = 2
+
+[node name="ServerLabel" type="Label" parent="LoginDialog/LoginContentContainer/LoginCredentialsContainer"]
+margin_top = 5.0
+margin_right = 130.0
+margin_bottom = 35.0
+text = "Server"
+
+[node name="ServerLineEdit" type="LineEdit" parent="LoginDialog/LoginContentContainer/LoginCredentialsContainer"]
+margin_left = 134.0
+margin_right = 1014.0
+margin_bottom = 40.0
+size_flags_horizontal = 3
+text = "91.146.57.100"
+
+[node name="LoginLabel" type="Label" parent="LoginDialog/LoginContentContainer/LoginCredentialsContainer"]
+margin_top = 49.0
+margin_right = 130.0
+margin_bottom = 79.0
+text = "Login"
+
+[node name="LoginLineEdit" type="LineEdit" parent="LoginDialog/LoginContentContainer/LoginCredentialsContainer"]
+margin_left = 134.0
+margin_top = 44.0
+margin_right = 1014.0
+margin_bottom = 84.0
+size_flags_horizontal = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PasswordLabel" type="Label" parent="LoginDialog/LoginContentContainer/LoginCredentialsContainer"]
+margin_top = 93.0
+margin_right = 130.0
+margin_bottom = 123.0
+text = "Password"
+
+[node name="PasswordLineEdit" type="LineEdit" parent="LoginDialog/LoginContentContainer/LoginCredentialsContainer"]
+margin_left = 134.0
+margin_top = 88.0
+margin_right = 1014.0
+margin_bottom = 128.0
+size_flags_horizontal = 3
+secret = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="LoginIncorrectLabel" type="Label" parent="LoginDialog/LoginContentContainer"]
+visible = false
+margin_top = 166.0
+margin_right = 1198.0
+margin_bottom = 196.0
+size_flags_horizontal = 3
+custom_colors/font_color = Color( 1, 0, 0, 1 )
+text = "Cant connect to the server with this credentials."
+align = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
