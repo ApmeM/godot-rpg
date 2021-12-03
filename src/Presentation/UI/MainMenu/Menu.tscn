@@ -1,17 +1,10 @@
-[gd_scene load_steps=17 format=2]
+[gd_scene load_steps=15 format=2]
 
-[ext_resource path="res://assets/Fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=1]
+[ext_resource path="res://Presentation/Game/UITheme.tres" type="Theme" id=1]
 [ext_resource path="res://Presentation/UI/MainMenu/Menu.cs" type="Script" id=2]
 [ext_resource path="res://Presentation/UI/MainMenu/TeamSelect.tscn" type="PackedScene" id=3]
 [ext_resource path="res://Presentation/UI/MainMenu/TeamSelector.tscn" type="PackedScene" id=4]
 [ext_resource path="res://assets/ui.png" type="Texture" id=5]
-
-[sub_resource type="DynamicFont" id=1]
-size = 24
-font_data = ExtResource( 1 )
-
-[sub_resource type="Theme" id=2]
-default_font = SubResource( 1 )
 
 [sub_resource type="AtlasTexture" id=13]
 flags = 4
@@ -57,7 +50,7 @@ region = Rect2( 0, 0, 32, 32 )
 [node name="Menu" type="MarginContainer"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme = SubResource( 2 )
+theme = ExtResource( 1 )
 custom_constants/margin_right = 5
 custom_constants/margin_top = 5
 custom_constants/margin_left = 5
@@ -324,6 +317,7 @@ margin_bottom = 30.0
 text = "Searching..."
 
 [node name="CustomDialog" type="WindowDialog" parent="."]
+visible = true
 margin_left = 5.0
 margin_top = 5.0
 margin_right = 1019.0
@@ -409,7 +403,6 @@ __meta__ = {
 }
 
 [node name="CampaignDialog" type="WindowDialog" parent="."]
-visible = true
 margin_left = 5.0
 margin_top = 5.0
 margin_right = 1019.0

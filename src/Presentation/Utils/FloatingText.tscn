@@ -1,14 +1,7 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://assets/Fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=1]
+[ext_resource path="res://Presentation/Game/UITheme.tres" type="Theme" id=1]
 [ext_resource path="res://Presentation/Utils/FloatingText.cs" type="Script" id=2]
-
-[sub_resource type="DynamicFont" id=1]
-size = 24
-font_data = ExtResource( 1 )
-
-[sub_resource type="Theme" id=2]
-default_font = SubResource( 1 )
 
 [node name="FloatingText" type="Label"]
 anchor_left = 0.5
@@ -19,7 +12,7 @@ margin_left = -20.0
 margin_top = -7.0
 margin_right = 20.0
 margin_bottom = 7.0
-theme = SubResource( 2 )
+theme = ExtResource( 1 )
 text = "popup"
 align = 1
 valign = 1
