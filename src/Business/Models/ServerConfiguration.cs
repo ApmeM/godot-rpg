@@ -13,6 +13,6 @@ namespace IsometricGame.Logic
 
         public int MaxUnits = DefaultMaxUnits;
         public int MaxSkills = DefaultMaxSkills;
-        public MapGeneratingType MapType = MapGeneratingType.Random;
+        public MapGeneratingType MapType = MapGeneratingType.Arena;
     }
 }
