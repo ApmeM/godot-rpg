@@ -30,7 +30,7 @@ margin_bottom = 595.0
 
 [node name="CaptionLabel" type="Label" parent="ContentContainer"]
 margin_right = 1014.0
-margin_bottom = 30.0
+margin_bottom = 38.0
 text = "Lobby"
 align = 1
 autowrap = true
@@ -39,32 +39,32 @@ __meta__ = {
 }
 
 [node name="LobbyContainer" type="HBoxContainer" parent="ContentContainer"]
-margin_top = 34.0
+margin_top = 42.0
 margin_right = 1014.0
-margin_bottom = 550.0
+margin_bottom = 548.0
 size_flags_vertical = 3
 
 [node name="PlayersListContainer" type="VBoxContainer" parent="ContentContainer/LobbyContainer"]
 margin_right = 505.0
-margin_bottom = 516.0
+margin_bottom = 506.0
 size_flags_horizontal = 3
 
 [node name="SettingsContainer" type="VBoxContainer" parent="ContentContainer/LobbyContainer"]
 margin_left = 509.0
 margin_right = 1014.0
-margin_bottom = 516.0
+margin_bottom = 506.0
 size_flags_horizontal = 3
 
 [node name="TurnTimeoutLabel" type="Label" parent="ContentContainer/LobbyContainer/SettingsContainer"]
 margin_right = 505.0
-margin_bottom = 63.0
+margin_bottom = 71.0
 text = "
 Turn timeout"
 
 [node name="TurnTimeoutCheckbox" type="CheckBox" parent="ContentContainer/LobbyContainer/SettingsContainer"]
-margin_top = 67.0
+margin_top = 75.0
 margin_right = 505.0
-margin_bottom = 105.0
+margin_bottom = 113.0
 pressed = true
 text = "Enabled"
 __meta__ = {
@@ -72,9 +72,9 @@ __meta__ = {
 }
 
 [node name="TurnTimeoutLineEdit" type="SpinBox" parent="ContentContainer/LobbyContainer/SettingsContainer"]
-margin_top = 109.0
+margin_top = 117.0
 margin_right = 505.0
-margin_bottom = 149.0
+margin_bottom = 155.0
 max_value = 300.0
 step = 10.0
 value = 60.0
@@ -83,49 +83,48 @@ prefix = "Turn timeout"
 suffix = "seconds"
 
 [node name="MapLabel" type="Label" parent="ContentContainer/LobbyContainer/SettingsContainer"]
-margin_top = 153.0
+margin_top = 159.0
 margin_right = 505.0
-margin_bottom = 216.0
+margin_bottom = 230.0
 text = "
 Map"
 
 [node name="MapOptionButton" type="OptionButton" parent="ContentContainer/LobbyContainer/SettingsContainer"]
-margin_top = 220.0
+margin_top = 234.0
 margin_right = 505.0
-margin_bottom = 256.0
+margin_bottom = 272.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="ViewFullMapCheckbox" type="CheckBox" parent="ContentContainer/LobbyContainer/SettingsContainer"]
-margin_top = 260.0
+margin_top = 276.0
 margin_right = 505.0
-margin_bottom = 298.0
+margin_bottom = 314.0
 pressed = true
 text = "View full map"
 
 [node name="ButtonsContainer" type="HBoxContainer" parent="ContentContainer"]
-margin_top = 554.0
+margin_top = 552.0
 margin_right = 1014.0
 margin_bottom = 590.0
 alignment = 2
 
 [node name="AddBotButton" type="Button" parent="ContentContainer/ButtonsContainer"]
 margin_right = 117.0
-margin_bottom = 36.0
+margin_bottom = 38.0
 text = "Add bot"
 
 [node name="SpaceLabel" type="Label" parent="ContentContainer/ButtonsContainer"]
 margin_left = 121.0
-margin_top = 3.0
 margin_right = 477.0
-margin_bottom = 33.0
+margin_bottom = 38.0
 size_flags_horizontal = 3
 
 [node name="LeaveButton" type="Button" parent="ContentContainer/ButtonsContainer"]
 margin_left = 481.0
 margin_right = 573.0
-margin_bottom = 36.0
+margin_bottom = 38.0
 shortcut = SubResource( 2 )
 text = "Leave"
 __meta__ = {
@@ -134,15 +133,14 @@ __meta__ = {
 
 [node name="SpaceLabel2" type="Label" parent="ContentContainer/ButtonsContainer"]
 margin_left = 577.0
-margin_top = 3.0
 margin_right = 933.0
-margin_bottom = 33.0
+margin_bottom = 38.0
 size_flags_horizontal = 3
 
 [node name="StartButton" type="Button" parent="ContentContainer/ButtonsContainer"]
 margin_left = 937.0
 margin_right = 1014.0
-margin_bottom = 36.0
+margin_bottom = 38.0
 shortcut = SubResource( 2 )
 text = "Start"
 __meta__ = {

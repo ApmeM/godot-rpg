@@ -2,11 +2,14 @@ using Godot;
 using IsometricGame.Logic.Enums;
 using IsometricGame.Presentation;
 using System;
+using System.Collections.Generic;
 
 [SceneReference("Lobby.tscn")]
 public partial class Lobby : Container
 {
     private Communicator communicator;
+    private Dictionary<int, Node> playerListNodes = new Dictionary<int, Node>();
+    private int myPlayerId;
 
     public override void _Ready()
     {
@@ -65,12 +68,16 @@ public partial class Lobby : Container
         this.communicator.AddBot(Bot.Easy);
     }
 
-    public void PlayerJoinedToLobby(string playerName)
+    public void PlayerJoinedToLobby(string playerName, int playerId)
     {
-        this.playersListContainer.AddChild(new Label { Text = playerName });
+        var playerListNode = new HBoxContainer();
+        playerListNodes[playerId] = playerListNode;
+        playerListNode.AddChild(new Label { Text = "Not ready." });
+        playerListNode.AddChild(new Label { Text = playerName + (playerId == myPlayerId ? "(You)": "") });
+        this.playersListContainer.AddChild(playerListNode);
     }
 
-    public void YouJoinedToLobby(bool creator, string lobbyId, string playerName)
+    public void YouJoinedToLobby(bool creator, string lobbyId, int playerId)
     {
         this.startButton.Visible = creator;
         this.addBotButton.Visible = creator;
@@ -81,22 +88,21 @@ public partial class Lobby : Container
         this.turnTimeoutLineEdit.Editable = creator;
         this.mapOptionButton.Disabled = !creator;
 
-        foreach (Label child in this.playersListContainer.GetChildren())
+        myPlayerId = playerId;
+
+        playerListNodes.Clear();
+        foreach (Node child in this.playersListContainer.GetChildren())
         {
             child.QueueFree();
         }
-
-        this.playersListContainer.AddChild(new Label { Text = playerName });
     }
 
-    public void PlayerLeftLobby(string playerName)
+    public void PlayerLeftLobby(int playerId)
     {
-        foreach (Label child in this.playersListContainer.GetChildren())
+        if (playerListNodes.ContainsKey(playerId))
         {
-            if (child.Text == playerName)
-            {
-                child.QueueFree();
-            }
+            playerListNodes[playerId].QueueFree();
+            playerListNodes.Remove(playerId);
         }
     }
 

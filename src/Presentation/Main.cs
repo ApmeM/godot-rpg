@@ -35,21 +35,21 @@ public partial class Main : Node
         this.menu.LobbyNotFound();
     }
 
-    public void YouJoinedToLobby(bool creator, string lobbyId, string playerName)
+    public void YouJoinedToLobby(bool creator, string lobbyId, int playerId)
     {
         RemoveChild(this.menu);
         AddChild(this.lobby);
-        this.lobby.YouJoinedToLobby(creator, lobbyId, playerName);
+        this.lobby.YouJoinedToLobby(creator, lobbyId, playerId);
     }
 
-    public void PlayerJoinedToLobby(string playerName)
+    public void PlayerJoinedToLobby(string playerName, int playerId)
     {
-        this.lobby.PlayerJoinedToLobby(playerName);
+        this.lobby.PlayerJoinedToLobby(playerName, playerId);
     }
 
-    public void PlayerLeftLobby(string playerName)
+    public void PlayerLeftLobby(int playerId)
     {
-        this.lobby.PlayerLeftLobby(playerName);
+        this.lobby.PlayerLeftLobby(playerId);
     }
 
     public void YouLeftLobby()

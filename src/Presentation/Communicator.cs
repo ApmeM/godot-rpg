@@ -201,26 +201,31 @@ public class Communicator : Node
         var playerName = newPlayer.PlayerName;
         if (clientId > 0)
         {
-            RpcId(clientId, nameof(YouJoinedToLobby), clientId == lobby.Creator, lobby.Id, playerName);
+            RpcId(clientId, nameof(YouJoinedToLobby), clientId == lobby.Creator, lobby.Id, clientId);
             RpcId(clientId, nameof(ConfigSynced), lobby.ServerConfiguration.FullMapVisible, lobby.ServerConfiguration.TurnTimeout != null, lobby.ServerConfiguration.TurnTimeout ?? ServerConfiguration.DefaultTurnTimeout, (int)lobby.ServerConfiguration.MapType);
+        }
+
+        if (clientId > 0)
+        {
+            foreach (var player in lobby.Players)
+            {
+                RpcId(clientId, nameof(PlayerJoinedToLobby), player.PlayerName, player.ClientId);
+            }
         }
 
         foreach (var player in lobby.Players)
         {
+            if (player.ClientId <= 0)
+            {
+                continue;
+            }
+
             if (player.ClientId == clientId)
             {
                 continue;
             }
 
-            if (player.ClientId > 0)
-            {
-                RpcId(player.ClientId, nameof(PlayerJoinedToLobby), playerName);
-            }
-
-            if (clientId > 0)
-            {
-                RpcId(clientId, nameof(PlayerJoinedToLobby), player.PlayerName);
-            }
+            RpcId(player.ClientId, nameof(PlayerJoinedToLobby), playerName, clientId);
         }
     }
 
@@ -249,15 +254,12 @@ public class Communicator : Node
 
         foreach (var player in lobby.Players)
         {
-            if (player.ClientId > 0)
+            if (player.ClientId <= 0)
             {
-                RpcId(player.ClientId, nameof(PlayerLeftLobby), playerName);
+                continue;
             }
 
-            if (clientId > 0)
-            {
-                RpcId(clientId, nameof(PlayerLeftLobby), playerName);
-            }
+            RpcId(player.ClientId, nameof(PlayerLeftLobby), clientId);
         }
 
         if (clientId > 0)
@@ -267,9 +269,9 @@ public class Communicator : Node
     }
 
     [RemoteSync]
-    private void PlayerLeftLobby(string playerName)
+    private void PlayerLeftLobby(int playerId)
     {
-        this.main.PlayerLeftLobby(playerName);
+        this.main.PlayerLeftLobby(playerId);
     }
 
     [RemoteSync]
@@ -279,15 +281,15 @@ public class Communicator : Node
     }
 
     [RemoteSync]
-    private void PlayerJoinedToLobby(string playerName)
+    private void PlayerJoinedToLobby(string playerName, int playerId)
     {
-        this.main.PlayerJoinedToLobby(playerName);
+        this.main.PlayerJoinedToLobby(playerName, playerId);
     }
 
     [RemoteSync]
-    private void YouJoinedToLobby(bool creator, string lobbyId, string playerName)
+    private void YouJoinedToLobby(bool creator, string lobbyId, int playerId)
     {
-        this.main.YouJoinedToLobby(creator, lobbyId, playerName);
+        this.main.YouJoinedToLobby(creator, lobbyId, playerId);
     }
 
     public void SyncConfig(bool fullMapVisible, bool turnTimeoutEnaled, float turnTimeoutValue, MapGeneratingType mapType)
