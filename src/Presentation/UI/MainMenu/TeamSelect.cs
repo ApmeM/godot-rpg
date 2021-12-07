@@ -105,7 +105,7 @@ public partial class TeamSelect : Container
     public void OnResetButtonPressed()
     {
         this.Teams = this.teamsRepository.LoadTeams();
-        teamSelector.Refresh(this.Teams);
+        teamSelector.Reload(this.Teams);
 
         ItemSelected(0);
     }

@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 [SceneReference("Menu.tscn")]
 public partial class Menu : Container
 {
-    private TeamsRepository teamsRepository;
-    private AccountRepository accountRepository;
+    private readonly AccountRepository accountRepository;
     private Communicator communicator;
 
     public int SelectedTeam => this.teamSelector.Selected;
@@ -16,14 +15,16 @@ public partial class Menu : Container
     [Signal]
     public delegate void LoginDone(bool loginSuccess);
 
+    public Menu()
+    {
+        this.accountRepository = DependencyInjector.accountRepository;
+    }
+
     public override void _Ready()
     {
         base._Ready();
         this.FillMembers();
         this.communicator = GetNode<Communicator>("/root/Communicator");
-
-        this.teamsRepository = DependencyInjector.teamsRepository;
-        this.accountRepository = DependencyInjector.accountRepository;
 
         this.createButton.Connect("pressed", this, nameof(OnCreateButtonPressed));
         this.joinButton.Connect("pressed", this, nameof(OnJoinButtonPressed));
@@ -37,8 +38,6 @@ public partial class Menu : Container
         this.loginLineEdit.Text = this.accountRepository.LoadLogin();
         this.passwordLineEdit.Text = this.accountRepository.LoadPassword();
         this.serverLineEdit.Text = this.accountRepository.LoadServer();
-
-        this.teamSelector.Refresh(this.teamsRepository.LoadTeams());
     }
 
     #region Dashboard
