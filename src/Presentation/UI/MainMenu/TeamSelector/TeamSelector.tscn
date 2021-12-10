@@ -1,0 +1,71 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://Presentation/UI/MainMenu/TeamSelector/TeamSelector.cs" type="Script" id=1]
+[ext_resource path="res://Presentation/UI/MainMenu/TeamSelector/TeamSelectorUnit.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Presentation/UI/UITheme.tres" type="Theme" id=3]
+[ext_resource path="res://assets/ui.png" type="Texture" id=4]
+[ext_resource path="res://Presentation/UI/MainMenu/TeamSelector/TeamSelectorList.tscn" type="PackedScene" id=5]
+
+[sub_resource type="AtlasTexture" id=1]
+flags = 4
+atlas = ExtResource( 4 )
+filter_clip = true
+
+[sub_resource type="StyleBoxTexture" id=2]
+texture = SubResource( 1 )
+region_rect = Rect2( 64, 32, 23, 20 )
+margin_left = 5.9292
+margin_right = 7.51032
+margin_top = 7.9056
+margin_bottom = 5.53392
+
+[node name="TeamSelector" type="PanelContainer"]
+margin_right = 201.0
+margin_bottom = 36.0
+theme = ExtResource( 3 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Panel" type="Panel" parent="."]
+margin_left = 6.0
+margin_top = 4.0
+margin_right = 442.0
+margin_bottom = 418.0
+custom_styles/panel = SubResource( 2 )
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+margin_left = 6.0
+margin_top = 4.0
+margin_right = 442.0
+margin_bottom = 418.0
+custom_constants/margin_right = 10
+custom_constants/margin_top = 10
+custom_constants/margin_left = 10
+custom_constants/margin_bottom = 10
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+margin_left = 10.0
+margin_top = 10.0
+margin_right = 426.0
+margin_bottom = 404.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TeamSelectorLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+margin_right = 416.0
+margin_bottom = 38.0
+text = "Your teams"
+align = 1
+
+[node name="TeamSelectorList" parent="MarginContainer/VBoxContainer" instance=ExtResource( 5 )]
+margin_left = 0.0
+margin_top = 42.0
+margin_right = 416.0
+margin_bottom = 394.0
+TeamSelectorUnitScene = ExtResource( 2 )

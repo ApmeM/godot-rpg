@@ -172,6 +172,9 @@ namespace GodotFieldsGenerator
                         var path = tree[firstParentElement] + otherParentElements + "/" + name;
                         tree[name] = path;
 
+                        if (path.Contains("EXAMPLE"))
+                            continue;
+
                         var type = string.Empty;
 
                         var builtInTypesMatch = builtInTypes.Match(line);

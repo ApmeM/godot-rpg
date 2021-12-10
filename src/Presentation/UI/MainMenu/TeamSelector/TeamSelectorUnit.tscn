@@ -1,0 +1,99 @@
+[gd_scene load_steps=9 format=2]
+
+[ext_resource path="res://Presentation/UI/MainMenu/TeamSelector/TeamSelectorUnit.cs" type="Script" id=1]
+[ext_resource path="res://Presentation/UI/UITheme.tres" type="Theme" id=2]
+[ext_resource path="res://assets/enemy/warlock.png" type="Texture" id=3]
+[ext_resource path="res://assets/enemy/gnoll.png" type="Texture" id=4]
+
+[sub_resource type="StreamTexture" id=1]
+flags = 4
+load_path = "res://.import/bat.png-ecf024c93f1c3e549971465aff0d0717.stex"
+
+[sub_resource type="AtlasTexture" id=2]
+flags = 4
+atlas = SubResource( 1 )
+region = Rect2( 0, 0, 14, 11 )
+
+[sub_resource type="AtlasTexture" id=3]
+flags = 4
+atlas = ExtResource( 3 )
+region = Rect2( 0, 0, 12, 16 )
+
+[sub_resource type="AtlasTexture" id=4]
+flags = 4
+atlas = ExtResource( 4 )
+region = Rect2( 0, 0, 12, 15 )
+
+[node name="TeamSelectorUnit" type="PanelContainer"]
+margin_right = 40.0
+margin_bottom = 40.0
+theme = ExtResource( 2 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="BackgroundPanel" type="Panel" parent="."]
+margin_left = 6.0
+margin_top = 4.0
+margin_right = 130.0
+margin_bottom = 170.0
+
+[node name="BorderContainer" type="MarginContainer" parent="."]
+margin_left = 6.0
+margin_top = 4.0
+margin_right = 130.0
+margin_bottom = 170.0
+custom_constants/margin_right = 10
+custom_constants/margin_top = 10
+custom_constants/margin_left = 10
+custom_constants/margin_bottom = 10
+
+[node name="ContentContainer" type="VBoxContainer" parent="BorderContainer"]
+margin_left = 10.0
+margin_top = 10.0
+margin_right = 114.0
+margin_bottom = 156.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TeamNameLabel" type="Label" parent="BorderContainer/ContentContainer"]
+margin_right = 104.0
+margin_bottom = 38.0
+text = "Team1"
+
+[node name="TeamMembers" type="GridContainer" parent="BorderContainer/ContentContainer"]
+margin_top = 42.0
+margin_right = 104.0
+margin_bottom = 146.0
+columns = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="EXAMPLE1" type="TextureRect" parent="BorderContainer/ContentContainer/TeamMembers"]
+margin_right = 50.0
+margin_bottom = 50.0
+rect_min_size = Vector2( 50, 50 )
+texture = SubResource( 2 )
+expand = true
+stretch_mode = 6
+
+[node name="EXAMPLE2" type="TextureRect" parent="BorderContainer/ContentContainer/TeamMembers"]
+margin_left = 54.0
+margin_right = 104.0
+margin_bottom = 50.0
+rect_min_size = Vector2( 50, 50 )
+texture = SubResource( 3 )
+expand = true
+stretch_mode = 6
+
+[node name="EXAMPLE3" type="TextureRect" parent="BorderContainer/ContentContainer/TeamMembers"]
+margin_top = 54.0
+margin_right = 50.0
+margin_bottom = 104.0
+rect_min_size = Vector2( 50, 50 )
+texture = SubResource( 4 )
+expand = true
+stretch_mode = 6

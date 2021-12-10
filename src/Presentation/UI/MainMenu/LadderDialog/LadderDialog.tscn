@@ -1,0 +1,64 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://assets/ui.png" type="Texture" id=1]
+[ext_resource path="res://Presentation/UI/MainMenu/LadderDialog/LadderDialog.cs" type="Script" id=2]
+
+[sub_resource type="AtlasTexture" id=1]
+flags = 4
+atlas = ExtResource( 1 )
+region = Rect2( 64, 0, 32, 32 )
+
+[node name="LadderDialog" type="WindowDialog"]
+margin_left = 5.0
+margin_top = 5.0
+margin_right = 1019.0
+margin_bottom = 595.0
+popup_exclusive = true
+window_title = "Ladder"
+script = ExtResource( 2 )
+
+[node name="Ladder" type="VBoxContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 4.0
+margin_top = 62.0
+margin_right = -4.0
+margin_bottom = 50.0
+custom_constants/separation = 50
+
+[node name="LadderControlContainer" type="HBoxContainer" parent="Ladder"]
+margin_right = 1006.0
+margin_bottom = 146.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="LadderSearchContainer" type="VBoxContainer" parent="Ladder/LadderControlContainer"]
+margin_right = 1006.0
+margin_bottom = 146.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="LadderSearchIconContainer" type="CenterContainer" parent="Ladder/LadderControlContainer/LadderSearchContainer"]
+margin_right = 1006.0
+margin_bottom = 128.0
+
+[node name="LadderSearchIcon" type="TextureRect" parent="Ladder/LadderControlContainer/LadderSearchContainer/LadderSearchIconContainer"]
+margin_left = 439.0
+margin_right = 567.0
+margin_bottom = 128.0
+rect_min_size = Vector2( 128, 128 )
+texture = SubResource( 1 )
+expand = true
+stretch_mode = 5
+
+[node name="LadderSearchLabelContainer" type="CenterContainer" parent="Ladder/LadderControlContainer/LadderSearchContainer"]
+margin_top = 132.0
+margin_right = 1006.0
+margin_bottom = 146.0
+
+[node name="LaderSearchLabel" type="Label" parent="Ladder/LadderControlContainer/LadderSearchContainer/LadderSearchLabelContainer"]
+margin_left = 466.0
+margin_right = 539.0
+margin_bottom = 14.0
+text = "Searching..."

@@ -9,6 +9,7 @@ namespace IsometricGame.Repository
         private const string DefaultLoginFileName = "user://default_login";
         private const string DefaultPasswordFileName = "user://default_password";
         private const string DefaultServerFileName = "user://default_server";
+        private const string DefaultIsServerFileName = "user://default_is_server";
         private const string LoginsFileName = "user://logins";
 
         private static readonly Dictionary<int, string> ActiveLogins = new Dictionary<int, string>();
@@ -28,6 +29,11 @@ namespace IsometricGame.Repository
             this.SaveString(DefaultServerFileName, server);
         }
 
+        public void SaveIsServer(bool isServer)
+        {
+            this.SaveString(DefaultIsServerFileName, isServer.ToString());
+        }
+
         public string LoadLogin()
         {
             return LoadString(DefaultLoginFileName);
@@ -39,6 +45,11 @@ namespace IsometricGame.Repository
         public string LoadServer()
         {
             return LoadString(DefaultServerFileName) ?? "91.146.57.100";
+        }
+
+        public bool LoadIsServer()
+        {
+            return bool.Parse(LoadString(DefaultIsServerFileName) ?? "false");
         }
 
         private string LoadString(string fileName)

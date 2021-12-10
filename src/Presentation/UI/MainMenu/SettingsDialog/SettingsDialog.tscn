@@ -1,0 +1,142 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Presentation/UI/UITheme.tres" type="Theme" id=1]
+[ext_resource path="res://Presentation/UI/MainMenu/SettingsDialog/SettingsDialog.cs" type="Script" id=2]
+
+[node name="SettingsDialog" type="WindowDialog"]
+visible = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme = ExtResource( 1 )
+popup_exclusive = true
+window_title = "Settings"
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="LoginContentContainer" type="VBoxContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="LoginCaptionLabel" type="Label" parent="LoginContentContainer"]
+margin_right = 1024.0
+margin_bottom = 38.0
+size_flags_horizontal = 3
+text = "Connection"
+align = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="LoginServerContainer" type="HBoxContainer" parent="LoginContentContainer"]
+margin_top = 42.0
+margin_right = 1024.0
+margin_bottom = 80.0
+
+[node name="LoginServerLabel" type="Label" parent="LoginContentContainer/LoginServerContainer"]
+margin_right = 321.0
+margin_bottom = 38.0
+text = "Play offline or as server"
+
+[node name="LoginServerCheckbox" type="CheckBox" parent="LoginContentContainer/LoginServerContainer"]
+margin_left = 325.0
+margin_right = 349.0
+margin_bottom = 38.0
+
+[node name="LoginCredentialsContainer" type="GridContainer" parent="LoginContentContainer"]
+margin_top = 84.0
+margin_right = 1024.0
+margin_bottom = 516.0
+size_flags_vertical = 3
+columns = 2
+
+[node name="ServerLabel" type="Label" parent="LoginContentContainer/LoginCredentialsContainer"]
+margin_right = 138.0
+margin_bottom = 38.0
+text = "Server"
+
+[node name="ServerLineEdit" type="LineEdit" parent="LoginContentContainer/LoginCredentialsContainer"]
+margin_left = 142.0
+margin_right = 1024.0
+margin_bottom = 38.0
+size_flags_horizontal = 3
+text = "91.146.57.100"
+caret_blink = true
+caret_blink_speed = 0.5
+
+[node name="LoginLabel" type="Label" parent="LoginContentContainer/LoginCredentialsContainer"]
+margin_top = 42.0
+margin_right = 138.0
+margin_bottom = 80.0
+text = "Login"
+
+[node name="LoginLineEdit" type="LineEdit" parent="LoginContentContainer/LoginCredentialsContainer"]
+margin_left = 142.0
+margin_top = 42.0
+margin_right = 1024.0
+margin_bottom = 80.0
+size_flags_horizontal = 3
+caret_blink = true
+caret_blink_speed = 0.5
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PasswordLabel" type="Label" parent="LoginContentContainer/LoginCredentialsContainer"]
+margin_top = 84.0
+margin_right = 138.0
+margin_bottom = 122.0
+text = "Password"
+
+[node name="PasswordLineEdit" type="LineEdit" parent="LoginContentContainer/LoginCredentialsContainer"]
+margin_left = 142.0
+margin_top = 84.0
+margin_right = 1024.0
+margin_bottom = 122.0
+size_flags_horizontal = 3
+secret = true
+caret_blink = true
+caret_blink_speed = 0.5
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="SavedLabel" type="Label" parent="LoginContentContainer"]
+margin_top = 520.0
+margin_right = 1024.0
+margin_bottom = 558.0
+size_flags_horizontal = 3
+custom_colors/font_color = Color( 0.219608, 0.517647, 0.113725, 1 )
+text = "Saved"
+align = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ButtonsContainer" type="HBoxContainer" parent="LoginContentContainer"]
+margin_top = 562.0
+margin_right = 1024.0
+margin_bottom = 600.0
+
+[node name="ResetButton" type="Button" parent="LoginContentContainer/ButtonsContainer"]
+margin_right = 338.0
+margin_bottom = 38.0
+size_flags_horizontal = 3
+text = "Reset"
+
+[node name="SpaceLabel" type="Label" parent="LoginContentContainer/ButtonsContainer"]
+margin_left = 342.0
+margin_right = 681.0
+margin_bottom = 38.0
+size_flags_horizontal = 3
+
+[node name="SaveButton" type="Button" parent="LoginContentContainer/ButtonsContainer"]
+margin_left = 685.0
+margin_right = 1024.0
+margin_bottom = 38.0
+size_flags_horizontal = 3
+text = "Save"

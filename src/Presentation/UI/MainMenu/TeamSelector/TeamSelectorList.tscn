@@ -1,0 +1,34 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Presentation/UI/MainMenu/TeamSelector/TeamSelectorList.cs" type="Script" id=1]
+[ext_resource path="res://Presentation/UI/MainMenu/TeamSelector/TeamSelectorUnit.tscn" type="PackedScene" id=2]
+
+[node name="TeamSelectorList" type="GridContainer"]
+margin_left = 6.0
+margin_top = 4.0
+margin_right = 442.0
+margin_bottom = 418.0
+columns = 3
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="EXAMPLE1" parent="." instance=ExtResource( 2 )]
+margin_right = 136.0
+margin_bottom = 174.0
+
+[node name="EXAMPLE2" parent="." instance=ExtResource( 2 )]
+margin_left = 140.0
+margin_right = 276.0
+margin_bottom = 174.0
+
+[node name="EXAMPLE3" parent="." instance=ExtResource( 2 )]
+margin_left = 280.0
+margin_right = 416.0
+margin_bottom = 174.0
+
+[node name="EXAMPLE4" parent="." instance=ExtResource( 2 )]
+margin_top = 178.0
+margin_right = 136.0
+margin_bottom = 352.0

@@ -3,7 +3,8 @@
 [ext_resource path="res://Presentation/Game/UnitShadow.cs" type="Script" id=1]
 [ext_resource path="res://assets/enemy/bat.png" type="Texture" id=2]
 [ext_resource path="res://assets/Arrow.png" type="Texture" id=43]
-[ext_resource path="res://Presentation/Shaders/Grayscale.tres" type="Material" id=63]
+[ext_resource path="res://Presentation/Game/Shaders/Grayscale.tres" type="Material" id=63]
+
 
 [sub_resource type="AtlasTexture" id=1]
 flags = 4

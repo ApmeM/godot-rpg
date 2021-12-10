@@ -6,10 +6,13 @@ using IsometricGame.Presentation;
 [SceneReference("Main.tscn")]
 public partial class Main : Node
 {
+    private Communicator communicator;
+
     public override void _Ready()
     {
         base._Ready();
         this.FillMembers();
+        this.communicator = GetNode<Communicator>("/root/Communicator");
 
         RemoveChild(this.dungeon);
         RemoveChild(this.lobby);
@@ -27,12 +30,12 @@ public partial class Main : Node
 
     public void LobbyCreated(string lobbyId)
     {
-        this.menu.LobbyCreated(lobbyId);
+        this.communicator.JoinLobby(lobbyId);
     }
 
     public void LobbyNotFound(string lobbyId)
     {
-        this.menu.LobbyNotFound();
+        this.menu.LobbyNotFound(lobbyId);
     }
 
     public void YouJoinedToLobby(bool creator, string lobbyId, int playerId)

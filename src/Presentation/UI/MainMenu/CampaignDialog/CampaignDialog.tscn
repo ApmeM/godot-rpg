@@ -1,0 +1,87 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://assets/ui.png" type="Texture" id=1]
+[ext_resource path="res://Presentation/UI/MainMenu/CampaignDialog/CampaignDialog.cs" type="Script" id=2]
+
+[sub_resource type="AtlasTexture" id=1]
+flags = 4
+atlas = ExtResource( 1 )
+region = Rect2( 0, 0, 32, 32 )
+
+[node name="CampaignDialog" type="WindowDialog"]
+margin_left = 5.0
+margin_top = 5.0
+margin_right = 1019.0
+margin_bottom = 595.0
+popup_exclusive = true
+window_title = "Campaign"
+script = ExtResource( 2 )
+
+[node name="Campaign" type="VBoxContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 4.0
+margin_top = 62.0
+margin_right = -4.0
+margin_bottom = 50.0
+custom_constants/separation = 50
+
+[node name="CampaignControlContainer" type="HBoxContainer" parent="Campaign"]
+margin_right = 1006.0
+margin_bottom = 170.0
+
+[node name="CampaignNewContainer" type="VBoxContainer" parent="Campaign/CampaignControlContainer"]
+margin_right = 1006.0
+margin_bottom = 170.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="CampaignNewIconContainer" type="CenterContainer" parent="Campaign/CampaignControlContainer/CampaignNewContainer"]
+margin_right = 1006.0
+margin_bottom = 128.0
+
+[node name="CampaignNewIcon" type="TextureRect" parent="Campaign/CampaignControlContainer/CampaignNewContainer/CampaignNewIconContainer"]
+margin_left = 439.0
+margin_right = 567.0
+margin_bottom = 128.0
+rect_min_size = Vector2( 128, 128 )
+texture = SubResource( 1 )
+expand = true
+stretch_mode = 5
+
+[node name="CampaignNewLabelContainer" type="CenterContainer" parent="Campaign/CampaignControlContainer/CampaignNewContainer"]
+margin_top = 132.0
+margin_right = 1006.0
+margin_bottom = 170.0
+
+[node name="CampaignNewLabel" type="Label" parent="Campaign/CampaignControlContainer/CampaignNewContainer/CampaignNewLabelContainer"]
+margin_left = 473.0
+margin_top = 12.0
+margin_right = 532.0
+margin_bottom = 26.0
+text = "Start new"
+
+[node name="CampaignLoadExistingContainer" type="GridContainer" parent="Campaign"]
+margin_top = 220.0
+margin_right = 1006.0
+margin_bottom = 258.0
+columns = 3
+
+[node name="CampaignLoadTimeLabel" type="Label" parent="Campaign/CampaignLoadExistingContainer"]
+margin_right = 266.0
+margin_bottom = 38.0
+text = "20-Nov-2021 12:55"
+
+[node name="CampaignLoadSlotDataLabel" type="Label" parent="Campaign/CampaignLoadExistingContainer"]
+margin_left = 270.0
+margin_right = 923.0
+margin_bottom = 38.0
+size_flags_horizontal = 3
+text = "Level: 1 Deep: 1"
+align = 1
+
+[node name="CampaignLoadButton" type="Button" parent="Campaign/CampaignLoadExistingContainer"]
+margin_left = 927.0
+margin_right = 1006.0
+margin_bottom = 38.0
+text = "Load"

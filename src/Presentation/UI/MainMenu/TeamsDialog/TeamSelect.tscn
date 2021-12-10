@@ -1,0 +1,124 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://Presentation/UI/UITheme.tres" type="Theme" id=1]
+[ext_resource path="res://Presentation/UI/MainMenu/TeamsDialog/TeamSelect.cs" type="Script" id=2]
+[ext_resource path="res://Presentation/UI/MainMenu/TeamsDialog/TeamSelectUnit.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Presentation/UI/MainMenu/TeamSelector/TeamSelectorList.tscn" type="PackedScene" id=4]
+[ext_resource path="res://Presentation/UI/MainMenu/TeamSelector/TeamSelectorUnit.tscn" type="PackedScene" id=5]
+
+[sub_resource type="InputEventAction" id=1]
+action = "ui_select"
+
+[sub_resource type="ShortCut" id=2]
+shortcut = SubResource( 1 )
+
+[node name="TeamSelect" type="WindowDialog"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme = ExtResource( 1 )
+window_title = "Team select"
+script = ExtResource( 2 )
+UnitConfigurationScene = ExtResource( 3 )
+
+[node name="ContentContainer" type="VBoxContainer" parent="."]
+margin_left = 5.0
+margin_top = 5.0
+margin_right = 1019.0
+margin_bottom = 783.0
+
+[node name="TeamContainer" type="HBoxContainer" parent="ContentContainer"]
+margin_right = 1014.0
+margin_bottom = 174.0
+
+[node name="TeamSelectorList" parent="ContentContainer/TeamContainer" instance=ExtResource( 4 )]
+margin_left = 0.0
+margin_top = 0.0
+margin_right = 556.0
+margin_bottom = 174.0
+columns = 100
+TeamSelectorUnitScene = ExtResource( 5 )
+
+[node name="OrLabel" type="Label" parent="ContentContainer/TeamContainer"]
+margin_left = 560.0
+margin_top = 68.0
+margin_right = 606.0
+margin_bottom = 106.0
+text = "OR"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="AddNewTeamButton" type="Button" parent="ContentContainer/TeamContainer"]
+margin_left = 610.0
+margin_right = 737.0
+margin_bottom = 174.0
+shortcut = SubResource( 2 )
+text = "Add new"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TeamDescriptionLineEdit" type="LineEdit" parent="ContentContainer"]
+margin_top = 178.0
+margin_right = 1014.0
+margin_bottom = 216.0
+caret_blink = true
+caret_blink_speed = 0.5
+
+[node name="ScrollUnitContainer" type="ScrollContainer" parent="ContentContainer"]
+margin_top = 220.0
+margin_right = 1014.0
+margin_bottom = 736.0
+size_flags_vertical = 3
+scroll_vertical_enabled = false
+
+[node name="UnitManagerContainer" type="HBoxContainer" parent="ContentContainer/ScrollUnitContainer"]
+margin_right = 221.0
+margin_bottom = 214.0
+
+[node name="UnitsContainer" type="HBoxContainer" parent="ContentContainer/ScrollUnitContainer/UnitManagerContainer"]
+margin_right = 188.0
+margin_bottom = 214.0
+size_flags_vertical = 3
+custom_constants/separation = 40
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TeamSelectUnit" parent="ContentContainer/ScrollUnitContainer/UnitManagerContainer/UnitsContainer" instance=ExtResource( 3 )]
+margin_right = 188.0
+margin_bottom = 214.0
+
+[node name="AddNewUnitButtonContainer" type="CenterContainer" parent="ContentContainer/ScrollUnitContainer/UnitManagerContainer"]
+margin_left = 192.0
+margin_right = 221.0
+margin_bottom = 214.0
+
+[node name="AddNewUnitButton" type="Button" parent="ContentContainer/ScrollUnitContainer/UnitManagerContainer/AddNewUnitButtonContainer"]
+margin_top = 88.0
+margin_right = 29.0
+margin_bottom = 126.0
+text = "+"
+
+[node name="ButtonsContainer" type="HBoxContainer" parent="ContentContainer"]
+margin_top = 740.0
+margin_right = 1014.0
+margin_bottom = 778.0
+custom_constants/separation = 20
+alignment = 2
+
+[node name="ResetButton" type="Button" parent="ContentContainer/ButtonsContainer"]
+margin_left = 828.0
+margin_right = 916.0
+margin_bottom = 38.0
+text = "Reset"
+
+[node name="SaveButton" type="Button" parent="ContentContainer/ButtonsContainer"]
+margin_left = 936.0
+margin_right = 1014.0
+margin_bottom = 38.0
+shortcut = SubResource( 2 )
+text = "Save"
+__meta__ = {
+"_edit_use_anchors_": false
+}
