@@ -2,6 +2,7 @@ using Godot;
 using IsometricGame.Logic;
 using IsometricGame.Logic.Utils;
 using IsometricGame.Presentation;
+using IsometricGame.Presentation.Utils;
 using IsometricGame.Repository;
 using System.Collections.Generic;
 
@@ -33,10 +34,7 @@ public partial class TeamSelectorList : Node
 
     public void Reload(List<TransferConnectData> teams)
     {
-        foreach (Node i in this.GetChildren())
-        {
-            i.QueueFree();
-        }
+        this.ClearChildren();
 
         for (var i = 0; i < teams.Count; i++)
         {

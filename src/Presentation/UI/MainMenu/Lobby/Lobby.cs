@@ -1,6 +1,7 @@
 using Godot;
 using IsometricGame.Logic.Enums;
 using IsometricGame.Presentation;
+using IsometricGame.Presentation.Utils;
 using System;
 using System.Collections.Generic;
 
@@ -91,10 +92,7 @@ public partial class Lobby : Container
         myPlayerId = playerId;
 
         playerListNodes.Clear();
-        foreach (Node child in this.playersListContainer.GetChildren())
-        {
-            child.QueueFree();
-        }
+        this.playersListContainer.ClearChildren();
     }
 
     public void PlayerLeftLobby(int playerId)

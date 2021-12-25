@@ -5,6 +5,7 @@ using IsometricGame.Logic.Models;
 using IsometricGame.Logic.ScriptHelpers;
 using IsometricGame.Logic.Utils;
 using IsometricGame.Presentation;
+using IsometricGame.Presentation.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,9 +34,9 @@ public partial class TeamSelectUnit : VBoxContainer
 
         var skills = Enum.GetValues(typeof(Skill)).Cast<Skill>().ToList();
         var texture = ResourceLoader.Load<Texture>("assets/Skills.png");
-        ClearContainer(availableSkillsContainer);
-        ClearContainer(skillsContainer);
-        ClearContainer(abilityContainer);
+        availableSkillsContainer.ClearChildren();
+        skillsContainer.ClearChildren();
+        abilityContainer.ClearChildren();
         for (var i = 0; i < skills.Count; i++)
         {
             var unitSkill = (int)skills[i];
@@ -139,7 +140,7 @@ public partial class TeamSelectUnit : VBoxContainer
         maxHP.Text = "MaxHP " + unit?.MaxHp.ToString() ?? "unknown";
         moveRange.Text = "Speed " + unit?.MoveDistance.ToString() ?? "unknown";
         sightRange.Text = "Vision " + unit?.SightRange.ToString() ?? "unknown";
-        ClearContainer(abilityContainer);
+        abilityContainer.ClearChildren();
 
         foreach (var ability in unit?.Abilities ?? new HashSet<Ability>())
         {
@@ -157,13 +158,5 @@ public partial class TeamSelectUnit : VBoxContainer
 
         this.Visible = false;
         this.CallDeferred("set_visible", true);
-    }
-
-    private void ClearContainer(Container container)
-    {
-        foreach (Node node in container.GetChildren())
-        {
-            node.QueueFree();
-        }
     }
 }

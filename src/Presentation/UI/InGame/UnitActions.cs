@@ -3,6 +3,7 @@ using IsometricGame.Logic.Enums;
 using IsometricGame.Logic.ScriptHelpers;
 using IsometricGame.Logic.Utils;
 using IsometricGame.Presentation;
+using IsometricGame.Presentation.Utils;
 using System.Collections.Generic;
 
 [SceneReference("UnitActions.tscn")]
@@ -11,7 +12,6 @@ public partial class UnitActions : Control
     [Signal]
     public delegate void ActionSelected(CurrentAction action, Ability ability);
 
-    private readonly List<Node> buttons = new List<Node>();
     private readonly PluginUtils pluginUtils;
     
     public UnitActions()
@@ -23,11 +23,7 @@ public partial class UnitActions : Control
     {
         set
         {
-            foreach(var b in buttons)
-            {
-                b.QueueFree();
-            }
-            buttons.Clear();
+            abilityContainer.ClearChildren();
 
             for (var i = 0; i < value.Count; i++)
             {
@@ -41,7 +37,6 @@ public partial class UnitActions : Control
                     HintTooltip = this.pluginUtils.FindAbility(ability).Description
                 };
 
-                buttons.Add(abilityNode);
                 abilityContainer.AddChild(abilityNode);
                 abilityNode.Connect("pressed", this, nameof(AttackButtonPressed), new Godot.Collections.Array { ability });
             }

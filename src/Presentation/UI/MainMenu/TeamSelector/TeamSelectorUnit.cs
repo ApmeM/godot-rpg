@@ -3,6 +3,7 @@ using IsometricGame.Logic;
 using IsometricGame.Logic.ScriptHelpers;
 using IsometricGame.Logic.Utils;
 using IsometricGame.Presentation;
+using IsometricGame.Presentation.Utils;
 
 [SceneReference("TeamSelectorUnit.tscn")]
 public partial class TeamSelectorUnit : Control
@@ -23,11 +24,8 @@ public partial class TeamSelectorUnit : Control
         base._Ready();
         this.FillMembers();
 
-        foreach (Node i in this.teamMembers.GetChildren())
-        {
-            i.QueueFree();
-        }
-
+        this.teamMembers.ClearChildren();
+        
         this.Connect("gui_input", this, nameof(GuiInput));
         this.backgroundPanel.Connect("gui_input", this, nameof(GuiInput));
         this.borderContainer.Connect("gui_input", this, nameof(GuiInput));
@@ -46,10 +44,7 @@ public partial class TeamSelectorUnit : Control
 
     public void Initialize(TransferConnectData team, int teamId)
     {
-        foreach (Node i in this.teamMembers.GetChildren())
-        {
-            i.QueueFree();
-        }
+        this.teamMembers.ClearChildren();
 
         this.TeamId = teamId;
         this.teamNameLabel.Text = team.TeamName;

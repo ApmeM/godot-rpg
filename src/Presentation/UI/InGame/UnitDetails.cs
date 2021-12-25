@@ -4,6 +4,7 @@ using IsometricGame.Logic.Models;
 using IsometricGame.Logic.ScriptHelpers;
 using IsometricGame.Logic.Utils;
 using IsometricGame.Presentation;
+using IsometricGame.Presentation.Utils;
 using System.Collections.Generic;
 
 [SceneReference("UnitDetails.tscn")]
@@ -29,10 +30,7 @@ public partial class UnitDetails : VBoxContainer
         sightRange.Text = "Vision " + unit?.SightRange.ToString() ?? "unknown";
 
         var texture = ResourceLoader.Load<Texture>("assets/Skills.png");
-        foreach (Node node in skillsContainer.GetChildren())
-        {
-            node.QueueFree();
-        }
+        this.skillsContainer.ClearChildren();
 
         foreach (var skill in unit?.Skills ?? new HashSet<Skill>())
         {
@@ -52,11 +50,8 @@ public partial class UnitDetails : VBoxContainer
 
             skillsContainer.AddChild(skillNode);
         }
-        
-        foreach (Node node in effectsContainer.GetChildren())
-        {
-            node.QueueFree();
-        }
+
+        this.effectsContainer.ClearChildren();
 
         foreach (var effect in unit?.Effects ?? new List<EffectDuration>())
         {

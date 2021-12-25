@@ -3,6 +3,7 @@ using Godot.Collections;
 using IsometricGame.Logic;
 using IsometricGame.Logic.Utils;
 using IsometricGame.Presentation;
+using IsometricGame.Presentation.Utils;
 using IsometricGame.Repository;
 using System.Collections.Generic;
 
@@ -66,10 +67,7 @@ public partial class TeamSelect : WindowDialog
         
         this.teamDescriptionLineEdit.Text = team.TeamName;
 
-        foreach (Node item in unitsContainer.GetChildren())
-        {
-            item.QueueFree();
-        }
+        unitsContainer.ClearChildren();
 
         for (var i = 0; i < team.Units.Count; i++)
         {
