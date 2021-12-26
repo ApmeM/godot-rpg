@@ -2,7 +2,7 @@
 
 [ext_resource path="res://Presentation/UI/UITheme.tres" type="Theme" id=1]
 [ext_resource path="res://Presentation/UI/MainMenu/Menu.cs" type="Script" id=2]
-[ext_resource path="res://Presentation/UI/MainMenu/TeamsDialog/TeamSelect.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Presentation/UI/MainMenu/TeamBuilderDialog/TeamBuilderDialog.tscn" type="PackedScene" id=3]
 [ext_resource path="res://Presentation/UI/MainMenu/TeamSelector/TeamSelector.tscn" type="PackedScene" id=4]
 [ext_resource path="res://assets/ui.png" type="Texture" id=5]
 [ext_resource path="res://Presentation/UI/MainMenu/CustomDialog/CustomDialog.tscn" type="PackedScene" id=6]
@@ -30,12 +30,12 @@ flags = 4
 atlas = ExtResource( 5 )
 region = Rect2( 32, 68, 12, 13 )
 
-[sub_resource type="AtlasTexture" id=6]
+[sub_resource type="AtlasTexture" id=5]
 flags = 4
 atlas = ExtResource( 5 )
 region = Rect2( 63, 110, 22, 17 )
 
-[sub_resource type="AtlasTexture" id=5]
+[sub_resource type="AtlasTexture" id=6]
 flags = 4
 atlas = ExtResource( 5 )
 region = Rect2( 100, 68, 13, 11 )
@@ -228,7 +228,7 @@ margin_left = 103.0
 margin_right = 231.0
 margin_bottom = 128.0
 rect_min_size = Vector2( 128, 128 )
-texture_normal = SubResource( 6 )
+texture_normal = SubResource( 5 )
 expand = true
 stretch_mode = 5
 
@@ -259,7 +259,7 @@ margin_left = 104.0
 margin_right = 232.0
 margin_bottom = 128.0
 rect_min_size = Vector2( 128, 128 )
-texture_normal = SubResource( 5 )
+texture_normal = SubResource( 6 )
 expand = true
 stretch_mode = 4
 
@@ -289,7 +289,8 @@ margin_top = 5.0
 margin_right = 1019.0
 margin_bottom = 595.0
 
-[node name="TeamSelect" parent="." instance=ExtResource( 3 )]
+[node name="TeamBuilderDialog" parent="." instance=ExtResource( 3 )]
+visible = false
 anchor_right = 0.0
 anchor_bottom = 0.0
 margin_left = 5.0

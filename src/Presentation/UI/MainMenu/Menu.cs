@@ -68,7 +68,7 @@ public partial class Menu : Container
 
     private void OnTeamBuilderPressed()
     {
-        this.teamSelect.PopupCentered();
+        this.teamBuilderDialog.PopupCentered();
     }
 
     private void OnExitPressed()

@@ -31,14 +31,14 @@ __meta__ = {
 [node name="Panel" type="Panel" parent="."]
 margin_left = 6.0
 margin_top = 4.0
-margin_right = 442.0
+margin_right = 451.0
 margin_bottom = 418.0
 custom_styles/panel = SubResource( 2 )
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 margin_left = 6.0
 margin_top = 4.0
-margin_right = 442.0
+margin_right = 451.0
 margin_bottom = 418.0
 custom_constants/margin_right = 10
 custom_constants/margin_top = 10
@@ -51,14 +51,14 @@ __meta__ = {
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
 margin_left = 10.0
 margin_top = 10.0
-margin_right = 426.0
+margin_right = 435.0
 margin_bottom = 404.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="TeamSelectorLabel" type="Label" parent="MarginContainer/VBoxContainer"]
-margin_right = 416.0
+margin_right = 425.0
 margin_bottom = 38.0
 text = "Your teams"
 align = 1
@@ -66,6 +66,6 @@ align = 1
 [node name="TeamSelectorList" parent="MarginContainer/VBoxContainer" instance=ExtResource( 5 )]
 margin_left = 0.0
 margin_top = 42.0
-margin_right = 416.0
+margin_right = 425.0
 margin_bottom = 394.0
 TeamSelectorUnitScene = ExtResource( 2 )

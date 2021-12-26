@@ -15,20 +15,28 @@ __meta__ = {
 }
 
 [node name="EXAMPLE1" parent="." instance=ExtResource( 2 )]
-margin_right = 136.0
+margin_right = 139.0
 margin_bottom = 174.0
+Units = PoolIntArray( 0, 1, 3 )
 
 [node name="EXAMPLE2" parent="." instance=ExtResource( 2 )]
-margin_left = 140.0
-margin_right = 276.0
+margin_left = 143.0
+margin_right = 282.0
 margin_bottom = 174.0
+Units = PoolIntArray( 0, 1, 2, 3 )
+Caption = "Team 2"
 
 [node name="EXAMPLE3" parent="." instance=ExtResource( 2 )]
-margin_left = 280.0
-margin_right = 416.0
+margin_left = 286.0
+margin_right = 425.0
 margin_bottom = 174.0
+Units = PoolIntArray( 0, 2 )
+Caption = "Team 3"
+IsSelected = true
 
 [node name="EXAMPLE4" parent="." instance=ExtResource( 2 )]
 margin_top = 178.0
-margin_right = 136.0
+margin_right = 139.0
 margin_bottom = 352.0
+Units = PoolIntArray( 3, 1, 2 )
+Caption = "Team 4"

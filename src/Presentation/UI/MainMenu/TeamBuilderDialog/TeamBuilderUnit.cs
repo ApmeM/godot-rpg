@@ -10,15 +10,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-[SceneReference("TeamSelectUnit.tscn")]
-public partial class TeamSelectUnit : VBoxContainer
+[SceneReference("TeamBuilderUnit.tscn")]
+public partial class TeamBuilderUnit : VBoxContainer
 {
     private TransferConnectData.UnitData Unit;
 
     private readonly UnitUtils unitUtils;
     private readonly PluginUtils pluginUtils;
 
-    public TeamSelectUnit()
+    public TeamBuilderUnit()
     {
         this.unitUtils = DependencyInjector.unitUtils;
         this.pluginUtils = DependencyInjector.pluginUtils;

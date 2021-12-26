@@ -13,16 +13,19 @@ public partial class TeamSelectorList : Node
 
     [Export]
     public PackedScene TeamSelectorUnitScene;
-
-    public int SelectedTeam;
+    
+    private int selectedIdx;
+    private bool selectedIdxDirty;
 
     [Signal]
-    public delegate void SelectionChanged(int teamId);
+    public delegate void SelectionChanged(int teamIdx);
 
     public TeamSelectorList()
     {
         this.teamsRepository = DependencyInjector.teamsRepository;
     }
+
+    public int SelectedIdx => this.selectedIdx;
 
     public override void _Ready()
     {
@@ -32,53 +35,59 @@ public partial class TeamSelectorList : Node
         this.Reload(this.teamsRepository.LoadTeams());
     }
 
+    public override void _Process(float delta)
+    {
+        base._Process(delta);
+
+        if (this.selectedIdxDirty)
+        {
+            this.selectedIdxDirty = false;
+            ((TeamSelectorUnit)this.GetChild(this.selectedIdx)).IsSelected = true;
+        }
+    }
+
     public void Reload(List<TransferConnectData> teams)
     {
         this.ClearChildren();
 
         for (var i = 0; i < teams.Count; i++)
         {
-            AddItem(teams[i], i);
+            AddItem(teams[i]);
         }
     }
 
-    public void AddItem(TransferConnectData team, int teamId)
+    public void AddItem(TransferConnectData team)
     {
         var scene = (TeamSelectorUnit)TeamSelectorUnitScene.Instance();
         this.AddChild(scene);
 
-        scene.Initialize(team, teamId);
-        scene.Connect(nameof(TeamSelectorUnit.Selected), this, nameof(TeamSelected));
+        scene.Team = team;
+        scene.Connect(nameof(TeamSelectorUnit.TeamSelected), this, nameof(TeamSelected));
     }
 
     private void TeamSelected(TeamSelectorUnit teamSelectorUnit)
     {
-        foreach (TeamSelectorUnit i in this.GetChildren())
+        foreach (TeamSelectorUnit child in this.GetChildren())
         {
-            if (teamSelectorUnit.TeamId == i.TeamId)
+            if (teamSelectorUnit.GetIndex() == child.GetIndex())
             {
                 continue;
             }
 
-            i.Deselect();
-            break;
+            child.IsSelected = false;
         }
-
-        this.SelectedTeam = teamSelectorUnit.TeamId;
-        EmitSignal(nameof(SelectionChanged), teamSelectorUnit.TeamId);
+        
+        EmitSignal(nameof(SelectionChanged), teamSelectorUnit.GetIndex());
     }
 
-    public void Select(int teamId)
+    public void Select(int teamIdx)
     {
-        foreach (TeamSelectorUnit i in this.GetChildren())
-        {
-            if (teamId != i.TeamId)
-            {
-                continue;
-            }
+        this.selectedIdx = teamIdx;
+        this.selectedIdxDirty = true;
+    }
 
-            i.Select();
-            break;
-        }
+    public void RefreshSelected()
+    {
+        ((TeamSelectorUnit)this.GetChild(this.selectedIdx)).Refresh();
     }
 }

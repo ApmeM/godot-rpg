@@ -1,74 +1,91 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=10 format=2]
 
-[ext_resource path="res://Presentation/UI/UITheme.tres" type="Theme" id=1]
-[ext_resource path="res://Presentation/UI/MainMenu/TeamsDialog/TeamSelect.cs" type="Script" id=2]
-[ext_resource path="res://Presentation/UI/MainMenu/TeamsDialog/TeamSelectUnit.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Presentation/UI/MainMenu/TeamBuilderDialog/TeamBuilderDialog.cs" type="Script" id=1]
+[ext_resource path="res://Presentation/UI/MainMenu/TeamSelector/TeamSelectorUnit.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Presentation/UI/MainMenu/TeamBuilderDialog/TeamBuilderUnit.tscn" type="PackedScene" id=3]
 [ext_resource path="res://Presentation/UI/MainMenu/TeamSelector/TeamSelectorList.tscn" type="PackedScene" id=4]
-[ext_resource path="res://Presentation/UI/MainMenu/TeamSelector/TeamSelectorUnit.tscn" type="PackedScene" id=5]
+[ext_resource path="res://Presentation/UI/UITheme.tres" type="Theme" id=5]
+[ext_resource path="res://assets/Fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=6]
 
-[sub_resource type="InputEventAction" id=1]
+[sub_resource type="DynamicFont" id=1]
+size = 80
+font_data = ExtResource( 6 )
+
+[sub_resource type="InputEventAction" id=2]
 action = "ui_select"
 
-[sub_resource type="ShortCut" id=2]
-shortcut = SubResource( 1 )
+[sub_resource type="ShortCut" id=3]
+shortcut = SubResource( 2 )
 
 [node name="TeamSelect" type="WindowDialog"]
+visible = true
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme = ExtResource( 1 )
+theme = ExtResource( 5 )
 window_title = "Team select"
-script = ExtResource( 2 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
 UnitConfigurationScene = ExtResource( 3 )
 
 [node name="ContentContainer" type="VBoxContainer" parent="."]
-margin_left = 5.0
-margin_top = 5.0
-margin_right = 1019.0
-margin_bottom = 783.0
+margin_right = 1025.0
+margin_bottom = 599.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="TeamContainer" type="HBoxContainer" parent="ContentContainer"]
-margin_right = 1014.0
+margin_right = 1025.0
 margin_bottom = 174.0
 
 [node name="TeamSelectorList" parent="ContentContainer/TeamContainer" instance=ExtResource( 4 )]
 margin_left = 0.0
 margin_top = 0.0
-margin_right = 556.0
+margin_right = 568.0
 margin_bottom = 174.0
 columns = 100
-TeamSelectorUnitScene = ExtResource( 5 )
+TeamSelectorUnitScene = ExtResource( 2 )
 
-[node name="OrLabel" type="Label" parent="ContentContainer/TeamContainer"]
-margin_left = 560.0
-margin_top = 68.0
-margin_right = 606.0
-margin_bottom = 106.0
-text = "OR"
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="AddNewTeamButton" type="Button" parent="ContentContainer/TeamContainer"]
-margin_left = 610.0
-margin_right = 737.0
+[node name="MarginContainer" type="MarginContainer" parent="ContentContainer/TeamContainer"]
+margin_left = 572.0
+margin_right = 700.0
 margin_bottom = 174.0
-shortcut = SubResource( 2 )
-text = "Add new"
-__meta__ = {
-"_edit_use_anchors_": false
-}
+custom_constants/margin_right = 4
+custom_constants/margin_top = 4
+custom_constants/margin_left = 4
+custom_constants/margin_bottom = 4
+
+[node name="AddNewButtonBackground" type="Panel" parent="ContentContainer/TeamContainer/MarginContainer"]
+margin_left = 4.0
+margin_top = 4.0
+margin_right = 124.0
+margin_bottom = 170.0
+
+[node name="AddNewTeamButton" type="Button" parent="ContentContainer/TeamContainer/MarginContainer"]
+margin_left = 4.0
+margin_top = 4.0
+margin_right = 124.0
+margin_bottom = 170.0
+rect_min_size = Vector2( 120, 0 )
+custom_fonts/font = SubResource( 1 )
+shortcut = SubResource( 3 )
+text = "+"
 
 [node name="TeamDescriptionLineEdit" type="LineEdit" parent="ContentContainer"]
 margin_top = 178.0
-margin_right = 1014.0
+margin_right = 1025.0
 margin_bottom = 216.0
 caret_blink = true
 caret_blink_speed = 0.5
 
 [node name="ScrollUnitContainer" type="ScrollContainer" parent="ContentContainer"]
 margin_top = 220.0
-margin_right = 1014.0
-margin_bottom = 736.0
+margin_right = 1025.0
+margin_bottom = 557.0
 size_flags_vertical = 3
 scroll_vertical_enabled = false
 
@@ -85,7 +102,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="TeamSelectUnit" parent="ContentContainer/ScrollUnitContainer/UnitManagerContainer/UnitsContainer" instance=ExtResource( 3 )]
+[node name="EXAMPLE1" parent="ContentContainer/ScrollUnitContainer/UnitManagerContainer/UnitsContainer" instance=ExtResource( 3 )]
 margin_right = 188.0
 margin_bottom = 214.0
 
@@ -101,23 +118,23 @@ margin_bottom = 126.0
 text = "+"
 
 [node name="ButtonsContainer" type="HBoxContainer" parent="ContentContainer"]
-margin_top = 740.0
-margin_right = 1014.0
-margin_bottom = 778.0
+margin_top = 561.0
+margin_right = 1025.0
+margin_bottom = 599.0
 custom_constants/separation = 20
 alignment = 2
 
 [node name="ResetButton" type="Button" parent="ContentContainer/ButtonsContainer"]
-margin_left = 828.0
-margin_right = 916.0
+margin_left = 839.0
+margin_right = 927.0
 margin_bottom = 38.0
 text = "Reset"
 
 [node name="SaveButton" type="Button" parent="ContentContainer/ButtonsContainer"]
-margin_left = 936.0
-margin_right = 1014.0
+margin_left = 947.0
+margin_right = 1025.0
 margin_bottom = 38.0
-shortcut = SubResource( 2 )
+shortcut = SubResource( 3 )
 text = "Save"
 __meta__ = {
 "_edit_use_anchors_": false

@@ -7,8 +7,8 @@ using IsometricGame.Presentation.Utils;
 using IsometricGame.Repository;
 using System.Collections.Generic;
 
-[SceneReference("TeamSelect.tscn")]
-public partial class TeamSelect : WindowDialog
+[SceneReference("TeamBuilderDialog.tscn")]
+public partial class TeamBuilderDialog : WindowDialog
 {
     [Export]
     public PackedScene UnitConfigurationScene;
@@ -21,7 +21,7 @@ public partial class TeamSelect : WindowDialog
 
     private TeamsRepository teamsRepository;
 
-    public TeamSelect()
+    public TeamBuilderDialog()
     {
         this.teamsRepository = DependencyInjector.teamsRepository;
     }
@@ -35,28 +35,35 @@ public partial class TeamSelect : WindowDialog
         this.resetButton.Connect("pressed", this, nameof(OnResetButtonPressed));
         this.addNewTeamButton.Connect("pressed", this, nameof(OnAddNewTeamButtonPressed));
         this.addNewUnitButton.Connect("pressed", this, nameof(OnAddNewUnitButtonPressed));
+        this.teamDescriptionLineEdit.Connect("text_changed", this, nameof(OnTeamNameTextChanged));
         this.teamSelectorList.Connect(nameof(TeamSelectorList.SelectionChanged), this, nameof(ItemSelected));
-        this.teamDescriptionLineEdit.Editable = false;
         this.OnResetButtonPressed();
     }
 
-    public void OnAddNewTeamButtonPressed()
+    private void OnTeamNameTextChanged(string text)
+    {
+        this.Teams[this.CurrentTeam].TeamName = text;
+        this.teamSelectorList.RefreshSelected();
+    }
+
+    private void OnAddNewTeamButtonPressed()
     {
         var team = new TransferConnectData
         {
-            TeamName = "New team name.",
+            TeamName = $"Team",
             Units = new List<TransferConnectData.UnitData>()
         };
         this.Teams.Add(team);
         
-        this.teamSelectorList.AddItem(team, this.Teams.Count - 1);
+        this.teamSelectorList.AddItem(team);
         this.teamSelectorList.Select(Teams.Count - 1);
     }
 
-    public void OnAddNewUnitButtonPressed()
+    private void OnAddNewUnitButtonPressed()
     {
         var unit = new TransferConnectData.UnitData();
         this.Teams[this.CurrentTeam].Units.Add(unit);
+        this.teamSelectorList.RefreshSelected();
         ItemSelected(this.CurrentTeam);
     }
 
@@ -72,7 +79,7 @@ public partial class TeamSelect : WindowDialog
         for (var i = 0; i < team.Units.Count; i++)
         {
             var unit = team.Units[i];
-            var unitScene = (TeamSelectUnit)UnitConfigurationScene.Instance();
+            var unitScene = (TeamBuilderUnit)UnitConfigurationScene.Instance();
             unitsContainer.AddChild(unitScene);
             unitScene.InitUnit(unit);
 
@@ -90,20 +97,20 @@ public partial class TeamSelect : WindowDialog
     private void UnitRemoved(int unitIndex)
     {
         Teams[CurrentTeam].Units.RemoveAt(unitIndex);
+        this.teamSelectorList.RefreshSelected();
         ItemSelected(CurrentTeam);
     }
 
-    public void OnSaveButtonPressed()
+    private void OnSaveButtonPressed()
     {
         this.teamsRepository.SaveTeams(Teams);
         EmitSignal(nameof(TeamsUpdated));
     }
 
-    public void OnResetButtonPressed()
+    private void OnResetButtonPressed()
     {
         this.Teams = this.teamsRepository.LoadTeams();
         this.teamSelectorList.Reload(this.Teams);
-
-        ItemSelected(0);
+        this.teamSelectorList.Select(0);
     }
 }
